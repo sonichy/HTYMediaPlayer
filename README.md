@@ -22,6 +22,6 @@ Project ERROR: Unknown module(s) in QT: multimedia
 sudo apt-get install qtmultimedia5-dev  
 
 有声音无视频：  
-https://bugreports.qt.io/browse/QTBUG-23761  
-卸载: sudo apt-get remove gstreamer1.0-vaapi  
-感谢 liujianfeng@deepin.org 。
+参考：https://bugreports.qt.io/browse/QTBUG-23761  
+解决：sudo apt-get remove gstreamer1.0-vaapi  
+感谢：liujianfeng@deepin.org 。
