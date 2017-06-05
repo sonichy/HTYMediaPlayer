@@ -370,7 +370,7 @@ void MainWindow::enterFullscreen(){
         ui->controlPanel->hide();
         ui->statusBar->hide();
         //ui->sliderProgress->hide();
-        ui->sliderProgress->setStyleSheet("background:black;");
+        ui->sliderProgress->setStyleSheet("background-color:black;");
         PMAFullscreen->setText("退出全屏");
         if(isListShow)ui->tableWidget->setVisible(false);
         ui->verticalLayout_2->setMargin(0);

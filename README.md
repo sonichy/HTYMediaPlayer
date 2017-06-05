@@ -21,6 +21,9 @@ Linux 平台基于 Qt 的 QMultiMedia 的媒体播放程序，支持某些直播
 Project ERROR: Unknown module(s) in QT: multimedia  
 sudo apt-get install qtmultimedia5-dev  
 
+快捷键失效：  
+鼠标移动到窗口非视频区域激活，全屏下鼠标移动到进度条上激活。  
+
 有声音无视频：  
 参考：https://bugreports.qt.io/browse/QTBUG-23761  
 解决：sudo apt-get remove gstreamer1.0-vaapi  
