@@ -2,7 +2,6 @@
 #include "ui_mainwindow.h"
 #include <QFileDialog>
 #include <QDesktopWidget>
-#include <QMediaPlayer>
 #include <QVideoWidget>
 #include <QShortcut>
 #include <QMessageBox>
@@ -10,26 +9,12 @@
 #include <QTime>
 #include <QTimer>
 #include <QInputDialog>
-#include <QTableWidget>
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QStandardPaths>
 #include <QScreen>
 #include <QPainter>
 #include <QMediaMetaData>
-
-QString filename="";
-QMediaPlayer *player;
-QVideoWidget *video;
-QMenu *popmenu;
-QAction *PMAPlay,*PMAFullscreen,*PMACapture;
-QTableWidget *table;
-int volume=100;
-bool m_bPressed;
-QPoint m_point;
-//QLabel *labelTL;
-int widthv=0,heightv=0,widtho=0,heighto=0,listVisible=0;
-bool isListShow;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -50,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     video=new QVideoWidget;
     ui->vbox->addWidget(video);
+    video->setMouseTracking(true);
     player = new QMediaPlayer;
     player->setVolume(100);
     player->setVideoOutput(video);
@@ -89,7 +75,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QStringList Largs=QApplication::arguments();
     qDebug() << Largs;
     if(Largs.length()>1){
-        open(Largs.at(1));
+        open(Largs.at(1));        
     }
 
     fillTable("tv.txt");
@@ -119,6 +105,7 @@ void MainWindow::open(QString path)
     setWindowTitle(QFileInfo(path).fileName());
     ui->statusBar->showMessage("打开 " + path);
     ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
+    ui->tableWidget->hide();
 }
 
 void MainWindow::on_action_openURL_triggered()
@@ -263,9 +250,6 @@ void MainWindow::on_action_info_triggered(){
 void MainWindow::on_action_volumeUp_triggered()
 {
     player->setVolume(player->volume()+1);
-//    labelTL->setText("音量："+QString::number(player->volume()+1));
-//    labelTL->show();
-//    QTimer::singleShot(3000,this,SLOT(hideWidget()));
 }
 
 void MainWindow::on_action_volumeDown_triggered()
@@ -296,7 +280,7 @@ void MainWindow::on_action_help_triggered(){
 
 void MainWindow::on_action_changelog_triggered()
 {
-    QMessageBox aboutMB(QMessageBox::NoIcon, "更新历史", "1.4(2017-05)\n系统升级后出现有声音无视频，根据 https://bugreports.qt.io/browse/QTBUG-23761，卸载 sudo apt-get remove gstreamer1.0-vaapi 修复。\n\n1.3 (2017-04)\n记忆全屏前直播列表是否显示，以便退出全屏后恢复。\n直播列表做进主窗体内并支持显隐。\n\n1.2 (2017-03)\n增加打开方式打开文件。\n右键增加截图菜单。\n增加剧情连拍。\n增加截图。\n\n1.1 (2017-03)\n窗口标题增加台号。\n (2017-02)\n合并导入重复代码。\n加入逗号判断，解决导入崩溃。\n增加导入直播列表菜单。\n上一个、下一个按钮换台。\n增加直播列表。\n\n1.0 (2017-02)\n静音修改图标和拖动条。\n增加快进、快退。\n增加时间。\n修复拖动进度条卡顿BUG。\n全屏修改进度条样式。\n实现全屏。\n增加视频控件。\n增加控制栏。");
+    QMessageBox aboutMB(QMessageBox::NoIcon, "更新历史", "1.4\n(2017-06)\n打开本地文件，自动隐藏直播列表。\n(2017-05)\n系统升级后出现有声音无视频，根据 https://bugreports.qt.io/browse/QTBUG-23761，卸载 sudo apt-get remove gstreamer1.0-vaapi 修复。\n\n1.3 (2017-04)\n记忆全屏前直播列表是否显示，以便退出全屏后恢复。\n直播列表做进主窗体内并支持显隐。\n\n1.2 (2017-03)\n增加打开方式打开文件。\n右键增加截图菜单。\n增加剧情连拍。\n增加截图。\n\n1.1 (2017-03)\n窗口标题增加台号。\n (2017-02)\n合并导入重复代码。\n加入逗号判断，解决导入崩溃。\n增加导入直播列表菜单。\n上一个、下一个按钮换台。\n增加直播列表。\n\n1.0 (2017-02)\n静音修改图标和拖动条。\n增加快进、快退。\n增加时间。\n修复拖动进度条卡顿BUG。\n全屏修改进度条样式。\n实现全屏。\n增加视频控件。\n增加控制栏。");
     aboutMB.exec();
 }
 
@@ -422,6 +406,9 @@ void MainWindow::setSTime(int v){
 
 void MainWindow::volumeChange(int v){
     ui->sliderVolume->setValue(v);
+//    labelTL->setText("音量："+QString::number(v));
+//    labelTL->show();
+//    QTimer::singleShot(3000,this,SLOT(hideWidget()));
 }
 
 void MainWindow::playPause(){
@@ -490,21 +477,23 @@ void MainWindow::fillTable(QString filename){
         QTextStream ts(file);
         QString s=ts.readAll();
         file->close();
-        //while(!file->atEnd()){
-        //    QString line = file->readLine();
-         QStringList line=s.split("\n");
-         for(int i=0;i<line.size();i++)
+        QStringList line=s.split("\n");
+        for(int i=0;i<line.size();i++)
             if(line.at(i).contains(",")){
                 QStringList strlist=line.at(i).split(",");
-                //int rownum=ui->tableWidget->rowCount();
                 ui->tableWidget->insertRow(i);
                 ui->tableWidget->setItem(i,0,new QTableWidgetItem(strlist.at(0)));
                 ui->tableWidget->setItem(i,1,new QTableWidgetItem(strlist.at(1).split("#").at(0)));
             }
-            ui->tableWidget->resizeColumnsToContents();//适应宽度
-        //}
+        ui->tableWidget->resizeColumnsToContents();//适应宽度
         ui->statusBar->showMessage("导入 " + filename + "，共" + QString::number(ui->tableWidget->rowCount()) + "个节目");
     }
+}
+
+void MainWindow::hideWidget()
+{
+    //labelTL->hide();
+    ui->sliderProgress->hide();
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
@@ -516,20 +505,15 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     }
 }
 
-void MainWindow::hideWidget()
-{
-    //labelTL->hide();
-    ui->sliderProgress->hide();
-}
-
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
+    qDebug() << "MouseMove:" << pos();
     if(m_bPressed)
         move(event->pos() - m_point + pos());
-    if(isFullScreen()){
-        ui->sliderProgress->show();
-        QTimer::singleShot(3000,this,SLOT(hideWidget()));
-    }
+//    if(isFullScreen()){
+//        ui->sliderProgress->show();
+//        QTimer::singleShot(3000,this,SLOT(hideWidget()));
+//    }
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)

@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMediaPlayer>
+#include <QTableWidget>
 
 namespace Ui {
     class MainWindow;
@@ -24,6 +26,18 @@ private:
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void open(QString path);
+    QString filename;
+    QMediaPlayer *player;
+    QVideoWidget *video;
+    QMenu *popmenu;
+    QAction *PMAPlay,*PMAFullscreen,*PMACapture;
+    QTableWidget *table;
+    int volume;
+    bool m_bPressed;
+    QPoint m_point;
+    //QLabel *labelTL;
+    int widthv,heightv,widtho,heighto,listVisible;
+    bool isListShow;
 
 private slots:
     void on_action_open_triggered();
