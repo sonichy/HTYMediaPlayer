@@ -13,6 +13,9 @@
   <property name="mouseTracking">
    <bool>true</bool>
   </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
+  </property>
   <property name="windowTitle">
    <string>海天鹰播放器</string>
   </property>

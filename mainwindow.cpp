@@ -16,6 +16,7 @@
 #include <QPainter>
 #include <QMediaMetaData>
 #include <QTextBrowser>
+#include <QMimeData>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -39,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent) :
     video->setMouseTracking(true);
     player = new QMediaPlayer;
     player->setVolume(100);
-    player->setVideoOutput(video);
+    player->setVideoOutput(video);    
     connect(player,SIGNAL(durationChanged(qint64)),this,SLOT(durationChange(qint64)));
     connect(player,SIGNAL(positionChanged(qint64)),this,SLOT(positionChange(qint64)));
     connect(player,SIGNAL(volumeChanged(int)),this,SLOT(volumeChange(int)));
@@ -72,6 +73,7 @@ MainWindow::MainWindow(QWidget *parent) :
     widtho = width() - video->width();
     heighto = height() - video->height();
     qDebug() << widtho << heighto;
+
 
     QStringList Largs=QApplication::arguments();
     qDebug() << Largs;
@@ -281,7 +283,7 @@ void MainWindow::on_action_help_triggered(){
 
 void MainWindow::on_action_changelog_triggered()
 {
-    QString s="1.4\n(2017-06)\n更新日志太长，消息框改成带滚动条的文本框。\n打开本地文件，自动隐藏直播列表。\n(2017-05)\n系统升级后出现有声音无视频，根据 https://bugreports.qt.io/browse/QTBUG-23761，卸载 sudo apt-get remove gstreamer1.0-vaapi 修复。\n\n1.3 (2017-04)\n记忆全屏前直播列表是否显示，以便退出全屏后恢复。\n直播列表做进主窗体内并支持显隐。\n\n1.2 (2017-03)\n增加打开方式打开文件。\n右键增加截图菜单。\n增加剧情连拍。\n增加截图。\n\n1.1 (2017-03)\n窗口标题增加台号。\n (2017-02)\n合并导入重复代码。\n加入逗号判断，解决导入崩溃。\n增加导入直播列表菜单。\n上一个、下一个按钮换台。\n增加直播列表。\n\n1.0 (2017-02)\n静音修改图标和拖动条。\n增加快进、快退。\n增加时间。\n修复拖动进度条卡顿BUG。\n全屏修改进度条样式。\n实现全屏。\n增加视频控件。\n增加控制栏。";
+    QString s="1.5\n(2017-08-20)\n增加拖放打开文件。\n\n1.4\n(2017-06)\n更新日志太长，消息框改成带滚动条的文本框。\n打开本地文件，自动隐藏直播列表。\n(2017-05)\n系统升级后出现有声音无视频，根据 https://bugreports.qt.io/browse/QTBUG-23761，卸载 sudo apt-get remove gstreamer1.0-vaapi 修复。\n\n1.3 (2017-04)\n记忆全屏前直播列表是否显示，以便退出全屏后恢复。\n直播列表做进主窗体内并支持显隐。\n\n1.2 (2017-03)\n增加打开方式打开文件。\n右键增加截图菜单。\n增加剧情连拍。\n增加截图。\n\n1.1 (2017-03)\n窗口标题增加台号。\n (2017-02)\n合并导入重复代码。\n加入逗号判断，解决导入崩溃。\n增加导入直播列表菜单。\n上一个、下一个按钮换台。\n增加直播列表。\n\n1.0 (2017-02)\n静音修改图标和拖动条。\n增加快进、快退。\n增加时间。\n修复拖动进度条卡顿BUG。\n全屏修改进度条样式。\n实现全屏。\n增加视频控件。\n增加控制栏。";
     QDialog *dialog=new QDialog;
     dialog->setWindowTitle("更新历史");
     dialog->setFixedSize(400,300);
@@ -311,7 +313,7 @@ void MainWindow::on_action_aboutQt_triggered()
 
 void MainWindow::on_action_about_triggered()
 {
-    QMessageBox aboutMB(QMessageBox::NoIcon, "关于", "海天鹰媒体播放器 1.4\n一款基于 Qt 的媒体播放器。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：sonichy.96.lt\n致谢：\n播放列表：http://blog.sina.com.cn/s/blog_74a7e56e0101agit.html");
+    QMessageBox aboutMB(QMessageBox::NoIcon, "关于", "海天鹰媒体播放器 1.5\n一款基于 Qt 的媒体播放器。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：sonichy.96.lt\n致谢：\n播放列表：http://blog.sina.com.cn/s/blog_74a7e56e0101agit.html");
     aboutMB.setIconPixmap(QPixmap(":/icon.png"));
     aboutMB.exec();
 }
@@ -566,4 +568,29 @@ void MainWindow::getMetaData()
         resize(widthv+wl, heightv + ui->controlPanel->height() + 60);
         //move((QApplication::desktop()->width() - width())/2, (QApplication::desktop()->height() - height())/2);
     }
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *e)
+{
+    //if(e->mimeData()->hasFormat("text/uri-list")) //只能打开文本文件
+        e->acceptProposedAction(); //可以在这个窗口部件上拖放对象
+}
+
+void MainWindow::dropEvent(QDropEvent *e) //释放对方时，执行的操作
+{
+    QList<QUrl> urls = e->mimeData()->urls();
+    if(urls.isEmpty())
+        return ;
+
+    QString fileName = urls.first().toLocalFile();
+
+    foreach (QUrl u, urls) {
+        qDebug() << u.toString();
+    }
+    qDebug() << urls.size();
+
+    if(fileName.isEmpty())
+        return;
+
+    open(fileName);
 }

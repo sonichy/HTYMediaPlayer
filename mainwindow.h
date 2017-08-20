@@ -38,6 +38,8 @@ private:
     //QLabel *labelTL;
     int widthv,heightv,widtho,heighto,listVisible;
     bool isListShow;
+    void dragEnterEvent(QDragEnterEvent*);
+    void dropEvent(QDropEvent*);
 
 private slots:
     void on_action_open_triggered();
@@ -65,9 +67,9 @@ private slots:
     void on_btnMute_clicked();
     void on_btnFullscreen_clicked();
     void on_btnList_clicked();
-    void durationChange(qint64 d);
-    void positionChange(qint64 d);
-    void volumeChange(int v);
+    void durationChange(qint64);
+    void positionChange(qint64);
+    void volumeChange(int);
     void setMPPosition();
     void setVolume();
     void enterFullscreen();
@@ -76,9 +78,9 @@ private slots:
     void playPause();
     void keyPressEvent(QKeyEvent *event);
     void contextMenuEvent(QContextMenuEvent *event);
-    void setSTime(int v);
-    void playTV(int row, int column);
-    void fillTable(QString filename);
+    void setSTime(int);
+    void playTV(int, int);
+    void fillTable(QString);
     void hideWidget();
     void getMetaData();
     void showHideList();
