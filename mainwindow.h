@@ -21,10 +21,10 @@ private:
     Ui::MainWindow *ui;
     void createPopmenu();
     void createTVList();
-    void mouseDoubleClickEvent(QMouseEvent* event);
-    void mousePressEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
+    void mouseDoubleClickEvent(QMouseEvent*);
+    void mousePressEvent(QMouseEvent*);
+    void mouseMoveEvent(QMouseEvent*);
+    void mouseReleaseEvent(QMouseEvent*);
     void open(QString path);
     QString filename;
     QMediaPlayer *player;

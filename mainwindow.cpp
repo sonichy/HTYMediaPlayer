@@ -483,15 +483,16 @@ void MainWindow::setVolume(){
 }
 
 void MainWindow::playTV(int row,int column){
+    Q_UNUSED(column);
     QString surl=ui->tableWidget->item(row,1)->text();
     //qDebug() << surl;
-    if(surl!=""){
+    //if(surl!=""){
         player->setMedia(QUrl(surl));
         player->play();
         setWindowTitle(ui->tableWidget->item(row,0)->text());
         ui->statusBar->showMessage("直播 "+surl);
         ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
-    }
+    //}
 }
 
 void MainWindow::fillTable(QString filename){
@@ -552,6 +553,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 
 void MainWindow::mouseDoubleClickEvent(QMouseEvent* event)
 {
+    Q_UNUSED(event);
     if(player){
         EEFullscreen();
     }
