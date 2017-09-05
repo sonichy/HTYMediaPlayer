@@ -68,6 +68,12 @@
           <property name="mouseTracking">
            <bool>true</bool>
           </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="toolTip">
+           <string>进度</string>
+          </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -96,6 +102,9 @@
            </property>
            <item>
             <widget class="QLabel" name="labelTimeVideo">
+             <property name="toolTip">
+              <string>时间</string>
+             </property>
              <property name="text">
               <string>00:00:00/00:00:00</string>
              </property>
@@ -117,7 +126,7 @@
            <item>
             <widget class="QPushButton" name="btnSkipB">
              <property name="focusPolicy">
-              <enum>Qt::WheelFocus</enum>
+              <enum>Qt::NoFocus</enum>
              </property>
              <property name="toolTip">
               <string>上一个</string>
@@ -143,6 +152,9 @@
            </item>
            <item>
             <widget class="QPushButton" name="btnSeekB">
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
              <property name="toolTip">
               <string>快退</string>
              </property>
@@ -167,6 +179,9 @@
            </item>
            <item>
             <widget class="QPushButton" name="btnPlay">
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
              <property name="toolTip">
               <string>播放/暂停</string>
              </property>
@@ -191,6 +206,9 @@
            </item>
            <item>
             <widget class="QPushButton" name="btnSeekF">
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
              <property name="toolTip">
               <string>快进</string>
              </property>
@@ -215,6 +233,9 @@
            </item>
            <item>
             <widget class="QPushButton" name="btnSkipF">
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
              <property name="toolTip">
               <string>下一个</string>
              </property>
@@ -239,6 +260,9 @@
            </item>
            <item>
             <widget class="QPushButton" name="btnStop">
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
              <property name="toolTip">
               <string>停止</string>
              </property>
@@ -263,6 +287,9 @@
            </item>
            <item>
             <widget class="QPushButton" name="btnMute">
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
              <property name="toolTip">
               <string>静音</string>
              </property>
@@ -293,6 +320,12 @@
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
+             <property name="toolTip">
+              <string>音量</string>
+             </property>
              <property name="maximum">
               <number>100</number>
              </property>
@@ -319,6 +352,12 @@
            </item>
            <item>
             <widget class="QPushButton" name="btnFullscreen">
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
+             <property name="toolTip">
+              <string>全屏</string>
+             </property>
              <property name="styleSheet">
               <string notr="true">border:none</string>
              </property>
@@ -332,8 +371,8 @@
              </property>
              <property name="iconSize">
               <size>
-               <width>32</width>
-               <height>32</height>
+               <width>20</width>
+               <height>20</height>
               </size>
              </property>
             </widget>
@@ -350,6 +389,12 @@
               <font>
                <pointsize>15</pointsize>
               </font>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
+             <property name="toolTip">
+              <string>直播</string>
              </property>
              <property name="text">
               <string>≡</string>
@@ -377,6 +422,9 @@
           <width>130</width>
           <height>16777215</height>
          </size>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
         </property>
         <property name="editTriggers">
          <set>QAbstractItemView::NoEditTriggers</set>

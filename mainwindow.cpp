@@ -424,10 +424,12 @@ void MainWindow::setSTime(int v){
     t=t.addMSecs(player->duration());
     QString sTimeTotal=t.toString("hh:mm:ss");
     ui->labelTimeVideo->setText(sTimeElapse+"/"+sTimeTotal);
+    ui->sliderProgress->setToolTip(sTimeElapse);
 }
 
 void MainWindow::volumeChange(int v){
     ui->sliderVolume->setValue(v);
+    ui->sliderVolume->setToolTip(QString::number(v));
 //    labelTL->setText("音量："+QString::number(v));
 //    labelTL->show();
 //    QTimer::singleShot(3000,this,SLOT(hideWidget()));
