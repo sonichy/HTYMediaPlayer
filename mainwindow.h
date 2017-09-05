@@ -84,6 +84,7 @@ private slots:
     void hideWidget();
     void getMetaData();
     void showHideList();
+    void errorHandle(QMediaPlayer::Error);
 };
 
 #endif // MAINWINDOW_H

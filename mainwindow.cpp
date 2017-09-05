@@ -45,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(player,SIGNAL(positionChanged(qint64)),this,SLOT(positionChange(qint64)));
     connect(player,SIGNAL(volumeChanged(int)),this,SLOT(volumeChange(int)));
     connect(player,SIGNAL(metaDataChanged()),this,SLOT(getMetaData()));
+    connect(player,SIGNAL(error(QMediaPlayer::Error)),this,SLOT(errorHandle(QMediaPlayer::Error)));
     video->show();
     move((QApplication::desktop()->width() - width())/2, (QApplication::desktop()->height() - height())/2);
     connect(new QShortcut(QKeySequence(Qt::Key_O),this), SIGNAL(activated()),this, SLOT(on_action_open_triggered()));
@@ -283,7 +284,7 @@ void MainWindow::on_action_help_triggered(){
 
 void MainWindow::on_action_changelog_triggered()
 {
-    QString s="1.5\n(2017-08-20)\n增加拖放打开文件。\n\n1.4\n(2017-06)\n更新日志太长，消息框改成带滚动条的文本框。\n打开本地文件，自动隐藏直播列表。\n(2017-05)\n系统升级后出现有声音无视频，根据 https://bugreports.qt.io/browse/QTBUG-23761，卸载 sudo apt-get remove gstreamer1.0-vaapi 修复。\n\n1.3 (2017-04)\n记忆全屏前直播列表是否显示，以便退出全屏后恢复。\n直播列表做进主窗体内并支持显隐。\n\n1.2 (2017-03)\n增加打开方式打开文件。\n右键增加截图菜单。\n增加剧情连拍。\n增加截图。\n\n1.1 (2017-03)\n窗口标题增加台号。\n (2017-02)\n合并导入重复代码。\n加入逗号判断，解决导入崩溃。\n增加导入直播列表菜单。\n上一个、下一个按钮换台。\n增加直播列表。\n\n1.0 (2017-02)\n静音修改图标和拖动条。\n增加快进、快退。\n增加时间。\n修复拖动进度条卡顿BUG。\n全屏修改进度条样式。\n实现全屏。\n增加视频控件。\n增加控制栏。";
+    QString s="1.5\n(2017-09)\n增加显示错误信息。\n(2017-08-20)\n增加拖放打开文件。\n\n1.4\n(2017-06)\n更新日志太长，消息框改成带滚动条的文本框。\n打开本地文件，自动隐藏直播列表。\n(2017-05)\n系统升级后出现有声音无视频，根据 https://bugreports.qt.io/browse/QTBUG-23761，卸载 sudo apt-get remove gstreamer1.0-vaapi 修复。\n\n1.3 (2017-04)\n记忆全屏前直播列表是否显示，以便退出全屏后恢复。\n直播列表做进主窗体内并支持显隐。\n\n1.2 (2017-03)\n增加打开方式打开文件。\n右键增加截图菜单。\n增加剧情连拍。\n增加截图。\n\n1.1 (2017-03)\n窗口标题增加台号。\n (2017-02)\n合并导入重复代码。\n加入逗号判断，解决导入崩溃。\n增加导入直播列表菜单。\n上一个、下一个按钮换台。\n增加直播列表。\n\n1.0 (2017-02)\n静音修改图标和拖动条。\n增加快进、快退。\n增加时间。\n修复拖动进度条卡顿BUG。\n全屏修改进度条样式。\n实现全屏。\n增加视频控件。\n增加控制栏。";
     QDialog *dialog=new QDialog;
     dialog->setWindowTitle("更新历史");
     dialog->setFixedSize(400,300);
@@ -563,7 +564,7 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent* event)
 
 void MainWindow::getMetaData()
 {
-    qDebug() << player->metaData(QMediaMetaData::Resolution);
+    //qDebug() << player->metaData(QMediaMetaData::Resolution);
     if(player->metaData(QMediaMetaData::Resolution)!=QVariant::Invalid && !isFullScreen()){
         int wl=0;
         if(ui->tableWidget->isVisible())wl=ui->tableWidget->width();
@@ -597,4 +598,29 @@ void MainWindow::dropEvent(QDropEvent *e) //释放对方时，执行的操作
         return;
 
     open(fileName);
+}
+
+void MainWindow::errorHandle(QMediaPlayer::Error error)
+{
+    switch (error) {
+    case QMediaPlayer::NoError:
+        break;
+    case QMediaPlayer::ResourceError:
+        ui->statusBar->showMessage("ResourceError");
+        break;
+    case QMediaPlayer::FormatError:
+        ui->statusBar->showMessage("FormatError");
+        break;
+    case QMediaPlayer::NetworkError:
+        ui->statusBar->showMessage("NetworkError");
+        break;
+    case QMediaPlayer::AccessDeniedError:
+        ui->statusBar->showMessage("AccessDeniedError");
+        break;
+    case QMediaPlayer::ServiceMissingError:
+        ui->statusBar->showMessage("ServiceMissingError");
+        break;
+    default:
+        break;
+    }
 }
