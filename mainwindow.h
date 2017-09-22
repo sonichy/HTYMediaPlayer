@@ -3,7 +3,10 @@
 
 #include <QMainWindow>
 #include <QMediaPlayer>
+#include <QMediaPlaylist>
 #include <QTableWidget>
+#include "dialogurl.h"
+#include "ui_dialogurl.h"
 
 namespace Ui {
     class MainWindow;
@@ -40,6 +43,8 @@ private:
     bool isListShow;
     void dragEnterEvent(QDragEnterEvent*);
     void dropEvent(QDropEvent*);
+    DialogURL *dialogUrl;
+    QMediaPlaylist *MPLurl;
 
 private slots:
     void on_action_open_triggered();
@@ -76,15 +81,18 @@ private slots:
     void exitFullscreen();
     void EEFullscreen();
     void playPause();
-    void keyPressEvent(QKeyEvent *event);
-    void contextMenuEvent(QContextMenuEvent *event);
+    void keyPressEvent(QKeyEvent*);
+    void contextMenuEvent(QContextMenuEvent*);
     void setSTime(int);
-    void playTV(int, int);
+    void playTV(int,int);
     void fillTable(QString);
     void hideWidget();
     void getMetaData();
     void showHideList();
     void errorHandle(QMediaPlayer::Error);
+    void analyze();
+    void playURL(int,int);
+    void MPLCIChange(int);
 };
 
 #endif // MAINWINDOW_H

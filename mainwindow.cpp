@@ -31,9 +31,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->btnSeekF->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward));
     ui->btnStop->setIcon(style()->standardIcon(QStyle::SP_MediaStop));
     ui->btnMute->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
-//    labelTL=new QLabel(this);
-//    labelTL->setStyleSheet("color:white;font:20px;");
-//    labelTL->move(50,50);
+//  labelTL=new QLabel(this);
+//  labelTL->setStyleSheet("color:white;font:20px;");
+//  labelTL->move(50,50);
 
     video=new QVideoWidget;
     ui->vbox->addWidget(video);
@@ -83,6 +83,13 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     fillTable("tv.txt");
+
+    dialogUrl = new DialogURL(this);
+    connect(dialogUrl->ui->pushButtonAnalyze,SIGNAL(pressed()),this,SLOT(analyze()));
+    connect(dialogUrl->ui->tableWidget,SIGNAL(cellClicked(int,int)),this,SLOT(playURL(int,int)));
+    MPLurl = new QMediaPlaylist;
+    MPLurl->setPlaybackMode(QMediaPlaylist::Sequential);
+    connect(MPLurl,SIGNAL(currentIndexChanged(int)),this,SLOT(MPLCIChange(int)));
 }
 
 MainWindow::~MainWindow()
@@ -114,17 +121,18 @@ void MainWindow::open(QString path)
 
 void MainWindow::on_action_openURL_triggered()
 {
-    bool isOK;
-    QString surl=QInputDialog::getText(this,"打开网络媒体","网址：", QLineEdit::Normal,"http://",&isOK);
-    if(isOK){
-        if(!surl.isEmpty()){
-            player->setMedia(QUrl(surl));
-            player->play();
-            setWindowTitle(QFileInfo(surl).fileName());
-            ui->statusBar->showMessage("打开 "+surl);
-            ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
-        }
-    }
+    dialogUrl->show();
+//    bool isOK;
+//    QString surl=QInputDialog::getText(this,"打开网络媒体","网址：", QLineEdit::Normal,"http://",&isOK);
+//    if(isOK){
+//        if(!surl.isEmpty()){
+//            player->setMedia(QUrl(surl));
+//            player->play();
+//            setWindowTitle(QFileInfo(surl).fileName());
+//            ui->statusBar->showMessage("打开 "+surl);
+//            ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
+//        }
+//    }
 }
 
 void MainWindow::on_btnList_clicked()
@@ -284,7 +292,7 @@ void MainWindow::on_action_help_triggered(){
 
 void MainWindow::on_action_changelog_triggered()
 {
-    QString s="1.5\n(2017-09)\n增加显示错误信息。\n(2017-08-20)\n增加拖放打开文件。\n\n1.4\n(2017-06)\n更新日志太长，消息框改成带滚动条的文本框。\n打开本地文件，自动隐藏直播列表。\n(2017-05)\n系统升级后出现有声音无视频，根据 https://bugreports.qt.io/browse/QTBUG-23761，卸载 sudo apt-get remove gstreamer1.0-vaapi 修复。\n\n1.3 (2017-04)\n记忆全屏前直播列表是否显示，以便退出全屏后恢复。\n直播列表做进主窗体内并支持显隐。\n\n1.2 (2017-03)\n增加打开方式打开文件。\n右键增加截图菜单。\n增加剧情连拍。\n增加截图。\n\n1.1 (2017-03)\n窗口标题增加台号。\n (2017-02)\n合并导入重复代码。\n加入逗号判断，解决导入崩溃。\n增加导入直播列表菜单。\n上一个、下一个按钮换台。\n增加直播列表。\n\n1.0 (2017-02)\n静音修改图标和拖动条。\n增加快进、快退。\n增加时间。\n修复拖动进度条卡顿BUG。\n全屏修改进度条样式。\n实现全屏。\n增加视频控件。\n增加控制栏。";
+    QString s="1.6\n(2017-09)\n增加解析分号分隔的网络媒体字符串到播放列表。\n\n1.5\n(2017-09)\n增加显示错误信息。\n(2017-08-20)\n增加拖放打开文件。\n\n1.4\n(2017-06)\n更新日志太长，消息框改成带滚动条的文本框。\n打开本地文件，自动隐藏直播列表。\n(2017-05)\n系统升级后出现有声音无视频，根据 https://bugreports.qt.io/browse/QTBUG-23761，卸载 sudo apt-get remove gstreamer1.0-vaapi 修复。\n\n1.3 (2017-04)\n记忆全屏前直播列表是否显示，以便退出全屏后恢复。\n直播列表做进主窗体内并支持显隐。\n\n1.2 (2017-03)\n增加打开方式打开文件。\n右键增加截图菜单。\n增加剧情连拍。\n增加截图。\n\n1.1 (2017-03)\n窗口标题增加台号。\n (2017-02)\n合并导入重复代码。\n加入逗号判断，解决导入崩溃。\n增加导入直播列表菜单。\n上一个、下一个按钮换台。\n增加直播列表。\n\n1.0 (2017-02)\n静音修改图标和拖动条。\n增加快进、快退。\n增加时间。\n修复拖动进度条卡顿BUG。\n全屏修改进度条样式。\n实现全屏。\n增加视频控件。\n增加控制栏。";
     QDialog *dialog=new QDialog;
     dialog->setWindowTitle("更新历史");
     dialog->setFixedSize(400,300);
@@ -314,7 +322,7 @@ void MainWindow::on_action_aboutQt_triggered()
 
 void MainWindow::on_action_about_triggered()
 {
-    QMessageBox aboutMB(QMessageBox::NoIcon, "关于", "海天鹰媒体播放器 1.5\n一款基于 Qt 的媒体播放器。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：sonichy.96.lt\n致谢：\n播放列表：http://blog.sina.com.cn/s/blog_74a7e56e0101agit.html");
+    QMessageBox aboutMB(QMessageBox::NoIcon, "关于", "海天鹰媒体播放器 1.6\n一款基于 Qt 的媒体播放器。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：sonichy.96.lt\n致谢：\n播放列表：http://blog.sina.com.cn/s/blog_74a7e56e0101agit.html");
     aboutMB.setIconPixmap(QPixmap(":/icon.png"));
     aboutMB.exec();
 }
@@ -623,4 +631,48 @@ void MainWindow::errorHandle(QMediaPlayer::Error error)
     default:
         break;
     }
+}
+
+void MainWindow::analyze()
+{
+    QString surl = dialogUrl->ui->lineEdit->text();
+    if(!surl.isEmpty()){
+        if(surl.contains(".m3u8")){
+            player->setMedia(QUrl(surl));
+            player->play();
+            setWindowTitle(QFileInfo(surl).fileName());
+            ui->statusBar->showMessage(surl);
+            ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
+        }
+        if(surl.contains(";")){
+            QStringList clip = surl.split(";");
+            MPLurl->clear();
+            dialogUrl->ui->tableWidget->setRowCount(0);
+            for(int i=0; i<clip.size(); i++){
+                MPLurl->addMedia(QUrl(clip.at(i)));
+                dialogUrl->ui->tableWidget->insertRow(i);
+                dialogUrl->ui->tableWidget->setItem(i,0,new QTableWidgetItem(QFileInfo(clip.at(i)).fileName()));
+            }
+            dialogUrl->ui->tableWidget->resizeColumnsToContents();
+            player->setPlaylist(MPLurl);
+            player->play();
+            ui->tableWidget->hide();
+        }
+    }
+}
+
+void MainWindow::MPLCIChange(int index)
+{
+    if(index!=-1){
+        dialogUrl->ui->tableWidget->setCurrentCell(index,0);
+        setWindowTitle(QString::number(index+1) + ":" + QFileInfo(MPLurl->currentMedia().canonicalUrl().toString()).fileName());
+        ui->statusBar->showMessage(MPLurl->currentMedia().canonicalUrl().toString());
+    }
+}
+
+void MainWindow::playURL(int r,int c)
+{
+    Q_UNUSED(c);
+    MPLurl->setCurrentIndex(r);
+    player->play();
 }
