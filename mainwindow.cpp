@@ -398,7 +398,12 @@ void MainWindow::enterFullscreen(){
         ui->controlPanel->hide();
         ui->statusBar->hide();
         //ui->sliderProgress->hide();
-        ui->sliderProgress->setStyleSheet("background-color:black;");
+        //ui->sliderProgress->setStyleSheet("background-color:black;");
+        ui->sliderProgress->setStyleSheet("QSlider{ background-color:black; }"
+                                          "QSlider::groove:Horizontal { height:5px; border-color: #333333;}" //主体
+                                          "QSlider::sub-page:Horizontal { background-color: #020202; }" // 已滑过
+                                          "QSlider::add-page:Horizontal { background-color: #111111; }" // 未滑过
+                                          "QSlider::handle:Horizontal { height: 10px; width:10px; margin:-5px 5px -5px 5px; border-radius:5px; background:#000000; border:1px solid #333333}"); // 拖柄
         PMAFullscreen->setText("退出全屏");
         if(isListShow)ui->tableWidget->setVisible(false);
         ui->verticalLayout_2->setMargin(0);
