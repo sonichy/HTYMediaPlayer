@@ -7,6 +7,7 @@
 #include <QTableWidget>
 #include "dialogurl.h"
 #include "ui_dialogurl.h"
+#include <QMessageBox>
 
 namespace Ui {
     class MainWindow;

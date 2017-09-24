@@ -90,6 +90,7 @@ MainWindow::MainWindow(QWidget *parent) :
     MPLurl = new QMediaPlaylist;
     MPLurl->setPlaybackMode(QMediaPlaylist::Sequential);
     connect(MPLurl,SIGNAL(currentIndexChanged(int)),this,SLOT(MPLCIChange(int)));
+
 }
 
 MainWindow::~MainWindow()
@@ -253,10 +254,22 @@ void MainWindow::on_action_capture16_triggered(){
     player->setMuted(false);
 }
 
-void MainWindow::on_action_info_triggered(){
-    qDebug() << player->metaData(QMediaMetaData::Resolution);
-    QMessageBox MB(QMessageBox::NoIcon, "信息", "分辨率：\t" + QString::number(widthv)+ " X " + QString::number(heightv) + "\n视频解码：" + player->metaData(QMediaMetaData::VideoCodec).toString() + "\n音频解码：\t" + player->metaData(QMediaMetaData::AudioCodec).toString());
-    MB.exec();
+void MainWindow::on_action_info_triggered()
+{
+    QStringList SLMD = player->availableMetaData();
+    //qDebug() << SLMD;
+    QString s="";
+    for(int i=0; i<SLMD.size(); i++){
+        if(SLMD.at(i)=="PixelAspectRatio" || SLMD.at(i)=="Resolution"){
+            s += SLMD.at(i) + ": " + QString::number(player->metaData(SLMD.at(i)).toSize().width()) + " X " + QString::number(player->metaData(SLMD.at(i)).toSize().height()) + "\n";
+        }else{
+            s += SLMD.at(i) + ": " + player->metaData(SLMD.at(i)).toString() + "\n";
+        }
+    }
+    QMessageBox MBInfo(QMessageBox::NoIcon, "信息", s);
+    QImage imageCover = player->metaData(QMediaMetaData::ThumbnailImage).value<QImage>();
+    MBInfo.setIconPixmap(QPixmap::fromImage(imageCover));
+    MBInfo.exec();
 }
 
 void MainWindow::on_action_volumeUp_triggered()
@@ -322,7 +335,7 @@ void MainWindow::on_action_aboutQt_triggered()
 
 void MainWindow::on_action_about_triggered()
 {
-    QMessageBox aboutMB(QMessageBox::NoIcon, "关于", "海天鹰媒体播放器 1.6\n一款基于 Qt 的媒体播放器。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：sonichy.96.lt\n致谢：\n播放列表：http://blog.sina.com.cn/s/blog_74a7e56e0101agit.html");
+    QMessageBox aboutMB(QMessageBox::NoIcon, "关于", "海天鹰媒体播放器 1.6\n一款基于 Qt 的媒体播放器。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：sonichy.96.lt\n致谢：\n播放列表：http://blog.sina.com.cn/s/blog_74a7e56e0101agit.html\n获取媒体信息：https://www.zhihu.com/question/36859497");
     aboutMB.setIconPixmap(QPixmap(":/icon.png"));
     aboutMB.exec();
 }
@@ -547,7 +560,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
-    qDebug() << "MouseMove:" << pos();
+    //qDebug() << "MouseMove:" << pos();
     if(m_bPressed)
         move(event->pos() - m_point + pos());
 //    if(isFullScreen()){
@@ -571,8 +584,7 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent* event)
 }
 
 void MainWindow::getMetaData()
-{
-    //qDebug() << player->metaData(QMediaMetaData::Resolution);
+{    
     if(player->metaData(QMediaMetaData::Resolution)!=QVariant::Invalid && !isFullScreen()){
         int wl=0;
         if(ui->tableWidget->isVisible())wl=ui->tableWidget->width();
