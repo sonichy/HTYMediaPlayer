@@ -26,7 +26,7 @@ sudo apt-get install qtmultimedia5-dev
 * 快捷键失效：  
 鼠标移动到窗口非视频区域激活，全屏下鼠标移动到进度条上激活。
 
-* 有视频无声音的问题:  
+* 有声音无视频:  
 参考：https://bugreports.qt.io/browse/QTBUG-23761  
 解决：sudo apt-get remove gstreamer1.0-vaapi  
 感谢：liujianfeng@deepin.org
