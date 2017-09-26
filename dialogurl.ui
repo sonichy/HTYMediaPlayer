@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>打开网址</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="filelist.qrc">
+    <normaloff>:/icon.png</normaloff>:/icon.png</iconset>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <property name="spacing">
     <number>0</number>
@@ -78,6 +82,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="filelist.qrc"/>
+ </resources>
  <connections/>
 </ui>

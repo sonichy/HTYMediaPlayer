@@ -81,6 +81,18 @@
         </item>
         <item>
          <widget class="QWidget" name="controlPanel" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>30</height>
+           </size>
+          </property>
           <layout class="QHBoxLayout" name="control">
            <property name="spacing">
             <number>0</number>

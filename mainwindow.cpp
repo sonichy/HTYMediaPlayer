@@ -269,6 +269,7 @@ void MainWindow::on_action_info_triggered()
     QMessageBox MBInfo(QMessageBox::NoIcon, "信息", s);
     QImage imageCover = player->metaData(QMediaMetaData::ThumbnailImage).value<QImage>();
     MBInfo.setIconPixmap(QPixmap::fromImage(imageCover));
+    MBInfo.setWindowIcon(QIcon(":/icon.png"));
     MBInfo.exec();
 }
 
