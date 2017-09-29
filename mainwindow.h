@@ -39,7 +39,7 @@ private:
     int volume;
     bool m_bPressed;
     QPoint m_point;
-    //QLabel *labelTL;
+//  QLabel *labelLogo;
     int widthv,heightv,widtho,heighto,listVisible;
     bool isListShow;
     void dragEnterEvent(QDragEnterEvent*);
@@ -94,6 +94,8 @@ private slots:
     void analyze();
     void playURL(int,int);
     void MPLCIChange(int);
+    void stateChange(QMediaPlayer::State);
+    void resizeEvent(QResizeEvent*);
 };
 
 #endif // MAINWINDOW_H

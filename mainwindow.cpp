@@ -17,6 +17,7 @@
 #include <QMediaMetaData>
 #include <QTextBrowser>
 #include <QMimeData>
+//#include <QPalette>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -31,23 +32,29 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->btnSeekF->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward));
     ui->btnStop->setIcon(style()->standardIcon(QStyle::SP_MediaStop));
     ui->btnMute->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
-//  labelTL=new QLabel(this);
-//  labelTL->setStyleSheet("color:white;font:20px;");
-//  labelTL->move(50,50);
 
-    video=new QVideoWidget;
+    video = new QVideoWidget;    
+
+//    labelLogo=new QLabel(this);
+//    labelLogo->setPixmap(QPixmap(":/icon.png"));
+//    labelLogo->adjustSize();
+//    labelLogo->show();
+
     ui->vbox->addWidget(video);
     video->setMouseTracking(true);
     player = new QMediaPlayer;
     player->setVolume(100);
-    player->setVideoOutput(video);    
+    player->setVideoOutput(video);
+    video->show();
+    move((QApplication::desktop()->width() - width())/2, (QApplication::desktop()->height() - height())/2);
+
     connect(player,SIGNAL(durationChanged(qint64)),this,SLOT(durationChange(qint64)));
     connect(player,SIGNAL(positionChanged(qint64)),this,SLOT(positionChange(qint64)));
     connect(player,SIGNAL(volumeChanged(int)),this,SLOT(volumeChange(int)));
     connect(player,SIGNAL(metaDataChanged()),this,SLOT(getMetaData()));
     connect(player,SIGNAL(error(QMediaPlayer::Error)),this,SLOT(errorHandle(QMediaPlayer::Error)));
-    video->show();
-    move((QApplication::desktop()->width() - width())/2, (QApplication::desktop()->height() - height())/2);
+    connect(player,SIGNAL(stateChanged(QMediaPlayer::State)),SLOT(stateChange(QMediaPlayer::State)));
+
     connect(new QShortcut(QKeySequence(Qt::Key_O),this), SIGNAL(activated()),this, SLOT(on_action_open_triggered()));
     connect(new QShortcut(QKeySequence(Qt::Key_U),this), SIGNAL(activated()),this, SLOT(on_action_openURL_triggered()));
     connect(new QShortcut(QKeySequence(Qt::Key_T),this), SIGNAL(activated()),this, SLOT(on_action_liveList_triggered()));
@@ -75,7 +82,6 @@ MainWindow::MainWindow(QWidget *parent) :
     heighto = height() - video->height();
     qDebug() << widtho << heighto;
 
-
     QStringList Largs=QApplication::arguments();
     qDebug() << Largs;
     if(Largs.length()>1){
@@ -91,6 +97,9 @@ MainWindow::MainWindow(QWidget *parent) :
     MPLurl->setPlaybackMode(QMediaPlaylist::Sequential);
     connect(MPLurl,SIGNAL(currentIndexChanged(int)),this,SLOT(MPLCIChange(int)));
 
+    //player->setMedia(QUrl("qrc:/icon.png"));
+//    player->setMedia(QUrl("http://www.bydauto.com.cn/uploads/image/20170825/1503648763587493.jpg"));
+//    player->play();
 }
 
 MainWindow::~MainWindow()
@@ -123,17 +132,6 @@ void MainWindow::open(QString path)
 void MainWindow::on_action_openURL_triggered()
 {
     dialogUrl->show();
-//    bool isOK;
-//    QString surl=QInputDialog::getText(this,"打开网络媒体","网址：", QLineEdit::Normal,"http://",&isOK);
-//    if(isOK){
-//        if(!surl.isEmpty()){
-//            player->setMedia(QUrl(surl));
-//            player->play();
-//            setWindowTitle(QFileInfo(surl).fileName());
-//            ui->statusBar->showMessage("打开 "+surl);
-//            ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
-//        }
-//    }
 }
 
 void MainWindow::on_btnList_clicked()
@@ -178,10 +176,10 @@ void MainWindow::on_action_capture_triggered(){
     QEventLoop eventloop;
     QTimer::singleShot(500, &eventloop, SLOT(quit()));
     eventloop.exec();
-    QDateTime now=QDateTime::currentDateTime();
-    QString path=QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).first()+"/"+now.toString("yyyyMMddHHmmss")+".jpg";
-    //QPixmap pixmap=QPixmap::grabWindow(QApplication::desktop()->winId(),video->mapToGlobal(video->pos()).x(),video->mapToGlobal(video->pos()).y(),video->width(),video->height());
-    QPixmap pixmap=QGuiApplication::primaryScreen()->grabWindow(0,video->mapToGlobal(video->pos()).x(),video->mapToGlobal(video->pos()).y(),video->width(),video->height());
+    QDateTime now = QDateTime::currentDateTime();
+    QString path = QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).first()+"/"+now.toString("yyyyMMddHHmmss")+".jpg";
+    //QPixmap pixmap = QPixmap::grabWindow(QApplication::desktop()->winId(),video->mapToGlobal(video->pos()).x(),video->mapToGlobal(video->pos()).y(),video->width(),video->height());
+    QPixmap pixmap = QGuiApplication::primaryScreen()->grabWindow(0,video->mapToGlobal(video->pos()).x(),video->mapToGlobal(video->pos()).y(),video->width()-1,video->height()-1);
     pixmap.save(path,0,100);
     ui->statusBar->showMessage("截图 "+path);
     //if(isFullScreen()){ui->sliderProgress->show();}
@@ -393,46 +391,43 @@ void MainWindow::on_btnFullscreen_clicked(){
 
 void MainWindow::enterFullscreen(){
     isListShow=ui->tableWidget->isVisible();
-    if(!isFullScreen()){
-        showFullScreen();
-        ui->menuBar->hide();
-        ui->controlPanel->hide();
-        ui->statusBar->hide();
-        //ui->sliderProgress->hide();
-        //ui->sliderProgress->setStyleSheet("background-color:black;");
-        ui->sliderProgress->setStyleSheet("QSlider{ background-color:black; }"
-                                          "QSlider::groove:Horizontal { height:5px; border-color: #333333;}" //主体
-                                          "QSlider::sub-page:Horizontal { background-color: #020202; }" // 已滑过
-                                          "QSlider::add-page:Horizontal { background-color: #111111; }" // 未滑过
-                                          "QSlider::handle:Horizontal { height: 10px; width:10px; margin:-5px 5px -5px 5px; border-radius:5px; background:#000000; border:1px solid #333333}"); // 拖柄
-        PMAFullscreen->setText("退出全屏");
-        if(isListShow)ui->tableWidget->setVisible(false);
-        ui->verticalLayout_2->setMargin(0);
-    }
+    showFullScreen();
+    ui->menuBar->hide();
+    ui->controlPanel->hide();
+    ui->statusBar->hide();
+    //ui->sliderProgress->hide();
+    //ui->sliderProgress->setStyleSheet("background-color:black;");
+    ui->sliderProgress->setStyleSheet("QSlider{ background-color:black; }"
+                                      "QSlider::groove:Horizontal { height:5px; border-color: #333333;}" //主体
+                                      "QSlider::sub-page:Horizontal { background-color: #020202; }" // 已滑过
+                                      "QSlider::add-page:Horizontal { background-color: #111111; }" // 未滑过
+                                      "QSlider::handle:Horizontal { height: 10px; width:10px; margin:-5px 5px -5px 5px; border-radius:5px; background:#000000; border:1px solid #333333}"); // 拖柄
+    PMAFullscreen->setText("退出全屏");
+    if(isListShow)ui->tableWidget->setVisible(false);
+    ui->verticalLayout_2->setMargin(0);
+    //labelLogo->move((video->width()-labelLogo->width())/2, (video->height()-labelLogo->height())/2);
 }
 
-void MainWindow::exitFullscreen(){
-    if(isFullScreen()){
-        showNormal();
-        ui->menuBar->show();
-        ui->controlPanel->show();
-        ui->statusBar->show();
-        ui->sliderProgress->show();
-        ui->sliderProgress->setStyleSheet("");
-        PMAFullscreen->setText("全屏");
-        ui->verticalLayout_2->setMargin(1);
-        if(isListShow)ui->tableWidget->setVisible(isListShow);
-    }
+void MainWindow::exitFullscreen()
+{
+    showNormal();
+    ui->menuBar->show();
+    ui->controlPanel->show();
+    ui->statusBar->show();
+    ui->sliderProgress->show();
+    ui->sliderProgress->setStyleSheet("");
+    PMAFullscreen->setText("全屏");
+    ui->verticalLayout_2->setMargin(1);
+    if(isListShow)ui->tableWidget->setVisible(isListShow);
+    //labelLogo->move((video->width()-labelLogo->width())/2, (video->height()-labelLogo->height())/2);
 }
 
 void MainWindow::EEFullscreen(){
-    //video->setFullScreen(!video->isFullScreen());
-    //QTimer::singleShot(5000,this,SLOT(EEFullscreen()));
     if(isFullScreen()){
         exitFullscreen();
     }else{
         enterFullscreen();
-    }
+    }    
 }
 
 void MainWindow::durationChange(qint64 d){
@@ -522,7 +517,7 @@ void MainWindow::playTV(int row,int column){
         setWindowTitle(ui->tableWidget->item(row,0)->text());
         ui->statusBar->showMessage("直播 "+surl);
         ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
-    //}
+    //}    
 }
 
 void MainWindow::fillTable(QString filename){
@@ -591,7 +586,7 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent* event)
 
 void MainWindow::getMetaData()
 {    
-    if(player->metaData(QMediaMetaData::Resolution)!=QVariant::Invalid && !isFullScreen()){
+    if(player->metaData(QMediaMetaData::Resolution)!=QVariant::Invalid && !isFullScreen() && !isMaximized()){
         int wl=0;
         if(ui->tableWidget->isVisible())wl=ui->tableWidget->width();
         widthv = player->metaData(QMediaMetaData::Resolution).toSize().width();
@@ -693,4 +688,24 @@ void MainWindow::playURL(int r,int c)
     Q_UNUSED(c);
     MPLurl->setCurrentIndex(r);
     player->play();
+}
+
+void MainWindow::stateChange(QMediaPlayer::State state)
+{
+    qDebug() << state;
+    if(state == QMediaPlayer::PlayingState){
+//        labelLogo->hide();
+    }
+    if(state == QMediaPlayer::PausedState){
+//        labelLogo->show();
+    }
+    if(state == QMediaPlayer::StoppedState){        
+//        labelLogo->show();
+    }
+}
+
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    Q_UNUSED(event);
+    //labelLogo->move((video->width()-labelLogo->width())/2, (video->height()-labelLogo->height())/2);
 }
