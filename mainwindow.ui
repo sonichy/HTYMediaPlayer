@@ -71,9 +71,6 @@
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
           </property>
-          <property name="toolTip">
-           <string>进度</string>
-          </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -336,7 +333,7 @@
               <enum>Qt::NoFocus</enum>
              </property>
              <property name="toolTip">
-              <string>音量</string>
+              <string>100</string>
              </property>
              <property name="maximum">
               <number>100</number>

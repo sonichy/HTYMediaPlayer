@@ -447,7 +447,7 @@ void MainWindow::setSTime(int v){
     t=t.addMSecs(player->duration());
     QString sTimeTotal=t.toString("hh:mm:ss");
     ui->labelTimeVideo->setText(sTimeElapse+"/"+sTimeTotal);
-    ui->sliderProgress->setToolTip(sTimeElapse);
+    //ui->sliderProgress->setToolTip(sTimeElapse);
 }
 
 void MainWindow::volumeChange(int v){
