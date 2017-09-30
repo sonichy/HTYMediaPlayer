@@ -88,7 +88,7 @@ private slots:
     void playTV(int,int);
     void fillTable(QString);
     void hideWidget();
-    void getMetaData();
+    void metaDataChange();
     void showHideList();
     void errorHandle(QMediaPlayer::Error);
     void analyze();
