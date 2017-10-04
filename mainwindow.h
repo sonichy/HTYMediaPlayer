@@ -8,6 +8,7 @@
 #include "dialogurl.h"
 #include "ui_dialogurl.h"
 #include <QMessageBox>
+#include <QNetworkReply>
 
 namespace Ui {
     class MainWindow;
@@ -39,13 +40,14 @@ private:
     int volume;
     bool m_bPressed;
     QPoint m_point;
-//  QLabel *labelLogo;
+    QLabel *labelLogo;
     int widthv,heightv,widtho,heighto,listVisible;
     bool isListShow;
     void dragEnterEvent(QDragEnterEvent*);
     void dropEvent(QDropEvent*);
     DialogURL *dialogUrl;
     QMediaPlaylist *MPLurl;
+    QPixmap pixmapAD;
 
 private slots:
     void on_action_open_triggered();
@@ -96,6 +98,7 @@ private slots:
     void MPLCIChange(int);
     void stateChange(QMediaPlayer::State);
     void resizeEvent(QResizeEvent*);
+    void replyAD(QNetworkReply*);
 };
 
 #endif // MAINWINDOW_H

@@ -17,7 +17,7 @@
 #include <QMediaMetaData>
 #include <QTextBrowser>
 #include <QMimeData>
-//#include <QPalette>
+#include <QNetworkAccessManager>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -35,10 +35,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     video = new QVideoWidget;    
 
-//    labelLogo=new QLabel(this);
-//    labelLogo->setPixmap(QPixmap(":/icon.png"));
-//    labelLogo->adjustSize();
-//    labelLogo->show();
+    labelLogo=new QLabel(this);
+    labelLogo->setPixmap(QPixmap(":/icon.png"));
+    labelLogo->adjustSize();
+    labelLogo->show();
 
     ui->vbox->addWidget(video);
     video->setMouseTracking(true);
@@ -97,9 +97,10 @@ MainWindow::MainWindow(QWidget *parent) :
     MPLurl->setPlaybackMode(QMediaPlaylist::Sequential);
     connect(MPLurl,SIGNAL(currentIndexChanged(int)),this,SLOT(MPLCIChange(int)));
 
-    //player->setMedia(QUrl("qrc:/icon.png"));
-//    player->setMedia(QUrl("http://www.bydauto.com.cn/uploads/image/20170825/1503648763587493.jpg"));
-//    player->play();
+    QNetworkAccessManager *NAM = new QNetworkAccessManager;
+    QString urlAD = "http://www.bydauto.com.cn/uploads/image/20170906/1504679624393355.jpg";
+    NAM->get(QNetworkRequest(urlAD));
+    connect(NAM, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyAD(QNetworkReply*)));
 }
 
 MainWindow::~MainWindow()
@@ -304,7 +305,7 @@ void MainWindow::on_action_help_triggered(){
 
 void MainWindow::on_action_changelog_triggered()
 {
-    QString s="1.6\n(2017-09)\n解决网络视频媒体信息频繁变更引起界面多余的缩放动作。\n增加解析分号分隔的网络媒体字符串到播放列表。\n遍历媒体信息。\n\n1.5\n(2017-09)\n增加显示错误信息。\n(2017-08-20)\n增加拖放打开文件。\n\n1.4\n(2017-06)\n更新日志太长，消息框改成带滚动条的文本框。\n打开本地文件，自动隐藏直播列表。\n(2017-05)\n系统升级后出现有声音无视频，根据 https://bugreports.qt.io/browse/QTBUG-23761，卸载 sudo apt-get remove gstreamer1.0-vaapi 修复。\n\n1.3 (2017-04)\n记忆全屏前直播列表是否显示，以便退出全屏后恢复。\n直播列表做进主窗体内并支持显隐。\n\n1.2 (2017-03)\n增加打开方式打开文件。\n右键增加截图菜单。\n增加剧情连拍。\n增加截图。\n\n1.1 (2017-03)\n窗口标题增加台号。\n (2017-02)\n合并导入重复代码。\n加入逗号判断，解决导入崩溃。\n增加导入直播列表菜单。\n上一个、下一个按钮换台。\n增加直播列表。\n\n1.0 (2017-02)\n静音修改图标和拖动条。\n增加快进、快退。\n增加时间。\n修复拖动进度条卡顿BUG。\n全屏修改进度条样式。\n实现全屏。\n增加视频控件。\n增加控制栏。";
+    QString s="1.6\n(2017-09)\n启动、暂停、停止显示广告。\n解决网络视频媒体信息频繁变更引起界面多余的缩放动作。\n增加解析分号分隔的网络媒体字符串到播放列表。\n遍历媒体信息。\n\n1.5\n(2017-09)\n增加显示错误信息。\n(2017-08-20)\n增加拖放打开文件。\n\n1.4\n(2017-06)\n更新日志太长，消息框改成带滚动条的文本框。\n打开本地文件，自动隐藏直播列表。\n(2017-05)\n系统升级后出现有声音无视频，根据 https://bugreports.qt.io/browse/QTBUG-23761，卸载 sudo apt-get remove gstreamer1.0-vaapi 修复。\n\n1.3 (2017-04)\n记忆全屏前直播列表是否显示，以便退出全屏后恢复。\n直播列表做进主窗体内并支持显隐。\n\n1.2 (2017-03)\n增加打开方式打开文件。\n右键增加截图菜单。\n增加剧情连拍。\n增加截图。\n\n1.1 (2017-03)\n窗口标题增加台号。\n (2017-02)\n合并导入重复代码。\n加入逗号判断，解决导入崩溃。\n增加导入直播列表菜单。\n上一个、下一个按钮换台。\n增加直播列表。\n\n1.0 (2017-02)\n静音修改图标和拖动条。\n增加快进、快退。\n增加时间。\n修复拖动进度条卡顿BUG。\n全屏修改进度条样式。\n实现全屏。\n增加视频控件。\n增加控制栏。";
     QDialog *dialog=new QDialog;
     dialog->setWindowTitle("更新历史");
     dialog->setFixedSize(400,300);
@@ -348,6 +349,7 @@ void MainWindow::on_btnStop_clicked()
 {
     player->stop();
     ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+    labelLogo->show();
 }
 
 void MainWindow::on_btnSeekB_clicked()
@@ -364,7 +366,7 @@ void MainWindow::on_btnSkipB_clicked()
 {
     if(ui->tableWidget->currentRow()>0){
         ui->tableWidget->setCurrentCell(ui->tableWidget->currentRow()-1,0);
-        playTV(ui->tableWidget->currentRow(),1);
+        playTV(ui->tableWidget->currentRow(),1);        
     }
 }
 
@@ -463,12 +465,15 @@ void MainWindow::playPause(){
     if(player->state()==QMediaPlayer::PlayingState){
         player->pause();
         ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+        labelLogo->show();
     }else if(player->state()==QMediaPlayer::PausedState){
         player->play();
-        ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));        
+        ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
+        labelLogo->hide();
     }else if(player->state()==QMediaPlayer::StoppedState){
         player->play();
         ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
+        labelLogo->hide();
     }
 }
 
@@ -517,6 +522,7 @@ void MainWindow::playTV(int row,int column){
         setWindowTitle(ui->tableWidget->item(row,0)->text());
         ui->statusBar->showMessage("直播 "+surl);
         ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
+        labelLogo->hide();
     //}    
 }
 
@@ -560,10 +566,11 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
-{
-    //qDebug() << "MouseMove:" << pos();
-    if(m_bPressed)
+{    
+    if(m_bPressed){
         move(event->pos() - m_point + pos());
+        qDebug() << "Move" << pos();
+    }
 //    if(isFullScreen()){
 //        ui->sliderProgress->show();
 //        QTimer::singleShot(3000,this,SLOT(hideWidget()));
@@ -585,7 +592,10 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent* event)
 }
 
 void MainWindow::metaDataChange()
-{
+{    
+    labelLogo->setPixmap(pixmapAD.scaled(400,300));
+    labelLogo->adjustSize();
+    labelLogo->move((video->width()-labelLogo->width())/2, (video->height()-labelLogo->height())/2);
     qDebug() << "metaDataChange" << player->metaData(QMediaMetaData::Resolution);
     if(player->metaData(QMediaMetaData::Resolution)!=QVariant::Invalid && !isFullScreen() && !isMaximized()){
         if(widthv != player->metaData(QMediaMetaData::Resolution).toSize().width() || heightv != player->metaData(QMediaMetaData::Resolution).toSize().height()){
@@ -596,6 +606,12 @@ void MainWindow::metaDataChange()
             resize(widthv+wl, heightv + ui->controlPanel->height() + 60);
             //move((QApplication::desktop()->width() - width())/2, (QApplication::desktop()->height() - height())/2);
         }
+    }
+    if(player->metaData(QMediaMetaData::ThumbnailImage).toString()!=""){
+        QImage imageCover = player->metaData(QMediaMetaData::ThumbnailImage).value<QImage>();
+        labelLogo->setPixmap(QPixmap::fromImage(imageCover));
+        labelLogo->adjustSize();
+        labelLogo->move((video->width()-labelLogo->width())/2, (video->height()-labelLogo->height())/2);
     }
 }
 
@@ -673,6 +689,7 @@ void MainWindow::analyze()
             player->setPlaylist(MPLurl);
             player->play();
             ui->tableWidget->hide();
+            labelLogo->hide();
         }
     }
 }
@@ -691,24 +708,33 @@ void MainWindow::playURL(int r,int c)
     Q_UNUSED(c);
     MPLurl->setCurrentIndex(r);
     player->play();
+    labelLogo->hide();
 }
 
 void MainWindow::stateChange(QMediaPlayer::State state)
 {
     qDebug() << state;
     if(state == QMediaPlayer::PlayingState){
-//        labelLogo->hide();
+
     }
     if(state == QMediaPlayer::PausedState){
-//        labelLogo->show();
+
     }
     if(state == QMediaPlayer::StoppedState){        
-//        labelLogo->show();
+
     }
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event);
-    //labelLogo->move((video->width()-labelLogo->width())/2, (video->height()-labelLogo->height())/2);
+    labelLogo->move((video->width()-labelLogo->width())/2, (video->height()-labelLogo->height())/2);
+}
+
+void MainWindow::replyAD(QNetworkReply *reply)
+{    
+    pixmapAD.loadFromData(reply->readAll());
+    labelLogo->setPixmap(pixmapAD.scaled(400,300));
+    labelLogo->adjustSize();
+    labelLogo->move((video->width()-labelLogo->width())/2, (video->height()-labelLogo->height())/2);
 }
