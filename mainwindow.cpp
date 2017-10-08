@@ -255,9 +255,9 @@ void MainWindow::on_action_capture16_triggered(){
 
 void MainWindow::on_action_info_triggered()
 {
+    QString s = "媒体地址：" + player->media().canonicalUrl().toString() + "\n";
     QStringList SLMD = player->availableMetaData();
     //qDebug() << SLMD;
-    QString s="";
     for(int i=0; i<SLMD.size(); i++){
         if(SLMD.at(i)=="PixelAspectRatio" || SLMD.at(i)=="Resolution"){
             s += SLMD.at(i) + ": " + QString::number(player->metaData(SLMD.at(i)).toSize().width()) + " X " + QString::number(player->metaData(SLMD.at(i)).toSize().height()) + "\n";
@@ -349,7 +349,7 @@ void MainWindow::on_btnStop_clicked()
 {
     player->stop();
     ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
-    labelLogo->show();
+    //labelLogo->show();
 }
 
 void MainWindow::on_btnSeekB_clicked()
@@ -465,15 +465,15 @@ void MainWindow::playPause(){
     if(player->state()==QMediaPlayer::PlayingState){
         player->pause();
         ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
-        labelLogo->show();
+        //labelLogo->show();
     }else if(player->state()==QMediaPlayer::PausedState){
         player->play();
         ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
-        labelLogo->hide();
+        //labelLogo->hide();
     }else if(player->state()==QMediaPlayer::StoppedState){
         player->play();
         ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
-        labelLogo->hide();
+        //labelLogo->hide();
     }
 }
 
@@ -708,20 +708,19 @@ void MainWindow::playURL(int r,int c)
     Q_UNUSED(c);
     MPLurl->setCurrentIndex(r);
     player->play();
-    labelLogo->hide();
 }
 
 void MainWindow::stateChange(QMediaPlayer::State state)
 {
     qDebug() << state;
     if(state == QMediaPlayer::PlayingState){
-
+        labelLogo->hide();
     }
     if(state == QMediaPlayer::PausedState){
-
+        labelLogo->show();
     }
     if(state == QMediaPlayer::StoppedState){        
-
+        labelLogo->show();
     }
 }
 
