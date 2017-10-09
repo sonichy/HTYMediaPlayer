@@ -126,7 +126,7 @@ void MainWindow::open(QString path)
     player->play();
     setWindowTitle(QFileInfo(path).fileName());
     ui->statusBar->showMessage("打开 " + path);
-    ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
+    //ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
     ui->tableWidget->hide();
 }
 
@@ -255,7 +255,7 @@ void MainWindow::on_action_capture16_triggered(){
 
 void MainWindow::on_action_info_triggered()
 {
-    QString s = "媒体地址：" + player->media().canonicalUrl().toString() + "\n";
+    QString s = "媒体地址：" + player->currentMedia().canonicalUrl().toString() + "\n";
     QStringList SLMD = player->availableMetaData();
     //qDebug() << SLMD;
     for(int i=0; i<SLMD.size(); i++){
@@ -347,8 +347,7 @@ void MainWindow::on_btnPlay_clicked()
 
 void MainWindow::on_btnStop_clicked()
 {
-    player->stop();
-    ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+    player->stop();    
     //labelLogo->show();
 }
 
@@ -464,15 +463,15 @@ void MainWindow::playPause(){
     //qDebug() << "state=" << player->state();
     if(player->state()==QMediaPlayer::PlayingState){
         player->pause();
-        ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+        //ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
         //labelLogo->show();
     }else if(player->state()==QMediaPlayer::PausedState){
         player->play();
-        ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
+        //ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
         //labelLogo->hide();
     }else if(player->state()==QMediaPlayer::StoppedState){
         player->play();
-        ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
+        //ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
         //labelLogo->hide();
     }
 }
@@ -521,7 +520,7 @@ void MainWindow::playTV(int row,int column){
         player->play();
         setWindowTitle(ui->tableWidget->item(row,0)->text());
         ui->statusBar->showMessage("直播 "+surl);
-        ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
+        //ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
         labelLogo->hide();
     //}    
 }
@@ -673,8 +672,7 @@ void MainWindow::analyze()
             player->setMedia(QUrl(surl));
             player->play();
             setWindowTitle(QFileInfo(surl).fileName());
-            ui->statusBar->showMessage(surl);
-            ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
+            ui->statusBar->showMessage(surl);            
         }
         if(surl.contains(";")){
             QStringList clip = surl.split(";");
@@ -715,12 +713,15 @@ void MainWindow::stateChange(QMediaPlayer::State state)
     qDebug() << state;
     if(state == QMediaPlayer::PlayingState){
         labelLogo->hide();
+        ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
     }
     if(state == QMediaPlayer::PausedState){
         labelLogo->show();
+        ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
     }
     if(state == QMediaPlayer::StoppedState){        
         labelLogo->show();
+        ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
     }
 }
 
