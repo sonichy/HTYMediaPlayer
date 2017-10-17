@@ -36,18 +36,19 @@ MainWindow::MainWindow(QWidget *parent) :
 
     video = new QVideoWidget;
     video->setStyleSheet("background:black;");
+    ui->vbox->addWidget(video);
+    video->setMouseTracking(true);
+    video->show();
 
     labelLogo=new QLabel(this);
     labelLogo->setPixmap(QPixmap(":/icon.png"));
     labelLogo->adjustSize();
     labelLogo->show();
 
-    ui->vbox->addWidget(video);
-    video->setMouseTracking(true);
     player = new QMediaPlayer;
     player->setVolume(100);
     player->setVideoOutput(video);
-    video->show();
+
     move((QApplication::desktop()->width() - width())/2, (QApplication::desktop()->height() - height())/2);
 
     connect(player,SIGNAL(durationChanged(qint64)),this,SLOT(durationChange(qint64)));
