@@ -99,6 +99,8 @@ private slots:
     void stateChange(QMediaPlayer::State);
     void resizeEvent(QResizeEvent*);
     void replyAD(QNetworkReply*);
+    void addHistory(QString url);
+    void openHistory(bool);
 };
 
 #endif // MAINWINDOW_H

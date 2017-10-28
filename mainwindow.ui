@@ -484,9 +484,15 @@
      <addaction name="action_liveList"/>
      <addaction name="action_liveImport"/>
     </widget>
+    <widget class="QMenu" name="menu_history">
+     <property name="title">
+      <string>历史记录</string>
+     </property>
+    </widget>
     <addaction name="action_open"/>
     <addaction name="action_openURL"/>
     <addaction name="menu_5"/>
+    <addaction name="menu_history"/>
     <addaction name="action_quit"/>
    </widget>
    <widget class="QMenu" name="menu_2">
@@ -616,6 +622,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="actionA">
+   <property name="text">
+    <string>a</string>
    </property>
   </action>
  </widget>
