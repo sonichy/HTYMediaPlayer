@@ -18,6 +18,9 @@
 #include <QTextBrowser>
 #include <QMimeData>
 #include <QNetworkAccessManager>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -25,7 +28,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     m_bPressed = false;
-    ui->mainToolBar->hide();
     ui->btnSkipB->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
     ui->btnSeekB->setIcon(style()->standardIcon(QStyle::SP_MediaSeekBackward));
     ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
@@ -40,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
     video->setMouseTracking(true);
     video->show();
 
-    labelLogo=new QLabel(this);
+    labelLogo = new QLabel(this);
     labelLogo->setPixmap(QPixmap(":/icon.png"));
     labelLogo->adjustSize();
     labelLogo->show();
@@ -186,7 +188,8 @@ void MainWindow::showHideList()
     }
 }
 
-void MainWindow::on_action_liveImport_triggered(){
+void MainWindow::on_action_liveImport_triggered()
+{
     if(filename==""){        
         filename = QFileDialog::getOpenFileName(this, "打开文本", "tv.txt", "文本文件(*.txt)");
     }else{
@@ -202,7 +205,8 @@ void MainWindow::on_action_quit_triggered()
     qApp->quit();
 }
 
-void MainWindow::on_action_capture_triggered(){
+void MainWindow::on_action_capture_triggered()
+{
     //if(isFullScreen()){ui->sliderProgress->hide();}
     QEventLoop eventloop;
     QTimer::singleShot(500, &eventloop, SLOT(quit()));
@@ -216,7 +220,8 @@ void MainWindow::on_action_capture_triggered(){
     //if(isFullScreen()){ui->sliderProgress->show();}
 }
 
-QString SB(qint64 b){
+QString MainWindow::SB(qint64 b)
+{
     QString s="";
     if(b>999999999){
         s=QString::number(b/(1024*1024*1024.0),'f',2)+"GB";
@@ -234,7 +239,8 @@ QString SB(qint64 b){
     return s;
 }
 
-void MainWindow::on_action_capture16_triggered(){
+void MainWindow::on_action_capture16_triggered()
+{
     QEventLoop eventloop;
     QTimer::singleShot(500, &eventloop, SLOT(quit()));
     eventloop.exec();
@@ -328,14 +334,15 @@ void MainWindow::on_action_volumeMute_triggered()
     }
 }
 
-void MainWindow::on_action_help_triggered(){
+void MainWindow::on_action_help_triggered()
+{
     QMessageBox MB(QMessageBox::NoIcon, "帮助", "快捷键：\nO\t打开文件\nU\t打开网址\nT\t直播列表\nI\t导入直播文件\n空格\t播放、暂停\n回车、双击\t全屏、退出全屏\nEsc\t退出全屏\n上\t增加音量\n下\t减小音量\n左 \t快退\n右\t快进\nM\t静音\nP\t截图");
     MB.exec();
 }
 
 void MainWindow::on_action_changelog_triggered()
 {
-    QString s="1.7\n(2017-10)\n增加历史记录。\n增加接收Chrome扩展传来的数据。\n修复m_bPressed没有初始化引起鼠标移动界面移动的Bug，音频封面Windows调试，取消会引起窗口宽度变化的关闭直播列表缩小窗宽，感谢Snail1991。\n如果播放的音乐有封面则显示。\n(2017-09)\n启动、暂停、停止显示广告。\n解决网络视频媒体信息频繁变更引起界面多余的缩放动作。\n\n1.6\n(2017-09)\n增加解析分号分隔的网络媒体字符串到播放列表。\n遍历媒体信息。\n\n1.5\n(2017-09)\n增加显示错误信息。\n(2017-08-20)\n增加拖放打开文件。\n\n1.4\n(2017-06)\n更新日志太长，消息框改成带滚动条的文本框。\n打开本地文件，自动隐藏直播列表。\n(2017-05)\n系统升级后出现有声音无视频，根据 https://bugreports.qt.io/browse/QTBUG-23761，卸载 sudo apt-get remove gstreamer1.0-vaapi 修复。\n\n1.3 (2017-04)\n记忆全屏前直播列表是否显示，以便退出全屏后恢复。\n直播列表做进主窗体内并支持显隐。\n\n1.2 (2017-03)\n增加打开方式打开文件。\n右键增加截图菜单。\n增加剧情连拍。\n增加截图。\n\n1.1 (2017-03)\n窗口标题增加台号。\n (2017-02)\n合并导入重复代码。\n加入逗号判断，解决导入崩溃。\n增加导入直播列表菜单。\n上一个、下一个按钮换台。\n增加直播列表。\n\n1.0 (2017-02)\n静音修改图标和拖动条。\n增加快进、快退。\n增加时间。\n修复拖动进度条卡顿BUG。\n全屏修改进度条样式。\n实现全屏。\n增加视频控件。\n增加控制栏。";
+    QString s="1.7\n(2017-11)\n增加对直播API的解析，换鼠标拖动代码更平滑，增加windows版编译图标。\n(2017-10)\n增加历史记录。\n增加接收Chrome扩展传来的数据。\n修复m_bPressed没有初始化引起鼠标移动界面移动的Bug，音频封面Windows调试，取消会引起窗口宽度变化的关闭直播列表缩小窗宽，感谢Snail1991。\n如果播放的音乐有封面则显示。\n(2017-09)\n启动、暂停、停止显示广告。\n解决网络视频媒体信息频繁变更引起界面多余的缩放动作。\n\n1.6\n(2017-09)\n增加解析分号分隔的网络媒体字符串到播放列表。\n遍历媒体信息。\n\n1.5\n(2017-09)\n增加显示错误信息。\n(2017-08-20)\n增加拖放打开文件。\n\n1.4\n(2017-06)\n更新日志太长，消息框改成带滚动条的文本框。\n打开本地文件，自动隐藏直播列表。\n(2017-05)\n系统升级后出现有声音无视频，根据 https://bugreports.qt.io/browse/QTBUG-23761，卸载 sudo apt-get remove gstreamer1.0-vaapi 修复。\n\n1.3 (2017-04)\n记忆全屏前直播列表是否显示，以便退出全屏后恢复。\n直播列表做进主窗体内并支持显隐。\n\n1.2 (2017-03)\n增加打开方式打开文件。\n右键增加截图菜单。\n增加剧情连拍。\n增加截图。\n\n1.1 (2017-03)\n窗口标题增加台号。\n (2017-02)\n合并导入重复代码。\n加入逗号判断，解决导入崩溃。\n增加导入直播列表菜单。\n上一个、下一个按钮换台。\n增加直播列表。\n\n1.0 (2017-02)\n静音修改图标和拖动条。\n增加快进、快退。\n增加时间。\n修复拖动进度条卡顿BUG。\n全屏修改进度条样式。\n实现全屏。\n增加视频控件。\n增加控制栏。";
     QDialog *dialog=new QDialog;
     dialog->setWindowTitle("更新历史");
     dialog->setFixedSize(400,300);
@@ -412,22 +419,24 @@ void MainWindow::on_btnMute_clicked()
     on_action_volumeMute_triggered();
 }
 
-void MainWindow::on_action_fullscreen_triggered(){
+void MainWindow::on_action_fullscreen_triggered()
+{
     EEFullscreen();
 }
 
-void MainWindow::on_btnFullscreen_clicked(){
+void MainWindow::on_btnFullscreen_clicked()
+{
     EEFullscreen();
 }
 
-void MainWindow::enterFullscreen(){
+void MainWindow::enterFullscreen()
+{
     isListShow=ui->tableWidget->isVisible();
     showFullScreen();
     ui->menuBar->hide();
     ui->controlPanel->hide();
     ui->statusBar->hide();
-    //ui->sliderProgress->hide();
-    //ui->sliderProgress->setStyleSheet("background-color:black;");
+    ui->sliderProgress->hide();
     ui->sliderProgress->setStyleSheet("QSlider{ background-color:black; }"
                                       "QSlider::groove:Horizontal { height:5px; border-color: #333333;}" //主体
                                       "QSlider::sub-page:Horizontal { background-color: #020202; }" // 已滑过
@@ -453,7 +462,8 @@ void MainWindow::exitFullscreen()
     //labelLogo->move((video->width()-labelLogo->width())/2, (video->height()-labelLogo->height())/2);
 }
 
-void MainWindow::EEFullscreen(){
+void MainWindow::EEFullscreen()
+{
     if(isFullScreen()){
         exitFullscreen();
     }else{
@@ -461,16 +471,19 @@ void MainWindow::EEFullscreen(){
     }    
 }
 
-void MainWindow::durationChange(qint64 d){
+void MainWindow::durationChange(qint64 d)
+{
     ui->sliderProgress->setMaximum(d);
     //qDebug() << "player->duration()=" << player->duration() << d;
 }
 
-void MainWindow::positionChange(qint64 p){
+void MainWindow::positionChange(qint64 p)
+{
     ui->sliderProgress->setValue(p);
 }
 
-void MainWindow::setSTime(int v){
+void MainWindow::setSTime(int v)
+{
     QTime t(0,0,0);
     t=t.addMSecs(v);
     QString sTimeElapse=t.toString("hh:mm:ss");
@@ -481,7 +494,8 @@ void MainWindow::setSTime(int v){
     //ui->sliderProgress->setToolTip(sTimeElapse);
 }
 
-void MainWindow::volumeChange(int v){
+void MainWindow::volumeChange(int v)
+{
     ui->sliderVolume->setValue(v);
     ui->sliderVolume->setToolTip(QString::number(v));
 //    labelTL->setText("音量："+QString::number(v));
@@ -489,7 +503,8 @@ void MainWindow::volumeChange(int v){
 //    QTimer::singleShot(3000,this,SLOT(hideWidget()));
 }
 
-void MainWindow::playPause(){
+void MainWindow::playPause()
+{
     //qDebug() << "state=" << player->state();
     if(player->state()==QMediaPlayer::PlayingState){
         player->pause();
@@ -506,7 +521,8 @@ void MainWindow::playPause(){
     }
 }
 
-void MainWindow::keyPressEvent(QKeyEvent *event){
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
     if(event->key() ==  Qt::Key_P){
         playPause();
     }else if(event->key() == Qt::Key_Enter){
@@ -514,7 +530,8 @@ void MainWindow::keyPressEvent(QKeyEvent *event){
     }
 }
 
-void MainWindow::createPopmenu(){
+void MainWindow::createPopmenu()
+{
     popmenu = new QMenu();
     PMAPlay = new QAction("播放",this);
     PMAFullscreen = new QAction("全屏",this);
@@ -527,7 +544,8 @@ void MainWindow::createPopmenu(){
     connect(PMACapture, SIGNAL(triggered()), this, SLOT(on_action_capture_triggered()));
 }
 
-void MainWindow::contextMenuEvent(QContextMenuEvent *event){
+void MainWindow::contextMenuEvent(QContextMenuEvent *event)
+{
     //pop_menu->clear();
     popmenu->exec(QCursor::pos());
     event->accept();
@@ -541,32 +559,85 @@ void MainWindow::setVolume(){
     player->setVolume(ui->sliderVolume->value());
 }
 
-void MainWindow::playTV(int row,int column){
+void MainWindow::playTV(int row,int column)
+{
     Q_UNUSED(column);
-    QString surl=ui->tableWidget->item(row,1)->text();
-    //qDebug() << surl;
-    //if(surl!=""){
-        player->setMedia(QUrl(surl));
-        player->play();
-        setWindowTitle(ui->tableWidget->item(row,0)->text());
-        ui->statusBar->showMessage("直播 "+surl);
-        addHistory(surl);
-        labelLogo->hide();
-    //}    
+    QString surl = ui->tableWidget->item(row,1)->text();
+    QString realurl = "";
+    if(surl.contains("http://vdn.live.cntv.cn/api2/live.do?channel=")){
+        qDebug() << "analyze(" << surl << ")";
+        QUrl url = QString(surl);
+        QNetworkAccessManager *NAM = new QNetworkAccessManager;
+        QNetworkRequest request(url);
+        QNetworkReply *reply = NAM->get(request);
+        QEventLoop loop;
+        connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+        loop.exec();
+        QByteArray responseText = reply->readAll();
+        QJsonDocument json = QJsonDocument::fromJson(responseText);
+        QString hls_url = json.object().value("hls_url").toObject().value("hls4").toString();
+        //qDebug() << "play(" << hls_url << ")";
+        //player->play(hls_url);
+        realurl = hls_url;
+    }else if(surl.contains("http://apiv1.starschina.com/cms/v1.0/stream?")){
+        qDebug() << "analyze(" << surl << ")";
+        QUrl url = QString(surl);
+        QNetworkAccessManager *NAM = new QNetworkAccessManager;
+        QNetworkRequest request(url);
+        QNetworkReply *reply = NAM->get(request);
+        QEventLoop loop;
+        connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+        loop.exec();
+        QByteArray responseText = reply->readAll();
+        QJsonDocument json = QJsonDocument::fromJson(responseText);
+        QJsonArray play_urls = json.object().value("data").toObject().value("play_urls").toArray();
+        QString urls = play_urls.last().toObject().value("urls").toArray()[0].toString();
+        //qDebug() << "play(" << urls << ")";
+        //player->play(urls);
+        realurl = urls;
+    }else if(surl.contains("http://live.api.hunantv.com/pc/getById?")){
+        qDebug() << "analyze(" << surl << ")";
+        QUrl url = QString(surl);
+        QNetworkAccessManager *NAM = new QNetworkAccessManager;
+        QNetworkRequest request(url);
+        QNetworkReply *reply = NAM->get(request);
+        QEventLoop loop;
+        connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+        loop.exec();
+        QByteArray responseText = reply->readAll();
+        QJsonDocument json = QJsonDocument::fromJson(responseText);
+        QJsonArray html5Sources = json.object().value("data").toObject().value("html5Sources").toArray();
+        QString urls = html5Sources.last().toObject().value("url").toString();
+        //qDebug() << "play(" << urls << ")";
+        //player->play(urls);
+        realurl = urls;
+    }else{
+        //qDebug() << "play(" << surl << ")";
+        //player->play(surl);
+        realurl = surl;
+    }
+    qDebug() << "play(" << realurl << ")";
+    player->setMedia(QUrl(realurl));
+    player->play();
+    addHistory(realurl);
+    setWindowTitle(ui->tableWidget->item(row,0)->text());
+    ui->statusBar->showMessage("播放 " + surl);
+    setFocus();
 }
 
-void MainWindow::fillTable(QString filename){
-    QFile *file=new QFile(filename);
+void MainWindow::fillTable(QString filename)
+{
+    QFile *file = new QFile(filename);
     if(file->open(QIODevice::ReadOnly | QIODevice::Text)){
         ui->tableWidget->setRowCount(0);
         QTextStream ts(file);
-        QString s=ts.readAll();
+        QString s = ts.readAll();
         file->close();
-        QStringList line=s.split("\n");
-        for(int i=0;i<line.size();i++){
+        QStringList line = s.split("\n");
+        for(int i=0; i<line.size(); i++){
             ui->tableWidget->insertRow(i);
             if(line.at(i).contains(",")){
-                QStringList strlist=line.at(i).split(",");                
+                QStringList strlist = line.at(i).split(",");
                 ui->tableWidget->setItem(i,0,new QTableWidgetItem(strlist.at(0)));
                 ui->tableWidget->setItem(i,1,new QTableWidgetItem(strlist.at(1).split("#").at(0)));
             }else{
@@ -590,14 +661,16 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     if (event->button() == Qt::LeftButton)
     {
         m_bPressed = true;
-        m_point = event->pos();
+        //m_point = event->pos();
+        m_point = pos()- event->globalPos();
     }
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {    
     if(m_bPressed){
-        move(event->pos() - m_point + pos());
+        //move(event->pos() - m_point + pos());
+        move(event->globalPos() + m_point);
         qDebug() << "Move" << pos();
     }
 //    if(isFullScreen()){
@@ -628,7 +701,7 @@ void MainWindow::metaDataChange()
     qDebug() << "metaDataChange" << player->metaData(QMediaMetaData::Resolution);
     if(player->metaData(QMediaMetaData::Resolution)!=QVariant::Invalid && !isFullScreen() && !isMaximized()){
         if(widthv != player->metaData(QMediaMetaData::Resolution).toSize().width() || heightv != player->metaData(QMediaMetaData::Resolution).toSize().height()){
-            int wl=0;
+            int wl = 0;
             if(ui->tableWidget->isVisible())wl=ui->tableWidget->width();
             widthv = player->metaData(QMediaMetaData::Resolution).toSize().width();
             heightv = player->metaData(QMediaMetaData::Resolution).toSize().height();
@@ -750,7 +823,7 @@ void MainWindow::stateChange(QMediaPlayer::State state)
         ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
     }
     if(state == QMediaPlayer::PausedState){
-        labelLogo->show();
+        //labelLogo->show();
         ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
     }
     if(state == QMediaPlayer::StoppedState){        

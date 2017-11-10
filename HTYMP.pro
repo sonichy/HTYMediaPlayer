@@ -22,5 +22,6 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui \
     dialogurl.ui
 
-RESOURCES += \
-    filelist.qrc
+RESOURCES += res.qrc
+
+RC_FILE += res.rc

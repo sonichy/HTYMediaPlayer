@@ -1,7 +1,8 @@
 # Qt 海天鹰媒体播放器
 Linux 平台基于 Qt 的 QMultiMedia 的媒体播放程序，支持某些直播。  
+已编译好的 HTYMP 程序适用64位 Linux 系统 Qt5 环境，双击运行。  
+
 ![alt](preview.jpg)  
-已编译好的 HTYMediaPlayer 程序适用64位 Linux 系统 Qt5 环境，双击运行。  
 
 ### 1.6版 增加解析分号分隔的网络媒体字符串到播放列表，遍历媒体信息，增加读取音频封面图片(Windows有效，Linux无效，Mac没试)。
 ![alt](music_cover.jpg)  
@@ -24,10 +25,17 @@ Linux 平台基于 Qt 的 QMultiMedia 的媒体播放程序，支持某些直播
 * Project ERROR: Unknown module(s) in QT: multimedia  
 sudo apt-get install qtmultimedia5-dev  
 
+* Win7无法播放视频可以尝试安装 LAV Filters 解码解决。
+
 * 快捷键失效：  
 鼠标移动到窗口非视频区域激活，全屏下鼠标移动到进度条上激活。
 
-* 有声音无视频:  
+### 有声音无视频:  
+* 报va相关错误  
 参考：https://bugreports.qt.io/browse/QTBUG-23761  
 解决：sudo apt-get remove gstreamer1.0-vaapi  
 感谢：liujianfeng@deepin.org
+* 不报错  
+sudo apt-get install gst123  
+下列【新】软件包将被安装：  
+gst123 gstreamer1.0-pulseaudio gstreamer1.0-x

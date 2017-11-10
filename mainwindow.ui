@@ -20,7 +20,7 @@
    <string>海天鹰播放器</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="filelist.qrc">
+   <iconset resource="res.qrc">
     <normaloff>:/icon.png</normaloff>:/icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -526,14 +526,6 @@
    <addaction name="menu_4"/>
    <addaction name="menu_2"/>
   </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-  </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="action_open">
    <property name="text">
@@ -620,9 +612,6 @@
    <property name="text">
     <string>信息</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+I</string>
-   </property>
   </action>
   <action name="actionA">
    <property name="text">
@@ -632,7 +621,7 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="filelist.qrc"/>
+  <include location="res.qrc"/>
  </resources>
  <connections/>
 </ui>

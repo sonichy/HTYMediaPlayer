@@ -48,6 +48,7 @@ private:
     DialogURL *dialogUrl;
     QMediaPlaylist *MPLurl;
     QPixmap pixmapAD;
+    QString SB(qint64 b);
 
 private slots:
     void on_action_open_triggered();
