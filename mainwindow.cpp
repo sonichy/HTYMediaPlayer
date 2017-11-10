@@ -342,17 +342,17 @@ void MainWindow::on_action_help_triggered()
 
 void MainWindow::on_action_changelog_triggered()
 {
-    QString s="1.7\n(2017-11)\n增加对直播API的解析，换鼠标拖动代码更平滑，增加windows版编译图标。\n(2017-10)\n增加历史记录。\n增加接收Chrome扩展传来的数据。\n修复m_bPressed没有初始化引起鼠标移动界面移动的Bug，音频封面Windows调试，取消会引起窗口宽度变化的关闭直播列表缩小窗宽，感谢Snail1991。\n如果播放的音乐有封面则显示。\n(2017-09)\n启动、暂停、停止显示广告。\n解决网络视频媒体信息频繁变更引起界面多余的缩放动作。\n\n1.6\n(2017-09)\n增加解析分号分隔的网络媒体字符串到播放列表。\n遍历媒体信息。\n\n1.5\n(2017-09)\n增加显示错误信息。\n(2017-08-20)\n增加拖放打开文件。\n\n1.4\n(2017-06)\n更新日志太长，消息框改成带滚动条的文本框。\n打开本地文件，自动隐藏直播列表。\n(2017-05)\n系统升级后出现有声音无视频，根据 https://bugreports.qt.io/browse/QTBUG-23761，卸载 sudo apt-get remove gstreamer1.0-vaapi 修复。\n\n1.3 (2017-04)\n记忆全屏前直播列表是否显示，以便退出全屏后恢复。\n直播列表做进主窗体内并支持显隐。\n\n1.2 (2017-03)\n增加打开方式打开文件。\n右键增加截图菜单。\n增加剧情连拍。\n增加截图。\n\n1.1 (2017-03)\n窗口标题增加台号。\n (2017-02)\n合并导入重复代码。\n加入逗号判断，解决导入崩溃。\n增加导入直播列表菜单。\n上一个、下一个按钮换台。\n增加直播列表。\n\n1.0 (2017-02)\n静音修改图标和拖动条。\n增加快进、快退。\n增加时间。\n修复拖动进度条卡顿BUG。\n全屏修改进度条样式。\n实现全屏。\n增加视频控件。\n增加控制栏。";
-    QDialog *dialog=new QDialog;
+    QString s="1.7\n(2017-11)\n增加对直播API的解析，换鼠标拖动代码更平滑，增加windows版编译图标。\n(2017-10)\n增加历史记录。\n增加接收Chrome扩展传来的直播网址。\n修复m_bPressed没有初始化引起鼠标移动界面移动的Bug，音频封面Windows调试，取消会引起窗口宽度变化的关闭直播列表缩小窗宽，感谢Snail1991。\n如果播放的音乐有封面则显示。\n(2017-09)\n启动、暂停、停止显示广告。\n解决网络视频媒体信息频繁变更引起界面多余的缩放动作。\n\n1.6\n(2017-09)\n增加解析分号分隔的网络媒体字符串到播放列表。\n遍历媒体信息。\n\n1.5\n(2017-09)\n增加显示错误信息。\n(2017-08-20)\n增加拖放打开文件。\n\n1.4\n(2017-06)\n更新日志太长，消息框改成带滚动条的文本框。\n打开本地文件，自动隐藏直播列表。\n(2017-05)\n系统升级后出现有声音无视频，根据 https://bugreports.qt.io/browse/QTBUG-23761，卸载 sudo apt-get remove gstreamer1.0-vaapi 修复。\n\n1.3 (2017-04)\n记忆全屏前直播列表是否显示，以便退出全屏后恢复。\n直播列表做进主窗体内并支持显隐。\n\n1.2 (2017-03)\n增加打开方式打开文件。\n右键增加截图菜单。\n增加剧情连拍。\n增加截图。\n\n1.1 (2017-03)\n窗口标题增加台号。\n (2017-02)\n合并导入重复代码。\n加入逗号判断，解决导入崩溃。\n增加导入直播列表菜单。\n上一个、下一个按钮换台。\n增加直播列表。\n\n1.0 (2017-02)\n静音修改图标和拖动条。\n增加快进、快退。\n增加时间。\n修复拖动进度条卡顿BUG。\n全屏修改进度条样式。\n实现全屏。\n增加视频控件。\n增加控制栏。";
+    QDialog *dialog = new QDialog;
     dialog->setWindowTitle("更新历史");
     dialog->setFixedSize(400,300);
-    QVBoxLayout *vbox=new QVBoxLayout;
-    QTextBrowser *textBrowser=new QTextBrowser;
+    QVBoxLayout *vbox = new QVBoxLayout;
+    QTextBrowser *textBrowser = new QTextBrowser;
     textBrowser->setText(s);
     textBrowser->zoomIn();
     vbox->addWidget(textBrowser);
-    QHBoxLayout *hbox=new QHBoxLayout;
-    QPushButton *btnConfirm=new QPushButton("确定");
+    QHBoxLayout *hbox = new QHBoxLayout;
+    QPushButton *btnConfirm = new QPushButton("确定");
     hbox->addStretch();
     hbox->addWidget(btnConfirm);
     hbox->addStretch();
@@ -360,7 +360,7 @@ void MainWindow::on_action_changelog_triggered()
     dialog->setLayout(vbox);
     dialog->show();
     connect(btnConfirm, SIGNAL(clicked()), dialog, SLOT(accept()));
-    if(dialog->exec()==QDialog::Accepted){
+    if(dialog->exec() == QDialog::Accepted){
         dialog->close();
     }
 }
