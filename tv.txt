@@ -9,11 +9,11 @@ CCTV-7,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv7&client
 CCTV-8,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv8&client=iosapp
 CCTV-9,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv9&client=iosapp
 CCTV-10,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv10&client=iosapp
-CCTV-11,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv10&client=iosapp
-CCTV-12,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv10&client=iosapp
-CCTV-13,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv10&client=iosapp
-CCTV-14,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv10&client=iosapp
-CCTV-15,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv10&client=iosapp
+CCTV-11,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv11&client=iosapp
+CCTV-12,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv12&client=iosapp
+CCTV-13,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv13&client=iosapp
+CCTV-14,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv14&client=iosapp
+CCTV-15,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv15&client=iosapp
 卫视
 湖南卫视,http://apiv1.starschina.com/cms/v1.0/stream?app_key=xdThhy2239daax&app_version=7.4.11&id=179&installation_id=1709271813429913&os_type=1
 湖北卫视,http://apiv1.starschina.com/cms/v1.0/stream?app_key=xdThhy2239daax&app_version=7.4.11&id=171&installation_id=1709271813429913&os_type=1
