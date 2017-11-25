@@ -89,14 +89,14 @@ MainWindow::MainWindow(QWidget *parent) :
     heighto = height() - video->height();
     qDebug() << widtho << heighto;
 
+    fillTable("tv.txt");
+
     QStringList Largs=QApplication::arguments();
     qDebug() << Largs;
     if(Largs.length()>1){
         if(!Largs.at(1).contains("chrome-extension://"))
             open(Largs.at(1));
     }
-
-    fillTable("tv.txt");
 
     dialogUrl = new DialogURL(this);
     connect(dialogUrl->ui->pushButtonAnalyze,SIGNAL(pressed()),this,SLOT(analyze()));
@@ -263,7 +263,7 @@ void MainWindow::on_action_capture16_triggered()
         player->setPosition(i);
         pixc[k]=QGuiApplication::primaryScreen()->grabWindow(0,video->mapToGlobal(video->pos()).x(),video->mapToGlobal(video->pos()).y(),video->width(),video->height()).scaled(320,240);
         QTime t(0,0,0);
-        t=t.addMSecs(player->position());
+        t = t.addMSecs(player->position());
         QString STimeElapse=t.toString("hh:mm:ss");
         QPainter painter(&pixc[k]);
         painter.setPen(QPen(Qt::white));
@@ -551,7 +551,8 @@ void MainWindow::contextMenuEvent(QContextMenuEvent *event)
     event->accept();
 }
 
-void MainWindow::setMPPosition(){
+void MainWindow::setMPPosition()
+{
     player->setPosition(ui->sliderProgress->value());
 }
 
@@ -770,16 +771,19 @@ void MainWindow::errorHandle(QMediaPlayer::Error error)
 
 void MainWindow::analyze()
 {
-    QString surl = dialogUrl->ui->lineEdit->text();
+    QByteArray BA = QByteArray::fromPercentEncoding(dialogUrl->ui->lineEdit->text().toUtf8());
+    QString surl = BA;
+    dialogUrl->ui->lineEdit->setText(surl);
     if(!surl.isEmpty()){
+        ui->tableWidget->hide();
+        labelLogo->hide();
         if(surl.contains(".m3u8")){
             player->setMedia(QUrl(surl));
-            player->play();
-            addHistory(surl);
+            player->play();            
             setWindowTitle(QFileInfo(surl).fileName());
-            ui->statusBar->showMessage(surl);            
-        }
-        if(surl.contains(";")){
+            ui->statusBar->showMessage(surl);
+            addHistory(surl);
+        }else if(surl.contains(";")){
             QStringList clip = surl.split(";");
             MPLurl->clear();
             dialogUrl->ui->tableWidget->setRowCount(0);
@@ -791,8 +795,12 @@ void MainWindow::analyze()
             dialogUrl->ui->tableWidget->resizeColumnsToContents();
             player->setPlaylist(MPLurl);
             player->play();
-            ui->tableWidget->hide();
-            labelLogo->hide();
+        }else{
+            player->setMedia(QUrl(surl));
+            player->play();
+            setWindowTitle(QFileInfo(surl).fileName());
+            ui->statusBar->showMessage(surl);
+            addHistory(surl);
         }
     }
 }
