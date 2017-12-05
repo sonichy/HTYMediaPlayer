@@ -23,6 +23,9 @@
    <iconset resource="res.qrc">
     <normaloff>:/icon.png</normaloff>:/icon.png</iconset>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QPushButton { background-color : transparent; }</string>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <property name="mouseTracking">
     <bool>true</bool>
@@ -141,15 +144,10 @@
               <string>上一个</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">border:none</string>
+              <string notr="true">border:none;</string>
              </property>
              <property name="text">
               <string/>
-             </property>
-             <property name="icon">
-              <iconset>
-               <normalon>:/last.png</normalon>
-              </iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -168,15 +166,10 @@
               <string>快退</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">border:none</string>
+              <string notr="true">border:none;</string>
              </property>
              <property name="text">
               <string/>
-             </property>
-             <property name="icon">
-              <iconset>
-               <normalon>:/fb.png</normalon>
-              </iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -194,16 +187,8 @@
              <property name="toolTip">
               <string>播放/暂停</string>
              </property>
-             <property name="styleSheet">
-              <string notr="true">border:none</string>
-             </property>
              <property name="text">
               <string/>
-             </property>
-             <property name="icon">
-              <iconset>
-               <normalon>:/play.png</normalon>
-              </iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -222,15 +207,10 @@
               <string>快进</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">border:none</string>
+              <string notr="true">border:none;</string>
              </property>
              <property name="text">
               <string/>
-             </property>
-             <property name="icon">
-              <iconset>
-               <normalon>:/ff.png</normalon>
-              </iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -249,15 +229,10 @@
               <string>下一个</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">border:none</string>
+              <string notr="true">border:none;</string>
              </property>
              <property name="text">
               <string/>
-             </property>
-             <property name="icon">
-              <iconset>
-               <normalon>:/next.png</normalon>
-              </iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -276,15 +251,10 @@
               <string>停止</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">border:none</string>
+              <string notr="true">border:none;</string>
              </property>
              <property name="text">
               <string/>
-             </property>
-             <property name="icon">
-              <iconset>
-               <normalon>:/stop.png</normalon>
-              </iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -303,15 +273,10 @@
               <string>静音</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">border:none</string>
+              <string notr="true">border:none;</string>
              </property>
              <property name="text">
               <string/>
-             </property>
-             <property name="icon">
-              <iconset>
-               <normalon>:/volume-high.png</normalon>
-              </iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -368,7 +333,7 @@
               <string>全屏</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">border:none</string>
+              <string notr="true">border:none;</string>
              </property>
              <property name="text">
               <string/>

@@ -40,7 +40,7 @@ private:
     int volume;
     bool m_bPressed;
     QPoint m_point;
-    QLabel *labelLogo;
+    QLabel *labelLogo,*labelTL;
     int widthv,heightv,widtho,heighto,listVisible;
     bool isListShow;
     void dragEnterEvent(QDragEnterEvent*);
