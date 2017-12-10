@@ -507,9 +507,9 @@ void MainWindow::volumeChange(int v)
 {
     ui->sliderVolume->setValue(v);
     ui->sliderVolume->setToolTip(QString::number(v));
-    labelTL->setText("音量："+QString::number(v));
-    labelTL->show();
-    QTimer::singleShot(3000,labelTL,SLOT(hide()));
+//    labelTL->setText("音量："+QString::number(v));
+//    labelTL->show();
+//    QTimer::singleShot(3000,labelTL,SLOT(hide()));
 }
 
 void MainWindow::playPause()
