@@ -39,6 +39,7 @@ private:
     QTableWidget *table;
     int volume;
     bool m_bPressed;
+    float sr;
     QPoint m_point;
     QLabel *labelLogo,*labelTL;
     int widthv,heightv,widtho,heighto,listVisible;
@@ -49,6 +50,7 @@ private:
     QMediaPlaylist *MPLurl;
     QPixmap pixmapAD;
     QString SB(qint64 b);
+    void scale(float s);
 
 private slots:
     void on_action_open_triggered();
@@ -102,6 +104,11 @@ private slots:
     void replyAD(QNetworkReply*);
     void addHistory(QString url);
     void openHistory(bool);
+    void on_action_scale0_5_triggered();
+    void on_action_scale1_triggered();
+    void on_action_scale1_5_triggered();
+    void on_action_scale2_triggered();
+    void fitDesktop();
 };
 
 #endif // MAINWINDOW_H

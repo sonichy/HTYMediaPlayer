@@ -36,10 +36,16 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->btnSeekF->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward));
     ui->btnStop->setIcon(style()->standardIcon(QStyle::SP_MediaStop));
     ui->btnMute->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
+    sr = 1;
+    QActionGroup *actionGroupScale = new QActionGroup(this);
+    actionGroupScale->addAction(ui->action_scale0_5);
+    actionGroupScale->addAction(ui->action_scale1);
+    actionGroupScale->addAction(ui->action_scale1_5);
+    actionGroupScale->addAction(ui->action_scale2);
 
     video = new QVideoWidget;
     video->setStyleSheet("background:black;");
-    ui->vbox->addWidget(video);
+    ui->vbox->addWidget(video);    
     video->setMouseTracking(true);
     video->show();
 
@@ -80,6 +86,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(new QShortcut(QKeySequence(Qt::Key_Down),this), SIGNAL(activated()),this, SLOT(on_action_volumeDown_triggered()));
     connect(new QShortcut(QKeySequence(Qt::Key_M),this), SIGNAL(activated()),this, SLOT(on_action_volumeMute_triggered()));
     connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_I),this), SIGNAL(activated()),this, SLOT(on_action_info_triggered()));
+    connect(new QShortcut(QKeySequence(Qt::Key_1),this), SIGNAL(activated()),this, SLOT(on_action_scale1_triggered()));
+    connect(new QShortcut(QKeySequence(Qt::Key_2),this), SIGNAL(activated()),this, SLOT(on_action_scale2_triggered()));
+    connect(new QShortcut(QKeySequence(Qt::Key_3),this), SIGNAL(activated()),this, SLOT(on_action_scale1_5_triggered()));
+    connect(new QShortcut(QKeySequence(Qt::Key_4),this), SIGNAL(activated()),this, SLOT(on_action_scale0_5_triggered()));
+    connect(new QShortcut(QKeySequence(Qt::Key_5),this), SIGNAL(activated()),this, SLOT(fitDesktop()));
 
     connect(ui->sliderProgress,SIGNAL(sliderReleased()),this,SLOT(setMPPosition()));
     connect(ui->sliderProgress,SIGNAL(valueChanged(int)),this,SLOT(setSTime(int)));
@@ -438,7 +449,7 @@ void MainWindow::on_btnFullscreen_clicked()
 
 void MainWindow::enterFullscreen()
 {
-    isListShow=ui->tableWidget->isVisible();
+    isListShow = ui->tableWidget->isVisible();
     showFullScreen();
     ui->menuBar->hide();
     ui->controlPanel->hide();
@@ -453,6 +464,7 @@ void MainWindow::enterFullscreen()
     PMAFullscreen->setText("退出全屏");
     if(isListShow)ui->tableWidget->setVisible(false);
     ui->verticalLayout_2->setMargin(0);
+    ui->centralWidget->setStyleSheet("background-color:black;");
     //labelLogo->move((video->width()-labelLogo->width())/2, (video->height()-labelLogo->height())/2);
 }
 
@@ -467,6 +479,7 @@ void MainWindow::exitFullscreen()
     ui->sliderProgress->setStyleSheet("");
     PMAFullscreen->setText("全屏");
     ui->verticalLayout_2->setMargin(1);
+    ui->centralWidget->setStyleSheet("");
     if(isListShow)ui->tableWidget->setVisible(isListShow);
     //labelLogo->move((video->width()-labelLogo->width())/2, (video->height()-labelLogo->height())/2);
 }
@@ -879,4 +892,56 @@ void MainWindow::openHistory(bool b)
         setWindowTitle(QFileInfo(surl).fileName());
     }
     player->play();
+}
+
+void MainWindow::scale(float s)
+{
+    if(isMaximized())showNormal();
+    if(isFullScreen()){
+        //ui->centralWidget->setStyleSheet("background-color: black;");
+        video->resize(widthv*s, heightv*s);
+        video->move((QApplication::desktop()->width() - video->width())/2, (QApplication::desktop()->height() - video->height())/2);
+    }else{
+        if(ui->tableWidget->isVisible()){
+            resize(widthv*s + ui->tableWidget->width(), heightv*s + ui->menuBar->height() + ui->sliderProgress->height() +ui->controlPanel->height() + ui->statusBar->height());
+        }else{
+            resize(widthv*s, heightv*s + ui->menuBar->height() + ui->sliderProgress->height() +ui->controlPanel->height() + ui->statusBar->height());
+        }
+    }
+}
+
+void MainWindow::on_action_scale0_5_triggered()
+{
+    sr = 0.5;
+    scale(sr);
+    ui->action_scale0_5->setChecked(true);
+}
+
+void MainWindow::on_action_scale1_triggered()
+{
+    sr = 1;
+    scale(sr);
+    ui->action_scale1->setChecked(true);
+}
+
+void MainWindow::on_action_scale1_5_triggered()
+{
+    sr = 1.5;
+    scale(sr);
+    ui->action_scale1_5->setChecked(true);
+}
+
+void MainWindow::on_action_scale2_triggered()
+{
+    sr = 2;
+    scale(sr);
+    ui->action_scale2->setChecked(true);
+}
+
+void MainWindow::fitDesktop()
+{
+    if(isFullScreen()){
+        video->move(0,0);
+        video->resize(QApplication::desktop()->width(),QApplication::desktop()->height());
+    }
 }

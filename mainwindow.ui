@@ -473,7 +473,17 @@
     <property name="title">
      <string>视频</string>
     </property>
+    <widget class="QMenu" name="menu_scale">
+     <property name="title">
+      <string>缩放</string>
+     </property>
+     <addaction name="action_scale0_5"/>
+     <addaction name="action_scale1"/>
+     <addaction name="action_scale1_5"/>
+     <addaction name="action_scale2"/>
+    </widget>
     <addaction name="action_fullscreen"/>
+    <addaction name="menu_scale"/>
     <addaction name="action_capture"/>
     <addaction name="action_capture16"/>
     <addaction name="action_info"/>
@@ -581,6 +591,38 @@
   <action name="actionA">
    <property name="text">
     <string>a</string>
+   </property>
+  </action>
+  <action name="action_scale0_5">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>X 0.5</string>
+   </property>
+  </action>
+  <action name="action_scale1">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>X 1</string>
+   </property>
+  </action>
+  <action name="action_scale1_5">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>X 1.5</string>
+   </property>
+  </action>
+  <action name="action_scale2">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>X 2</string>
    </property>
   </action>
  </widget>
