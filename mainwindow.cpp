@@ -238,17 +238,17 @@ void MainWindow::on_action_capture_triggered()
 
 QString MainWindow::SB(qint64 b)
 {
-    QString s="";
+    QString s = "";
     if(b>999999999){
-        s=QString::number(b/(1024*1024*1024.0),'f',2)+"GB";
+        s = QString::number(b/(1024*1024*1024.0),'f',2) + " GB";
     }else{
         if(b>999999){
-            s=QString::number(b/(1024*1024.0),'f',2)+"MB";
+            s = QString::number(b/(1024*1024.0),'f',2) + " MB";
         }else{
             if(b>999){
-                s=QString::number(b/1024.0,'f',2)+"KB";
+                s = QString::number(b/1024.0,'f',2) + " KB";
             }else{
-                s=QString::number(b/1.0,'f',2)+"B";
+                s = QString::number(b) + " B";
             }
         }
     }
@@ -263,24 +263,24 @@ void MainWindow::on_action_capture16_triggered()
     QPixmap pixc[16];
     player->pause();
     player->setMuted(true);
-    QPixmap pixDS=QPixmap(1280+50,960+80+40);
+    QPixmap pixDS = QPixmap(1280 + 50, 960 + 80 + 40);
     pixDS.fill(Qt::white);
-    int k=0;
+    int k = 0;
     QPainter painter(&pixDS);
     painter.drawPixmap(20,10,QPixmap("icon.png").scaled(60,60));
     painter.drawText(300,30,"文件名称：" + QFileInfo(filename).fileName());
     painter.drawText(300,60,"文件大小：" + SB(QFileInfo(filename).size()));
     painter.drawText(500,60,"视频尺寸：" + QString::number(widthv) + " X " + QString::number(heightv));
     QTime t(0,0,0);
-    t=t.addMSecs(player->duration());
-    QString STimeTotal=t.toString("hh:mm:ss");
+    t = t.addMSecs(player->duration());
+    QString STimeTotal = t.toString("hh:mm:ss");
     painter.drawText(700,60,"视频时长："+STimeTotal);
-    for(qint64 i=player->duration()/16;i<player->duration();i+=player->duration()/16){
+    for(qint64 i=player->duration()/16; i<player->duration(); i+=player->duration()/16){
         player->setPosition(i);
-        pixc[k]=QGuiApplication::primaryScreen()->grabWindow(0,video->mapToGlobal(video->pos()).x(),video->mapToGlobal(video->pos()).y(),video->width(),video->height()).scaled(320,240);
+        pixc[k] = QGuiApplication::primaryScreen()->grabWindow(0,video->mapToGlobal(video->pos()).x(),video->mapToGlobal(video->pos()).y(),video->width(),video->height()).scaled(320,240);
         QTime t(0,0,0);
         t = t.addMSecs(player->position());
-        QString STimeElapse=t.toString("hh:mm:ss");
+        QString STimeElapse = t.toString("hh:mm:ss");
         QPainter painter(&pixc[k]);
         painter.setPen(QPen(Qt::white));
         painter.drawText(270,235,STimeElapse);
@@ -289,17 +289,17 @@ void MainWindow::on_action_capture16_triggered()
         eventloop.exec();
         k++;
     }
-    k=0;
-    for(int y=0;y<4;y++){
-        for(int x=0;x<4;x++){
-            painter.drawPixmap(x*(320+10)+10,y*(240+10)+80,pixc[k]);
+    k = 0;
+    for(int y=0; y<4; y++){
+        for(int x=0; x<4; x++){
+            painter.drawPixmap(x*(320+10)+10, y*(240+10)+80,pixc[k]);
             k++;
         }
     }
     QFont font("Arial",20,QFont::Normal,false);
     painter.setFont(font);
     painter.drawText(100,50,"海天鹰播放器");
-    QString path=QStandardPaths::writableLocation(QStandardPaths::DesktopLocation)+ "/Summary_"+QFileInfo(filename).baseName()+".jpg";
+    QString path = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/Summary_" + QFileInfo(filename).baseName() + ".jpg";
     pixDS.save(path,0,100);
     player->play();
     player->setMuted(false);
@@ -307,7 +307,10 @@ void MainWindow::on_action_capture16_triggered()
 
 void MainWindow::on_action_info_triggered()
 {
-    QString s = "媒体地址：" + player->currentMedia().canonicalUrl().toString() + "\n";
+    QString path = player->currentMedia().canonicalUrl().toString();
+    if(path.startsWith("file://"))
+        path = path.mid(7);
+    QString s = "媒体地址：" + path + "\n";
     QStringList SLMD = player->availableMetaData();
     //qDebug() << SLMD;
     for(int i=0; i<SLMD.size(); i++){
@@ -317,6 +320,8 @@ void MainWindow::on_action_info_triggered()
             s += SLMD.at(i) + ": " + player->metaData(SLMD.at(i)).toString() + "\n";
         }
     }
+
+    s += "文件大小：" + SB(QFileInfo(path).size());
     QMessageBox MBInfo(QMessageBox::NoIcon, "信息", s);
     QImage imageCover = player->metaData(QMediaMetaData::ThumbnailImage).value<QImage>();
     MBInfo.setIconPixmap(QPixmap::fromImage(imageCover));
@@ -359,7 +364,7 @@ void MainWindow::on_action_help_triggered()
 
 void MainWindow::on_action_changelog_triggered()
 {
-    QString s="1.7\n(2017-11)\n增加对直播API的解析，换鼠标拖动代码更平滑，增加windows版编译图标。\n(2017-10)\n增加历史记录。\n增加接收Chrome扩展传来的直播网址。\n修复m_bPressed没有初始化引起鼠标移动界面移动的Bug，音频封面Windows调试，取消会引起窗口宽度变化的关闭直播列表缩小窗宽，感谢Snail1991。\n如果播放的音乐有封面则显示。\n(2017-09)\n启动、暂停、停止显示广告。\n解决网络视频媒体信息频繁变更引起界面多余的缩放动作。\n\n1.6\n(2017-09)\n增加解析分号分隔的网络媒体字符串到播放列表。\n遍历媒体信息。\n\n1.5\n(2017-09)\n增加显示错误信息。\n(2017-08-20)\n增加拖放打开文件。\n\n1.4\n(2017-06)\n更新日志太长，消息框改成带滚动条的文本框。\n打开本地文件，自动隐藏直播列表。\n(2017-05)\n系统升级后出现有声音无视频，根据 https://bugreports.qt.io/browse/QTBUG-23761，卸载 sudo apt-get remove gstreamer1.0-vaapi 修复。\n\n1.3 (2017-04)\n记忆全屏前直播列表是否显示，以便退出全屏后恢复。\n直播列表做进主窗体内并支持显隐。\n\n1.2 (2017-03)\n增加打开方式打开文件。\n右键增加截图菜单。\n增加剧情连拍。\n增加截图。\n\n1.1 (2017-03)\n窗口标题增加台号。\n (2017-02)\n合并导入重复代码。\n加入逗号判断，解决导入崩溃。\n增加导入直播列表菜单。\n上一个、下一个按钮换台。\n增加直播列表。\n\n1.0 (2017-02)\n静音修改图标和拖动条。\n增加快进、快退。\n增加时间。\n修复拖动进度条卡顿BUG。\n全屏修改进度条样式。\n实现全屏。\n增加视频控件。\n增加控制栏。";
+    QString s = "1.8\n(2017-12)\n文件信息增加文件大小。\n增加视频缩放。\n\n1.7\n(2017-11)\n增加对直播API的解析，换鼠标拖动代码更平滑，增加windows版编译图标。\n(2017-10)\n增加历史记录。\n增加接收Chrome扩展传来的直播网址。\n修复m_bPressed没有初始化引起鼠标移动界面移动的Bug，音频封面Windows调试，取消会引起窗口宽度变化的关闭直播列表缩小窗宽，感谢Snail1991。\n如果播放的音乐有封面则显示。\n(2017-09)\n启动、暂停、停止显示广告。\n解决网络视频媒体信息频繁变更引起界面多余的缩放动作。\n\n1.6\n(2017-09)\n增加解析分号分隔的网络媒体字符串到播放列表。\n遍历媒体信息。\n\n1.5\n(2017-09)\n增加显示错误信息。\n(2017-08-20)\n增加拖放打开文件。\n\n1.4\n(2017-06)\n更新日志太长，消息框改成带滚动条的文本框。\n打开本地文件，自动隐藏直播列表。\n(2017-05)\n系统升级后出现有声音无视频，根据 https://bugreports.qt.io/browse/QTBUG-23761，卸载 sudo apt-get remove gstreamer1.0-vaapi 修复。\n\n1.3 (2017-04)\n记忆全屏前直播列表是否显示，以便退出全屏后恢复。\n直播列表做进主窗体内并支持显隐。\n\n1.2 (2017-03)\n增加打开方式打开文件。\n右键增加截图菜单。\n增加剧情连拍。\n增加截图。\n\n1.1 (2017-03)\n窗口标题增加台号。\n (2017-02)\n合并导入重复代码。\n加入逗号判断，解决导入崩溃。\n增加导入直播列表菜单。\n上一个、下一个按钮换台。\n增加直播列表。\n\n1.0 (2017-02)\n静音修改图标和拖动条。\n增加快进、快退。\n增加时间。\n修复拖动进度条卡顿BUG。\n全屏修改进度条样式。\n实现全屏。\n增加视频控件。\n增加控制栏。";
     QDialog *dialog = new QDialog;
     dialog->setWindowIcon(QIcon(":/icon.png"));
     dialog->setWindowTitle("更新历史");
@@ -390,7 +395,7 @@ void MainWindow::on_action_aboutQt_triggered()
 
 void MainWindow::on_action_about_triggered()
 {
-    QMessageBox aboutMB(QMessageBox::NoIcon, "关于", "海天鹰媒体播放器 1.7\n一款基于 Qt 的媒体播放器。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：sonichy.96.lt\n致谢：\n播放列表：http://blog.sina.com.cn/s/blog_74a7e56e0101agit.html\n获取媒体信息：https://www.zhihu.com/question/36859497");
+    QMessageBox aboutMB(QMessageBox::NoIcon, "关于", "海天鹰媒体播放器 1.8\n一款基于 Qt 的媒体播放器。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：sonichy.96.lt\n致谢：\n播放列表：http://blog.sina.com.cn/s/blog_74a7e56e0101agit.html\n获取媒体信息：https://www.zhihu.com/question/36859497");
     aboutMB.setIconPixmap(QPixmap(":/icon.png"));
     aboutMB.exec();
 }
