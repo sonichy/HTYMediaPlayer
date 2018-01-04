@@ -107,7 +107,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     fillTable("tv.txt");
 
-    QStringList Largs=QApplication::arguments();
+    QStringList Largs = QApplication::arguments();
     qDebug() << Largs;
     if(Largs.length()>1){
         if(!Largs.at(1).contains("chrome-extension://"))
