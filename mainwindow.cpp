@@ -176,6 +176,7 @@ void MainWindow::open(QString path)
     ui->statusBar->showMessage("打开 " + path);
     addHistory(path);
     ui->tableWidget->hide();
+    ui->action_scale1->setChecked(true);
 }
 
 void MainWindow::on_action_openURL_triggered()
@@ -645,6 +646,7 @@ void MainWindow::playTV(int row,int column)
     setWindowTitle(ui->tableWidget->item(row,0)->text());
     ui->statusBar->showMessage("播放 " + surl);
     setFocus();
+    ui->action_scale1->setChecked(true);
 }
 
 void MainWindow::fillTable(QString filename)
@@ -825,6 +827,7 @@ void MainWindow::analyze()
             ui->statusBar->showMessage(surl);
             addHistory(surl);
         }
+        ui->action_scale1->setChecked(true);
     }
 }
 
