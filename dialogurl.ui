@@ -48,6 +48,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="pushButtonAnalyze">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="text">
           <string>解析</string>
          </property>

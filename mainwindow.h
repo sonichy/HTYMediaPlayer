@@ -81,8 +81,6 @@ private slots:
     void durationChange(qint64);
     void positionChange(qint64);
     void volumeChange(int);
-    void setMPPosition();
-    void setVolume();
     void enterFullscreen();
     void exitFullscreen();
     void EEFullscreen();
@@ -109,6 +107,9 @@ private slots:
     void on_action_scale1_5_triggered();
     void on_action_scale2_triggered();
     void fitDesktop();
+    void sliderProgressPressed();
+    void sliderProgressReleased();
+    void sliderVolumeReleased();
 };
 
 #endif // MAINWINDOW_H

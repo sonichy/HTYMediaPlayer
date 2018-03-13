@@ -66,7 +66,6 @@ CCTV-6,http://cctv.live.cntv.liveplay.myqcloud.com:8000/live/flv/channel218?ptyp
 直播星电影,http://dlhls.cdn.zhanqi.tv/zqlive/35349_iXsXw.m3u8
 星卫电影台,HD http://dlhls.cdn.zhanqi.tv/zqlive/35349_iXsXw.m3u8
 战旗影院1,http://dlhls.cdn.zhanqi.tv/zqlive/80918_cr4oy.m3u8
-战旗影院2,http://dlhls.cdn.zhanqi.tv/zqlive/99815_VmbZY.m3u8
 战旗影院4,http://dlhls.cdn.zhanqi.tv/zqlive/88945_Kligp.m3u8
 战旗影院5,http://dlhls.cdn.zhanqi.tv/zqlive/7032_0s2qn.m3u8
 战旗影院6,http://dlhls.cdn.zhanqi.tv/zqlive/49858_wgGj1.m3u8
