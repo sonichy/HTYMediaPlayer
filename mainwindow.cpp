@@ -92,9 +92,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(new QShortcut(QKeySequence(Qt::Key_5),this), SIGNAL(activated()),this, SLOT(fitDesktop()));
 
     connect(ui->sliderProgress,SIGNAL(sliderPressed()),this,SLOT(sliderProgressPressed()));
-    connect(ui->sliderProgress,SIGNAL(sliderReleased()),this,SLOT(sliderProgressReleased()));
-    connect(ui->sliderProgress,SIGNAL(valueChanged(int)),this,SLOT(setSTime(int)));
-    connect(ui->sliderVolume,SIGNAL(sliderReleased()),this,SLOT(sliderVolumeReleased()));
+    connect(ui->sliderProgress,SIGNAL(sliderReleased()),this,SLOT(sliderProgressReleased()));    
+    //connect(ui->sliderProgress,SIGNAL(valueChanged(int)),this,SLOT(sliderProgressValueChanged(int)));
+    connect(ui->sliderProgress,SIGNAL(sliderMoved(int)),this,SLOT(sliderProgressMoved(int)));
+    connect(ui->sliderVolume,SIGNAL(sliderMoved(int)),this,SLOT(sliderVolumeMoved(int)));
 
     ui->tableWidget->setColumnHidden(1,true);
     ui->tableWidget->setStyleSheet("QTableWidget{color:white; background-color:black;} QTableWidget::item:selected{background-color:#222222;}");
@@ -278,10 +279,10 @@ void MainWindow::on_action_capture16_triggered()
     painter.drawText(300,30,"文件名称：" + QFileInfo(filename).fileName());
     painter.drawText(300,60,"文件大小：" + SB(QFileInfo(filename).size()));
     painter.drawText(500,60,"视频尺寸：" + QString::number(widthv) + " X " + QString::number(heightv));
-    QTime t(0,0,0);
-    t = t.addMSecs(player->duration());
-    QString STimeTotal = t.toString("hh:mm:ss");
-    painter.drawText(700,60,"视频时长："+STimeTotal);
+//    QTime t(0,0,0);
+//    t = t.addMSecs(player->duration());
+//    QString STimeDuration = t.toString("hh:mm:ss");
+    painter.drawText(700,60,"视频时长：" + STimeDuration);
     for(qint64 i=player->duration()/16; i<player->duration(); i+=player->duration()/16){
         player->setPosition(i);
         pixc[k] = QGuiApplication::primaryScreen()->grabWindow(0,video->mapToGlobal(video->pos()).x(),video->mapToGlobal(video->pos()).y(),video->width(),video->height()).scaled(320,240);
@@ -509,23 +510,27 @@ void MainWindow::durationChange(qint64 d)
 {
     ui->sliderProgress->setMaximum(d);
     //qDebug() << "player->duration()=" << player->duration() << d;
+    QTime t(0,0,0);
+    t = t.addMSecs(d);
+    STimeDuration = t.toString("hh:mm:ss");
 }
 
 void MainWindow::positionChange(qint64 p)
 {
-    ui->sliderProgress->setValue(p);
+    if(!ui->sliderProgress->isSliderDown())ui->sliderProgress->setValue(p);
+    setSTime(p);
 }
 
-void MainWindow::setSTime(int v)
-{
+void MainWindow::setSTime(qint64 v)
+{    
     QTime t(0,0,0);
-    t=t.addMSecs(v);
-    QString sTimeElapse=t.toString("hh:mm:ss");
-    t.setHMS(0,0,0);
-    t=t.addMSecs(player->duration());
-    QString sTimeTotal=t.toString("hh:mm:ss");
-    ui->labelTimeVideo->setText(sTimeElapse+"/"+sTimeTotal);
-    //ui->sliderProgress->setToolTip(sTimeElapse);
+    t = t.addMSecs(v);
+    QString STimeElapse = t.toString("hh:mm:ss");
+//    t.setHMS(0,0,0);
+//    t = t.addMSecs(player->duration());
+//    QString STimeDuration = t.toString("hh:mm:ss");
+    ui->labelTimeVideo->setText(STimeElapse + "/" + STimeDuration);
+    ui->sliderProgress->setToolTip(STimeElapse);
 }
 
 void MainWindow::volumeChange(int v)
@@ -579,15 +584,9 @@ void MainWindow::contextMenuEvent(QContextMenuEvent *event)
     event->accept();
 }
 
-void MainWindow::sliderProgressReleased()
+void MainWindow::sliderVolumeMoved(int v)
 {
-    player->setPosition(ui->sliderProgress->value());
-    connect(player,SIGNAL(positionChanged(qint64)),this,SLOT(positionChange(qint64)));
-}
-
-void MainWindow::sliderVolumeReleased()
-{
-    player->setVolume(ui->sliderVolume->value());
+    player->setVolume(v);
 }
 
 void MainWindow::playTV(int row,int column)
@@ -963,6 +962,15 @@ void MainWindow::fitDesktop()
 }
 
 void MainWindow::sliderProgressPressed()
+{    
+}
+
+void MainWindow::sliderProgressMoved(int v)
 {
-    disconnect(player,SIGNAL(positionChanged(qint64)),this,SLOT(positionChange(qint64)));
+    player->setPosition(v);
+}
+
+void MainWindow::sliderProgressReleased()
+{
+    player->setPosition(ui->sliderProgress->value());
 }

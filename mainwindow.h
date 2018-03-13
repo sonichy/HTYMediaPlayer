@@ -31,7 +31,7 @@ private:
     void mouseMoveEvent(QMouseEvent*);
     void mouseReleaseEvent(QMouseEvent*);
     void open(QString path);
-    QString filename;
+    QString filename, STimeDuration;
     QMediaPlayer *player;
     QVideoWidget *video;
     QMenu *popmenu;
@@ -51,6 +51,7 @@ private:
     QPixmap pixmapAD;
     QString SB(qint64 b);
     void scale(float s);
+    void setSTime(qint64);
 
 private slots:
     void on_action_open_triggered();
@@ -86,8 +87,7 @@ private slots:
     void EEFullscreen();
     void playPause();
     void keyPressEvent(QKeyEvent*);
-    void contextMenuEvent(QContextMenuEvent*);
-    void setSTime(int);
+    void contextMenuEvent(QContextMenuEvent*);    
     void playTV(int,int);
     void fillTable(QString);
     void hideWidget();
@@ -109,7 +109,9 @@ private slots:
     void fitDesktop();
     void sliderProgressPressed();
     void sliderProgressReleased();
-    void sliderVolumeReleased();
+    //void sliderProgressValueChanged(int);
+    void sliderProgressMoved(int);
+    void sliderVolumeMoved(int);
 };
 
 #endif // MAINWINDOW_H
