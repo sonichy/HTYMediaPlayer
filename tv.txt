@@ -1,13 +1,13 @@
 央视
-CCTV-1,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv1&client=iosapp
+CCTV-1,http://cctv.cntv.wscdns.com/live/cctv1hls_/index.m3u8?ptype=1&amode=1&AUTH=cntv0004vgtzvlwds9wqsUUrZUbn75L5lXmcngCQUON74YeRVVZfp4qfMwAhBKdNkAKO9G0IP1RJU40TmWl6ZtfaekyEk5/I7qdi5w==&adapt=0&BR=td
 CCTV-2,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv2&client=iosapp
 CCTV-3,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv3&client=iosapp
 CCTV-4,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv4&client=iosapp
 CCTV-5,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv5&client=iosapp
-CCTV-6,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv6&client=iosapp
+CCTV-6,http://cctv.live.cntv.liveplay.myqcloud.com/live/cctv6hls_/index.m3u8?ptype=1&amode=1&AUTH=cntv0004vgtzvlwd7YZJvNMseJXgg2CwfnTdyeWcv4BVahcfQ9zZV9OO5JmGvdu6wUGD31sPfJw7bchKm9POK1p7m/6gFnB++a8vNw==&adapt=0&BR=td
 CCTV-7,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv7&client=iosapp
-CCTV-8,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv8&client=iosapp
-CCTV-9,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv9&client=iosapp
+CCTV-8,http://cctv.live.cntv.liveplay.myqcloud.com/live/cctv8hls_/index.m3u8?ptype=1&amode=1&AUTH=cntv0004vgtzvlwdZ8nLSpaqYrdEc4dyGoSginTSAXBQlgWhjP1ByjUrUsbKEgZP5mbsI8Ry7qv1l2nvVSwuD9S44eb/14I4Q1HPnA==&adapt=0&BR=td
+CCTV-9,http://cctv.cntv.wscdns.com/cache/292_/seg0/index.m3u8?AUTH=cntv0004vgtzvlwdKyBThuqJGx2bUfWl7+eeHpJA91UA5AqUaZAZBdhAuMct+GuJ9uwuKFfN8kwXhzV3lKbS/46sPq0m/S4HmKfj3g==
 CCTV-10,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv10&client=iosapp
 CCTV-11,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv11&client=iosapp
 CCTV-12,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv12&client=iosapp

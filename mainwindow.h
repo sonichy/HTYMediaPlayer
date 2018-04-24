@@ -42,7 +42,7 @@ private:
     float sr;
     QPoint m_point;
     QLabel *labelLogo,*labelTL;
-    int widthv,heightv,widtho,heighto,listVisible;
+    int widthV,heightV,widtho,heighto,listVisible;
     bool isListShow;
     void dragEnterEvent(QDragEnterEvent*);
     void dropEvent(QDropEvent*);
