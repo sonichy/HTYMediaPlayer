@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=海天鹰播放器
 Comment=Media player
-Exec=/media/sonichy/job/HY/Linux/Qt/HTYMP/HTYMP
+Exec=/media/sonichy/job/HY/Linux/Qt/HTYMP/HTYMP %u
 Icon=/media/sonichy/job/HY/Linux/Qt/HTYMP/icon.png
 Path=/media/sonichy/job/HY/Linux/Qt/HTYMP
 StartupNotify=true
