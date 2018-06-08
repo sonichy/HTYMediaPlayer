@@ -1,12 +1,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "dialogurl.h"
+#include "ui_dialogurl.h"
+#include "waveform.h"
 #include <QMainWindow>
 #include <QMediaPlayer>
 #include <QMediaPlaylist>
 #include <QTableWidget>
-#include "dialogurl.h"
-#include "ui_dialogurl.h"
 #include <QMessageBox>
 #include <QNetworkReply>
 
@@ -52,6 +53,7 @@ private:
     QString SB(qint64 b);
     void scale(float s);
     void setSTime(qint64);
+    Waveform *waveform;
 
 private slots:
     void on_action_open_triggered();
@@ -112,6 +114,7 @@ private slots:
     //void sliderProgressValueChanged(int);
     void sliderProgressMoved(int);
     void sliderVolumeMoved(int);
+    void audioBufferProbed(QAudioBuffer buffer);
 };
 
 #endif // MAINWINDOW_H

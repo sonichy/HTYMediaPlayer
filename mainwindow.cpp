@@ -49,7 +49,10 @@ MainWindow::MainWindow(QWidget *parent) :
     video->setStyleSheet("background:black;");
     ui->vbox->addWidget(video);    
     video->setMouseTracking(true);
-    video->show();
+    video->show();    
+
+    //waveform = new Waveform;
+    //ui->vbox->addWidget(waveform);
 
 //    labelTL = new QLabel(this);
 //    labelTL->move(50,50);
@@ -69,6 +72,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(player,SIGNAL(metaDataChanged()),this,SLOT(metaDataChange()));
     connect(player,SIGNAL(error(QMediaPlayer::Error)),this,SLOT(errorHandle(QMediaPlayer::Error)));
     connect(player,SIGNAL(stateChanged(QMediaPlayer::State)),SLOT(stateChange(QMediaPlayer::State)));
+
+    QAudioProbe *audioProbe = new QAudioProbe;
+    //connect(audioProbe, SIGNAL(audioBufferProbed(QAudioBuffer)), this, SLOT(audioBufferProbed(QAudioBuffer)));
+    audioProbe->setSource(player);
 
     connect(new QShortcut(QKeySequence(Qt::Key_O),this), SIGNAL(activated()),this, SLOT(on_action_open_triggered()));
     connect(new QShortcut(QKeySequence(Qt::Key_U),this), SIGNAL(activated()),this, SLOT(on_action_openURL_triggered()));
@@ -98,7 +105,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->sliderVolume,SIGNAL(sliderMoved(int)),this,SLOT(sliderVolumeMoved(int)));
 
     ui->tableWidget->setColumnHidden(1,true);
-    ui->tableWidget->setStyleSheet("QTableWidget{color:white; background-color:black;} QTableWidget::item:selected{background-color:#222222;}");
+    ui->tableWidget->setStyleSheet("QTableWidget { color:white; background-color:black; }"
+                                   "QTableWidget::item:selected { background-color:#222222; }");
     connect(ui->tableWidget,SIGNAL(cellClicked(int,int)),this,SLOT(playTV(int,int)));
     createPopmenu();
 
@@ -975,4 +983,12 @@ void MainWindow::sliderProgressMoved(int v)
 void MainWindow::sliderProgressReleased()
 {
     player->setPosition(ui->sliderProgress->value());
+}
+
+void MainWindow::audioBufferProbed(QAudioBuffer buffer)
+{
+    QVector<qreal> levels = Waveform::getBufferLevels(buffer);
+    for (int i = 0; i < levels.count(); ++i) {
+        waveform->updateWave(levels.at(i));
+    }
 }

@@ -8,10 +8,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    dialogurl.cpp
+    dialogurl.cpp \
+    waveform.cpp
 
 HEADERS  += mainwindow.h \
-    dialogurl.h
+    dialogurl.h \
+    waveform.h
 
 FORMS    += mainwindow.ui \
     dialogurl.ui
