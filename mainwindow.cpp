@@ -30,7 +30,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     move((QApplication::desktop()->width() - width())/2, (QApplication::desktop()->height() - height())/2);
+    sr = 1;
     m_bPressed = false;
+    version = "1.11";
     ui->btnSkipB->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
     ui->btnSeekB->setIcon(style()->standardIcon(QStyle::SP_MediaSeekBackward));
     ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
@@ -38,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->btnSeekF->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward));
     ui->btnStop->setIcon(style()->standardIcon(QStyle::SP_MediaStop));
     ui->btnMute->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
-    sr = 1;
+
     QActionGroup *actionGroupScale = new QActionGroup(this);
     actionGroupScale->addAction(ui->action_scale0_5);
     actionGroupScale->addAction(ui->action_scale1);
@@ -49,10 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
     video->setStyleSheet("background:black;");
     ui->vbox->addWidget(video);    
     video->setMouseTracking(true);
-    video->show();    
-
-    //waveform = new Waveform;
-    //ui->vbox->addWidget(waveform);
+    video->show();
 
 //    labelTL = new QLabel(this);
 //    labelTL->move(50,50);
@@ -72,10 +71,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(player,SIGNAL(metaDataChanged()),this,SLOT(metaDataChange()));
     connect(player,SIGNAL(error(QMediaPlayer::Error)),this,SLOT(errorHandle(QMediaPlayer::Error)));
     connect(player,SIGNAL(stateChanged(QMediaPlayer::State)),SLOT(stateChange(QMediaPlayer::State)));
-
-    QAudioProbe *audioProbe = new QAudioProbe;
-    //connect(audioProbe, SIGNAL(audioBufferProbed(QAudioBuffer)), this, SLOT(audioBufferProbed(QAudioBuffer)));
-    audioProbe->setSource(player);
 
     connect(new QShortcut(QKeySequence(Qt::Key_O),this), SIGNAL(activated()),this, SLOT(on_action_open_triggered()));
     connect(new QShortcut(QKeySequence(Qt::Key_U),this), SIGNAL(activated()),this, SLOT(on_action_openURL_triggered()));
@@ -129,18 +124,18 @@ MainWindow::MainWindow(QWidget *parent) :
             //read the first four bytes (=> Length)
             //getwchar: receive char from stdin
             //putwchar: write char to stdout
-            for ( int i = 0; i < 4; i++) {
+            for (int i = 0; i < 4; i++) {
                 length += getwchar();
             }
             //read the json-message
             QString url = "";
-            for ( int i = 0; i < length; i++) {
+            for (int i = 0; i < length; i++) {
                 url += getwchar();
             }
             //浏览器端传来的数据会有一个双引号引在两端
             url = url.mid(1, url.length()-2);
             qDebug() << url;
-            if(url!=""){
+            if(url != ""){
                 ui->tableWidget->hide();
                 player->setMedia(QUrl(url));
                 player->play();
@@ -162,6 +157,7 @@ MainWindow::MainWindow(QWidget *parent) :
     NAM->get(QNetworkRequest(urlAD));
     connect(NAM, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyAD(QNetworkReply*)));
 
+    checkVersion(version);
 }
 
 MainWindow::~MainWindow()
@@ -985,10 +981,10 @@ void MainWindow::sliderProgressReleased()
     player->setPosition(ui->sliderProgress->value());
 }
 
-void MainWindow::audioBufferProbed(QAudioBuffer buffer)
+void MainWindow::checkVersion(QString version)
 {
-    QVector<qreal> levels = Waveform::getBufferLevels(buffer);
-    for (int i = 0; i < levels.count(); ++i) {
-        waveform->updateWave(levels.at(i));
-    }
+    QNetworkAccessManager *NAM = new QNetworkAccessManager;
+    QString urlAD = "http://www.bydauto.com.cn/uploads/image/20170906/1504679624393355.jpg";
+    NAM->get(QNetworkRequest(urlAD));
+    connect(NAM, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyAD(QNetworkReply*)));
 }

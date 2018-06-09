@@ -3,7 +3,6 @@
 
 #include "dialogurl.h"
 #include "ui_dialogurl.h"
-#include "waveform.h"
 #include <QMainWindow>
 #include <QMediaPlayer>
 #include <QMediaPlaylist>
@@ -32,7 +31,7 @@ private:
     void mouseMoveEvent(QMouseEvent*);
     void mouseReleaseEvent(QMouseEvent*);
     void open(QString path);
-    QString filename, STimeDuration;
+    QString filename, STimeDuration, version;
     QMediaPlayer *player;
     QVideoWidget *video;
     QMenu *popmenu;
@@ -53,7 +52,7 @@ private:
     QString SB(qint64 b);
     void scale(float s);
     void setSTime(qint64);
-    Waveform *waveform;
+    void checkVersion(QString version);
 
 private slots:
     void on_action_open_triggered();
@@ -114,7 +113,6 @@ private slots:
     //void sliderProgressValueChanged(int);
     void sliderProgressMoved(int);
     void sliderVolumeMoved(int);
-    void audioBufferProbed(QAudioBuffer buffer);
 };
 
 #endif // MAINWINDOW_H
