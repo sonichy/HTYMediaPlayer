@@ -43,7 +43,7 @@ private:
     QPoint m_point;
     QLabel *labelLogo,*labelTL;
     int widthV,heightV,widtho,heighto,listVisible;
-    bool isListShow;
+    bool isListShow, isManualUpdate;
     void dragEnterEvent(QDragEnterEvent*);
     void dropEvent(QDropEvent*);
     DialogURL *dialogUrl;
@@ -52,7 +52,7 @@ private:
     QString SB(qint64 b);
     void scale(float s);
     void setSTime(qint64);
-    void checkVersion(QString version);
+    QString SBytes(qint64 bytes);
 
 private slots:
     void on_action_open_triggered();
@@ -113,6 +113,10 @@ private slots:
     //void sliderProgressValueChanged(int);
     void sliderProgressMoved(int);
     void sliderVolumeMoved(int);
+    void autoCheckVersion();
+    void manualCheckVersion(bool);
+    void checkVersion(bool);
+    void updateProgress(qint64 bytesReceived, qint64 bytesTotal);
 };
 
 #endif // MAINWINDOW_H

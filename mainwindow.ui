@@ -466,6 +466,7 @@
     </property>
     <addaction name="action_help"/>
     <addaction name="action_changelog"/>
+    <addaction name="action_checkVersion"/>
     <addaction name="action_aboutQt"/>
     <addaction name="action_about"/>
    </widget>
@@ -623,6 +624,11 @@
    </property>
    <property name="text">
     <string>X 2</string>
+   </property>
+  </action>
+  <action name="action_checkVersion">
+   <property name="text">
+    <string>检查更新</string>
    </property>
   </action>
  </widget>
