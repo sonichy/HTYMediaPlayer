@@ -47,7 +47,7 @@ private:
     void dragEnterEvent(QDragEnterEvent*);
     void dropEvent(QDropEvent*);
     DialogURL *dialogUrl;
-    QMediaPlaylist *MPLurl;
+    QMediaPlaylist *MPLurl, *playlist;
     QPixmap pixmapAD;
     QString SB(qint64 b);
     void scale(float s);
@@ -78,6 +78,7 @@ private slots:
     void on_btnSkipB_clicked();
     void on_btnSkipF_clicked();
     void on_btnMute_clicked();
+    void on_pushButton_playbackMode_clicked();
     void on_btnFullscreen_clicked();
     void on_btnList_clicked();
     void durationChange(qint64);
@@ -88,7 +89,7 @@ private slots:
     void EEFullscreen();
     void playPause();
     void keyPressEvent(QKeyEvent*);
-    void contextMenuEvent(QContextMenuEvent*);    
+    void contextMenuEvent(QContextMenuEvent*);
     void playTV(int,int);
     void fillTable(QString);
     void hideWidget();
@@ -99,6 +100,7 @@ private slots:
     void playURL(int,int);
     void MPLCIChange(int);
     void stateChange(QMediaPlayer::State);
+    void mediaStatusChange(QMediaPlayer::MediaStatus status);
     void resizeEvent(QResizeEvent*);
     void replyAD(QNetworkReply*);
     void addHistory(QString url);

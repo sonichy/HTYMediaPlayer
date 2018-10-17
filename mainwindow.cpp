@@ -29,11 +29,18 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->tableWidget->hide();
     move((QApplication::desktop()->width() - width())/2, (QApplication::desktop()->height() - height())/2);
     sr = 1;
     m_bPressed = false;
     version = "1.13";
     isManualUpdate = false;
+    ui->action_open->setIcon(style()->standardIcon(QStyle::SP_DialogOpenButton));
+    ui->action_quit->setIcon(style()->standardIcon(QStyle::SP_DialogCloseButton));
+    ui->action_volumeMute->setIcon(style()->standardIcon(QStyle::SP_MediaVolumeMuted));
+    ui->action_info->setIcon(style()->standardIcon(QStyle::SP_MessageBoxInformation));
+    ui->action_aboutQt->setIcon(style()->standardIcon(QStyle::SP_TitleBarMenuButton));
+    ui->action_about->setIcon(style()->standardIcon(QStyle::SP_DialogHelpButton));
     ui->btnSkipB->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
     ui->btnSeekB->setIcon(style()->standardIcon(QStyle::SP_MediaSeekBackward));
     ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
@@ -72,27 +79,31 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(player,SIGNAL(metaDataChanged()),this,SLOT(metaDataChange()));
     connect(player,SIGNAL(error(QMediaPlayer::Error)),this,SLOT(errorHandle(QMediaPlayer::Error)));
     connect(player,SIGNAL(stateChanged(QMediaPlayer::State)),SLOT(stateChange(QMediaPlayer::State)));
+    connect(player,SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)),SLOT(mediaStatusChange(QMediaPlayer::MediaStatus)));
 
-    connect(new QShortcut(QKeySequence(Qt::Key_O),this), SIGNAL(activated()),this, SLOT(on_action_open_triggered()));
-    connect(new QShortcut(QKeySequence(Qt::Key_U),this), SIGNAL(activated()),this, SLOT(on_action_openURL_triggered()));
-    connect(new QShortcut(QKeySequence(Qt::Key_T),this), SIGNAL(activated()),this, SLOT(on_action_liveList_triggered()));
-    connect(new QShortcut(QKeySequence(Qt::Key_I),this), SIGNAL(activated()),this, SLOT(on_action_liveImport_triggered()));
-    connect(new QShortcut(QKeySequence(Qt::Key_Escape),this), SIGNAL(activated()),this, SLOT(exitFullscreen()));
-    connect(new QShortcut(QKeySequence(Qt::Key_Return),this), SIGNAL(activated()),this, SLOT(EEFullscreen()));
-    connect(new QShortcut(QKeySequence(Qt::Key_Enter),this), SIGNAL(activated()),this, SLOT(EEFullscreen()));
-    connect(new QShortcut(QKeySequence(Qt::Key_Space),this), SIGNAL(activated()),this, SLOT(playPause()));
-    connect(new QShortcut(QKeySequence(Qt::Key_Left),this), SIGNAL(activated()),this, SLOT(on_btnSeekB_clicked()));
-    connect(new QShortcut(QKeySequence(Qt::Key_Right),this), SIGNAL(activated()),this, SLOT(on_btnSeekF_clicked()));
-    connect(new QShortcut(QKeySequence(Qt::Key_P),this), SIGNAL(activated()),this, SLOT(on_action_capture_triggered()));
-    connect(new QShortcut(QKeySequence(Qt::Key_Up),this), SIGNAL(activated()),this, SLOT(on_action_volumeUp_triggered()));
-    connect(new QShortcut(QKeySequence(Qt::Key_Down),this), SIGNAL(activated()),this, SLOT(on_action_volumeDown_triggered()));
-    connect(new QShortcut(QKeySequence(Qt::Key_M),this), SIGNAL(activated()),this, SLOT(on_action_volumeMute_triggered()));
-    connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_I),this), SIGNAL(activated()),this, SLOT(on_action_info_triggered()));
-    connect(new QShortcut(QKeySequence(Qt::Key_1),this), SIGNAL(activated()),this, SLOT(on_action_scale1_triggered()));
-    connect(new QShortcut(QKeySequence(Qt::Key_2),this), SIGNAL(activated()),this, SLOT(on_action_scale2_triggered()));
-    connect(new QShortcut(QKeySequence(Qt::Key_3),this), SIGNAL(activated()),this, SLOT(on_action_scale1_5_triggered()));
-    connect(new QShortcut(QKeySequence(Qt::Key_4),this), SIGNAL(activated()),this, SLOT(on_action_scale0_5_triggered()));
-    connect(new QShortcut(QKeySequence(Qt::Key_5),this), SIGNAL(activated()),this, SLOT(fitDesktop()));
+    playlist = new QMediaPlaylist;
+    player->setPlaylist(playlist);
+
+    connect(new QShortcut(QKeySequence(Qt::Key_O),this), SIGNAL(activated()), this, SLOT(on_action_open_triggered()));
+    connect(new QShortcut(QKeySequence(Qt::Key_U),this), SIGNAL(activated()), this, SLOT(on_action_openURL_triggered()));
+    connect(new QShortcut(QKeySequence(Qt::Key_T),this), SIGNAL(activated()), this, SLOT(on_action_liveList_triggered()));
+    connect(new QShortcut(QKeySequence(Qt::Key_I),this), SIGNAL(activated()), this, SLOT(on_action_liveImport_triggered()));
+    connect(new QShortcut(QKeySequence(Qt::Key_Escape),this), SIGNAL(activated()), this, SLOT(exitFullscreen()));
+    connect(new QShortcut(QKeySequence(Qt::Key_Return),this), SIGNAL(activated()), this, SLOT(EEFullscreen()));
+    connect(new QShortcut(QKeySequence(Qt::Key_Enter),this), SIGNAL(activated()), this, SLOT(EEFullscreen()));
+    connect(new QShortcut(QKeySequence(Qt::Key_Space),this), SIGNAL(activated()), this, SLOT(playPause()));
+    connect(new QShortcut(QKeySequence(Qt::Key_Left),this), SIGNAL(activated()), this, SLOT(on_btnSeekB_clicked()));
+    connect(new QShortcut(QKeySequence(Qt::Key_Right),this), SIGNAL(activated()), this, SLOT(on_btnSeekF_clicked()));
+    connect(new QShortcut(QKeySequence(Qt::Key_P),this), SIGNAL(activated()), this, SLOT(on_action_capture_triggered()));
+    connect(new QShortcut(QKeySequence(Qt::Key_Up),this), SIGNAL(activated()), this, SLOT(on_action_volumeUp_triggered()));
+    connect(new QShortcut(QKeySequence(Qt::Key_Down),this), SIGNAL(activated()), this, SLOT(on_action_volumeDown_triggered()));
+    connect(new QShortcut(QKeySequence(Qt::Key_M),this), SIGNAL(activated()), this, SLOT(on_action_volumeMute_triggered()));
+    connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_I),this), SIGNAL(activated()), this, SLOT(on_action_info_triggered()));
+    connect(new QShortcut(QKeySequence(Qt::Key_1),this), SIGNAL(activated()), this, SLOT(on_action_scale1_triggered()));
+    connect(new QShortcut(QKeySequence(Qt::Key_2),this), SIGNAL(activated()), this, SLOT(on_action_scale2_triggered()));
+    connect(new QShortcut(QKeySequence(Qt::Key_3),this), SIGNAL(activated()), this, SLOT(on_action_scale1_5_triggered()));
+    connect(new QShortcut(QKeySequence(Qt::Key_4),this), SIGNAL(activated()), this, SLOT(on_action_scale0_5_triggered()));
+    connect(new QShortcut(QKeySequence(Qt::Key_5),this), SIGNAL(activated()), this, SLOT(fitDesktop()));
 
     connect(ui->action_checkVersion,SIGNAL(triggered(bool)),this,SLOT(manualCheckVersion(bool)));
     connect(ui->sliderProgress,SIGNAL(sliderPressed()),this,SLOT(sliderProgressPressed()));
@@ -101,10 +112,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->sliderProgress,SIGNAL(sliderMoved(int)),this,SLOT(sliderProgressMoved(int)));
     connect(ui->sliderVolume,SIGNAL(sliderMoved(int)),this,SLOT(sliderVolumeMoved(int)));
 
-    ui->tableWidget->setColumnHidden(1,true);
+    ui->tableWidget->setColumnHidden(1, true);
     ui->tableWidget->setStyleSheet("QTableWidget { color:white; background-color:black; }"
                                    "QTableWidget::item:selected { background-color:#222222; }");
-    connect(ui->tableWidget,SIGNAL(cellClicked(int,int)),this,SLOT(playTV(int,int)));
+    connect(ui->tableWidget, SIGNAL(cellClicked(int,int)), this, SLOT(playTV(int,int)));
     createPopmenu();
 
     widtho = width() - video->width();
@@ -169,10 +180,13 @@ MainWindow::MainWindow(QWidget *parent) :
     MPLurl->setPlaybackMode(QMediaPlaylist::Sequential);
     connect(MPLurl,SIGNAL(currentIndexChanged(int)),this,SLOT(MPLCIChange(int)));
 
-    QNetworkAccessManager *NAM = new QNetworkAccessManager;
-    QString urlAD = "http://www.bydauto.com.cn/uploads/image/20170906/1504679624393355.jpg";
-    NAM->get(QNetworkRequest(urlAD));
-    connect(NAM, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyAD(QNetworkReply*)));
+    player->setMedia(QUrl("http://live.bydauto.com.cn/7d4b5440ce67448289ca611d83081e71/6fd6527c70704bc78532a35df64ba319-5287d2089db37e62345123a1be272f8b.mp4"));
+    player->play();
+
+//    QNetworkAccessManager *NAM = new QNetworkAccessManager;
+//    QString urlAD = "https://cdnmall.bydauto.com.cn/resources/activityReleased/089cb95b-2bed-4726-b7a7-53db0b16d11c/images/qin-pro-index/pc01.jpg";
+//    NAM->get(QNetworkRequest(urlAD));
+//    connect(NAM, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyAD(QNetworkReply*)));
 
     QTimer::singleShot(5000,this,SLOT(autoCheckVersion()));
 }
@@ -203,6 +217,7 @@ void MainWindow::open(QString path)
     addHistory(path);
     ui->tableWidget->hide();
     ui->action_scale1->setChecked(true);
+    playlist->addMedia(QUrl::fromLocalFile(path));
 }
 
 void MainWindow::on_action_openURL_triggered()
@@ -471,6 +486,28 @@ void MainWindow::on_btnSkipF_clicked()
 void MainWindow::on_btnMute_clicked()
 {
     on_action_volumeMute_triggered();
+}
+
+void MainWindow::on_pushButton_playbackMode_clicked()
+{
+    qDebug() << playlist->playbackMode();
+    if(playlist->playbackMode() == QMediaPlaylist::Sequential){
+        ui->pushButton_playbackMode->setIcon(QIcon(":/PlaybackModeCurrentItemInLoop"));
+        ui->pushButton_playbackMode->setToolTip("单曲循环");
+        playlist->setPlaybackMode(QMediaPlaylist::CurrentItemInLoop);
+    }else if(playlist->playbackMode() == QMediaPlaylist::CurrentItemInLoop){
+        ui->pushButton_playbackMode->setIcon(QIcon(":/PlaybackModeLoop"));
+        ui->pushButton_playbackMode->setToolTip("列表循环");
+        playlist->setPlaybackMode(QMediaPlaylist::Loop);
+    }else if(playlist->playbackMode() == QMediaPlaylist::Loop){
+        ui->pushButton_playbackMode->setIcon(QIcon(":/PlaybackModeRandom"));
+        playlist->setPlaybackMode(QMediaPlaylist::Random);
+        ui->pushButton_playbackMode->setToolTip("列表随机");
+    }else if(playlist->playbackMode() == QMediaPlaylist::Random){
+        ui->pushButton_playbackMode->setIcon(QIcon(":/PlaybackModeSequential"));
+        ui->pushButton_playbackMode->setToolTip("顺序播放");
+        playlist->setPlaybackMode(QMediaPlaylist::Sequential);
+    }
 }
 
 void MainWindow::on_action_fullscreen_triggered()
@@ -895,6 +932,16 @@ void MainWindow::stateChange(QMediaPlayer::State state)
     }
 }
 
+void MainWindow::mediaStatusChange(QMediaPlayer::MediaStatus status)
+{
+    qDebug() << status;
+    if (status == QMediaPlayer::EndOfMedia) {
+        if(playlist->playbackMode() == QMediaPlaylist::CurrentItemInLoop){
+            player->play();
+        }
+    }
+}
+
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event);
@@ -904,7 +951,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 void MainWindow::replyAD(QNetworkReply *reply)
 {
     pixmapAD.loadFromData(reply->readAll());
-    labelLogo->setPixmap(pixmapAD.scaled(400,300));
+    labelLogo->setPixmap(pixmapAD.scaled(400,300,Qt::KeepAspectRatio));
     labelLogo->adjustSize();
     labelLogo->move((video->width()-labelLogo->width())/2, (video->height()-labelLogo->height())/2);
 }

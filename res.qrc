@@ -2,5 +2,9 @@
     <qresource prefix="/">
         <file>icon.png</file>
         <file>fullscreen.png</file>
+        <file>PlaybackModeLoop.svg</file>
+        <file>PlaybackModeSequential.svg</file>
+        <file>PlaybackModeCurrentItemInLoop.svg</file>
+        <file>PlaybackModeRandom.svg</file>
     </qresource>
 </RCC>
