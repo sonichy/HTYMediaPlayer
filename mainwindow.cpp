@@ -171,6 +171,9 @@ MainWindow::MainWindow(QWidget *parent) :
                 setWindowTitle(url);
             }
         }
+    }else{
+        player->setMedia(QUrl("http://live.bydauto.com.cn/7d4b5440ce67448289ca611d83081e71/6fd6527c70704bc78532a35df64ba319-5287d2089db37e62345123a1be272f8b.mp4"));
+        player->play();
     }
 
     dialogUrl = new DialogURL(this);
@@ -179,9 +182,6 @@ MainWindow::MainWindow(QWidget *parent) :
     MPLurl = new QMediaPlaylist;
     MPLurl->setPlaybackMode(QMediaPlaylist::Sequential);
     connect(MPLurl,SIGNAL(currentIndexChanged(int)),this,SLOT(MPLCIChange(int)));
-
-    player->setMedia(QUrl("http://live.bydauto.com.cn/7d4b5440ce67448289ca611d83081e71/6fd6527c70704bc78532a35df64ba319-5287d2089db37e62345123a1be272f8b.mp4"));
-    player->play();
 
 //    QNetworkAccessManager *NAM = new QNetworkAccessManager;
 //    QString urlAD = "https://cdnmall.bydauto.com.cn/resources/activityReleased/089cb95b-2bed-4726-b7a7-53db0b16d11c/images/qin-pro-index/pc01.jpg";
