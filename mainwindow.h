@@ -53,6 +53,8 @@ private:
     void scale(float s);
     void setSTime(qint64);
     QString SBytes(qint64 bytes);
+    bool importXSPF(QString fileName);
+    void appandText(QString fileName, QString text);
 
 private slots:
     void on_action_open_triggered();
