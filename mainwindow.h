@@ -86,6 +86,7 @@ private slots:
     void durationChange(qint64);
     void positionChange(qint64);
     void volumeChange(int);
+    void mutedChange(bool muted);
     void enterFullscreen();
     void exitFullscreen();
     void EEFullscreen();

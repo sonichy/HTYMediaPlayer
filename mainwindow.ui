@@ -149,6 +149,9 @@
              <property name="text">
               <string/>
              </property>
+             <property name="icon">
+              <iconset theme="media-skip-backward"/>
+             </property>
              <property name="iconSize">
               <size>
                <width>32</width>
@@ -170,6 +173,9 @@
              </property>
              <property name="text">
               <string/>
+             </property>
+             <property name="icon">
+              <iconset theme="media-seek-backward"/>
              </property>
              <property name="iconSize">
               <size>
@@ -193,6 +199,9 @@
              <property name="text">
               <string/>
              </property>
+             <property name="icon">
+              <iconset theme="media-playback-start"/>
+             </property>
              <property name="iconSize">
               <size>
                <width>32</width>
@@ -214,6 +223,9 @@
              </property>
              <property name="text">
               <string/>
+             </property>
+             <property name="icon">
+              <iconset theme="media-seek-forward"/>
              </property>
              <property name="iconSize">
               <size>
@@ -237,6 +249,9 @@
              <property name="text">
               <string/>
              </property>
+             <property name="icon">
+              <iconset theme="media-skip-forward"/>
+             </property>
              <property name="iconSize">
               <size>
                <width>32</width>
@@ -259,6 +274,9 @@
              <property name="text">
               <string/>
              </property>
+             <property name="icon">
+              <iconset theme="media-playback-stop"/>
+             </property>
              <property name="iconSize">
               <size>
                <width>32</width>
@@ -280,6 +298,9 @@
              </property>
              <property name="text">
               <string/>
+             </property>
+             <property name="icon">
+              <iconset theme="audio-volume-high"/>
              </property>
              <property name="iconSize">
               <size>
@@ -368,14 +389,12 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset>
-               <normalon>:/fullscreen.png</normalon>
-              </iconset>
+              <iconset theme="view-fullscreen"/>
              </property>
              <property name="iconSize">
               <size>
-               <width>20</width>
-               <height>20</height>
+               <width>24</width>
+               <height>24</height>
               </size>
              </property>
             </widget>
@@ -533,11 +552,17 @@
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="action_open">
+   <property name="icon">
+    <iconset theme="document-open"/>
+   </property>
    <property name="text">
     <string>打开</string>
    </property>
   </action>
   <action name="action_quit">
+   <property name="icon">
+    <iconset theme="application-exit"/>
+   </property>
    <property name="text">
     <string>退出</string>
    </property>
@@ -556,6 +581,9 @@
    </property>
   </action>
   <action name="action_about">
+   <property name="icon">
+    <iconset theme="help-about"/>
+   </property>
    <property name="text">
     <string>关于</string>
    </property>
@@ -571,6 +599,9 @@
    </property>
   </action>
   <action name="action_volumeMute">
+   <property name="icon">
+    <iconset theme="audio-volume-muted"/>
+   </property>
    <property name="text">
     <string>静音</string>
    </property>
@@ -606,6 +637,9 @@
    </property>
   </action>
   <action name="action_help">
+   <property name="icon">
+    <iconset theme="help-contents"/>
+   </property>
    <property name="text">
     <string>帮助</string>
    </property>
@@ -614,6 +648,9 @@
    </property>
   </action>
   <action name="action_info">
+   <property name="icon">
+    <iconset theme="dialog-information"/>
+   </property>
    <property name="text">
     <string>信息</string>
    </property>

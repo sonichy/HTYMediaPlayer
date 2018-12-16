@@ -36,19 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_bPressed = false;
     version = "1.14";
     isManualUpdate = false;
-    ui->action_open->setIcon(style()->standardIcon(QStyle::SP_DialogOpenButton));
-    ui->action_quit->setIcon(style()->standardIcon(QStyle::SP_DialogCloseButton));
-    ui->action_volumeMute->setIcon(style()->standardIcon(QStyle::SP_MediaVolumeMuted));
-    ui->action_info->setIcon(style()->standardIcon(QStyle::SP_MessageBoxInformation));
     ui->action_aboutQt->setIcon(style()->standardIcon(QStyle::SP_TitleBarMenuButton));
-    ui->action_about->setIcon(style()->standardIcon(QStyle::SP_DialogHelpButton));
-    ui->btnSkipB->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
-    ui->btnSeekB->setIcon(style()->standardIcon(QStyle::SP_MediaSeekBackward));
-    ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
-    ui->btnSkipF->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
-    ui->btnSeekF->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward));
-    ui->btnStop->setIcon(style()->standardIcon(QStyle::SP_MediaStop));
-    ui->btnMute->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
 
     QActionGroup *actionGroupScale = new QActionGroup(this);
     actionGroupScale->addAction(ui->action_scale0_5);
@@ -77,6 +65,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(player,SIGNAL(durationChanged(qint64)),this,SLOT(durationChange(qint64)));
     connect(player,SIGNAL(positionChanged(qint64)),this,SLOT(positionChange(qint64)));
     connect(player,SIGNAL(volumeChanged(int)),this,SLOT(volumeChange(int)));
+    connect(player,SIGNAL(mutedChanged(bool)),this,SLOT(mutedChange(bool)));
     connect(player,SIGNAL(metaDataChanged()),this,SLOT(metaDataChange()));
     connect(player,SIGNAL(error(QMediaPlayer::Error)),this,SLOT(errorHandle(QMediaPlayer::Error)));
     connect(player,SIGNAL(stateChanged(QMediaPlayer::State)),SLOT(stateChange(QMediaPlayer::State)));
@@ -377,11 +366,13 @@ void MainWindow::on_action_info_triggered()
 
 void MainWindow::on_action_volumeUp_triggered()
 {
+    player->setMuted(false);
     player->setVolume(player->volume()+1);
 }
 
 void MainWindow::on_action_volumeDown_triggered()
 {
+    player->setMuted(false);
     player->setVolume(player->volume()-1);
 }
 
@@ -389,15 +380,8 @@ void MainWindow::on_action_volumeMute_triggered()
 {
     if(player->isMuted()){
         player->setMuted(false);
-        ui->sliderVolume->setValue(volume);
-        //ui->btnMute->setIcon(QIcon("volume-high.png"));
-        ui->btnMute->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
     }else{
-        volume=player->volume();
         player->setMuted(true);
-        ui->sliderVolume->setValue(0);
-        //ui->btnMute->setIcon(QIcon("volume-muted.png"));
-        ui->btnMute->setIcon(style()->standardIcon(QStyle::SP_MediaVolumeMuted));
     }
 }
 
@@ -601,16 +585,35 @@ void MainWindow::volumeChange(int v)
     //labelTL->adjustSize();
     //labelTL->show();
     //QTimer::singleShot(3000,labelTL,SLOT(hide()));
+    if(v==0){
+        ui->btnMute->setIcon(QIcon::fromTheme("audio-volume-muted"));
+    }else if(v<33){
+        ui->btnMute->setIcon(QIcon::fromTheme("audio-volume-low"));
+    }else if(v<66){
+        ui->btnMute->setIcon(QIcon::fromTheme("audio-volume-medium"));
+    }else{
+        ui->btnMute->setIcon(QIcon::fromTheme("audio-volume-high"));
+    }
+}
+
+void MainWindow::mutedChange(bool muted)
+{
+    if(muted){
+        ui->btnMute->setIcon(QIcon::fromTheme("audio-volume-muted"));
+        ui->sliderVolume->setValue(0);
+    }else{
+        volumeChange(player->volume());
+    }
 }
 
 void MainWindow::playPause()
 {
     //qDebug() << "state=" << player->state();
-    if(player->state()==QMediaPlayer::PlayingState){
+    if(player->state() == QMediaPlayer::PlayingState){
         player->pause();
-    }else if(player->state()==QMediaPlayer::PausedState){
+    }else if(player->state() == QMediaPlayer::PausedState){
         player->play();
-    }else if(player->state()==QMediaPlayer::StoppedState){
+    }else if(player->state() == QMediaPlayer::StoppedState){
         player->play();
     }
 }
@@ -935,12 +938,12 @@ void MainWindow::stateChange(QMediaPlayer::State state)
     qDebug() << state;
     if (state == QMediaPlayer::PlayingState) {
         labelLogo->hide();
-        ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
+        ui->btnPlay->setIcon(QIcon::fromTheme("media-playback-pause"));
     } else if (state == QMediaPlayer::PausedState) {
-        ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+        ui->btnPlay->setIcon(QIcon::fromTheme("media-playback-start"));
     } else if (state == QMediaPlayer::StoppedState) {
         labelLogo->show();
-        ui->btnPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+        ui->btnPlay->setIcon(QIcon::fromTheme("media-playback-start"));
     }
 }
 
