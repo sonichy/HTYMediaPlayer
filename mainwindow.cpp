@@ -118,7 +118,7 @@ MainWindow::MainWindow(QWidget *parent) :
     for(int i=0; i< SL_args.length(); i++){
         log += SL_args.at(i) + " ";
     }
-    if(SL_args.length()>1){
+    if(SL_args.length() > 1){
         filename = SL_args.at(1);
         if(!filename.contains("chrome-extension://")){
             if(filename.startsWith("file://")){
@@ -161,8 +161,10 @@ MainWindow::MainWindow(QWidget *parent) :
             }
         }
     }else{
-        fillTable("tv.m3u8");
-        player->setMedia(QUrl("http://live.bydauto.com.cn/7d4b5440ce67448289ca611d83081e71/6fd6527c70704bc78532a35df64ba319-5287d2089db37e62345123a1be272f8b.mp4"));
+        //fillTable("tv.m3u8");
+        fillTable("tv.txt");
+        //player->setMedia(QUrl("http://live.bydauto.com.cn/7d4b5440ce67448289ca611d83081e71/6fd6527c70704bc78532a35df64ba319-5287d2089db37e62345123a1be272f8b.mp4"));
+        player->setMedia(QUrl("https://qiniu-xpc0.xpccdn.com/5cb980b78c6c0.mp4"));
         player->play();
     }
 
@@ -1092,9 +1094,9 @@ void MainWindow::checkVersion(bool b)
     QByteArray BA = reply->readAll();
     qDebug() << surl ;
     qDebug() << BA;
-    QStringList SLS = QString(BA).split(".");
-    QStringList SLL = version.split(".");
-    if((SLS.at(0) > SLL.at(0)) || (SLS.at(0) == SLL.at(0) && SLS.at(1) > SLL.at(1))){
+    QStringList SLVN = QString(BA).split(".");
+    QStringList SLV = version.split(".");
+    if((SLVN.at(0) > SLV.at(0)) || (SLVN.at(0) == SLV.at(0) && SLVN.at(1) > SLV.at(1))){
         QMessageBox::StandardButton SB = QMessageBox::question(NULL, "海天鹰播放器 更新", "检查到有更新，是否从 " + version + " 升级到 " + BA + " ?", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
         if(SB == QMessageBox::Yes){
             surl = "https://codeload.github.com/sonichy/HTYMediaPlayer/zip/master";

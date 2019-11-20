@@ -15,7 +15,8 @@ CCTV-13,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv13&clie
 CCTV-14,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv14&client=iosapp
 CCTV-15,http://vdn.live.cntv.cn/api2/live.do?channel=pa://cctv_p2p_hdcctv15&client=iosapp
 卫视
-湖南卫视,http://apiv1.starschina.com/cms/v1.0/stream?app_key=xdThhy2239daax&app_version=7.4.11&id=179&installation_id=1709271813429913&os_type=1
+湖南卫视HD,http://ivi.bupt.edu.cn/hls/hunanhd.m3u8
+湖南卫视,http://ivi.bupt.edu.cn/hls/hunantv.m3u8
 湖北卫视,http://apiv1.starschina.com/cms/v1.0/stream?app_key=xdThhy2239daax&app_version=7.4.11&id=171&installation_id=1709271813429913&os_type=1
 广东卫视,http://apiv1.starschina.com/cms/v1.0/stream?app_key=xdThhy2239daax&app_version=7.4.11&id=180&installation_id=1709271813429913&os_type=1
 广西卫视,http://wscdn.hls.video.qq.com/100104000.m3u8?cdn=wangsu&sdtfrom=v10132&platform=10103&butype=1&scheduleflag=1&HLSP2P=1&buname=qqlive&vkey=3B15CF66FAEF1F812DBB1412DEFD1AF492D4698C0E7E142A13171AB20CF792A66ED1BB4610E6BDE67D1188BA2A82476799B1EAF32204F5F6C75655343E34D6B62AD3FC5A3211E910D9D31BDDB139EE5364FBB5C8B16288C7
