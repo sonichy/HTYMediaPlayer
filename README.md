@@ -31,6 +31,8 @@ sudo apt-get install qtmultimedia5-dev
 * 快捷键失效：  
 鼠标移动到窗口非视频区域激活，全屏下鼠标移动到进度条上激活。
 
+### 找不到‘video/mpegts, systemstream=(boolean)true, packetsize=(int)188’类型可用的解码器
+
 ### 有声音无视频:  
 #### Linux
 * 报 va 相关错误  
@@ -38,9 +40,9 @@ sudo apt-get install qtmultimedia5-dev
 解决：sudo apt-get remove gstreamer1.0-vaapi  
 感谢：liujianfeng@deepin.org
 * 不报错  
-sudo apt-get install gst123  
-下列【新】软件包将被安装：  
-gst123 gstreamer1.0-pulseaudio gstreamer1.0-x  
+    sudo apt-get install gst123  
+    下列【新】软件包将被安装：  
+    gst123 gstreamer1.0-pulseaudio gstreamer1.0-x  
 
 #### Windows
 * 安装 LAV Filters 解码解决。

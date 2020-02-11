@@ -35,7 +35,7 @@ private:
     QMediaPlayer *player;
     QVideoWidget *video;
     QMenu *popmenu;
-    QAction *PMAPlay,*PMAFullscreen,*PMACapture;
+    QAction *PMAPlay, *PMAFullscreen, *PMACapture, *PMAInfo;
     QTableWidget *table;
     int volume;
     bool m_bPressed;
