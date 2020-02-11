@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
     move((QApplication::desktop()->width() - width())/2, (QApplication::desktop()->height() - height())/2);
     sr = 1;
     m_bPressed = false;
-    version = "1.15";
+    version = "1.16";
     isManualUpdate = false;
     ui->action_aboutQt->setIcon(style()->standardIcon(QStyle::SP_TitleBarMenuButton));
 
