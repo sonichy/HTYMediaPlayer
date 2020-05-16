@@ -32,10 +32,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->tableWidget->hide();
     move((QApplication::desktop()->width() - width())/2, (QApplication::desktop()->height() - height())/2);
-    sr = 1;
-    m_bPressed = false;
-    version = "1.16";
-    isManualUpdate = false;
     ui->action_aboutQt->setIcon(style()->standardIcon(QStyle::SP_TitleBarMenuButton));
 
     QActionGroup *actionGroupScale = new QActionGroup(this);
@@ -44,32 +40,29 @@ MainWindow::MainWindow(QWidget *parent) :
     actionGroupScale->addAction(ui->action_scale1_5);
     actionGroupScale->addAction(ui->action_scale2);
 
-    video = new QVideoWidget;
-    video->setStyleSheet("background:black;");
-    ui->vbox->addWidget(video);
-    video->setMouseTracking(true);
-    video->show();
-
-    //labelTL = new QLabel(this);
-    //labelTL->move(50,50);
-    //labelTL->setStyleSheet("font-size:20px; color:white;");
-
-    labelLogo = new QLabel(this);
-    labelLogo->setPixmap(QPixmap(":/icon.png"));
-    labelLogo->adjustSize();
-    labelLogo->show();
+    scene = new QGraphicsScene;
+    scene->setBackgroundBrush(Qt::black);
+    GVI = new QGraphicsVideoItem;
+    scene->addItem(GVI);
+    GTI = new QGraphicsTextItem;
+    GTI->setDefaultTextColor(Qt::white);
+    QFont font = this->font();
+    font.setPixelSize(20);
+    GTI->setFont(font);
+    scene->addItem(GTI);
+    ui->graphicsView->setScene(scene);
 
     player = new QMediaPlayer;
     player->setVolume(100);
-    player->setVideoOutput(video);
-    connect(player,SIGNAL(durationChanged(qint64)),this,SLOT(durationChange(qint64)));
-    connect(player,SIGNAL(positionChanged(qint64)),this,SLOT(positionChange(qint64)));
-    connect(player,SIGNAL(volumeChanged(int)),this,SLOT(volumeChange(int)));
-    connect(player,SIGNAL(mutedChanged(bool)),this,SLOT(mutedChange(bool)));
-    connect(player,SIGNAL(metaDataChanged()),this,SLOT(metaDataChange()));
-    connect(player,SIGNAL(error(QMediaPlayer::Error)),this,SLOT(errorHandle(QMediaPlayer::Error)));
-    connect(player,SIGNAL(stateChanged(QMediaPlayer::State)),SLOT(stateChange(QMediaPlayer::State)));
-    connect(player,SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)),SLOT(mediaStatusChange(QMediaPlayer::MediaStatus)));
+    player->setVideoOutput(GVI);
+    connect(player, SIGNAL(durationChanged(qint64)), this, SLOT(durationChange(qint64)));
+    connect(player, SIGNAL(positionChanged(qint64)), this, SLOT(positionChange(qint64)));
+    connect(player, SIGNAL(volumeChanged(int)), this, SLOT(volumeChange(int)));
+    connect(player, SIGNAL(mutedChanged(bool)), this, SLOT(mutedChange(bool)));
+    connect(player, SIGNAL(metaDataChanged()), this, SLOT(metaDataChange()));
+    connect(player, SIGNAL(error(QMediaPlayer::Error)), this, SLOT(errorHandle(QMediaPlayer::Error)));
+    connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(stateChange(QMediaPlayer::State)));
+    connect(player, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), SLOT(mediaStatusChange(QMediaPlayer::MediaStatus)));
 
     playlist = new QMediaPlaylist;
     player->setPlaylist(playlist);
@@ -95,22 +88,17 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(new QShortcut(QKeySequence(Qt::Key_4),this), SIGNAL(activated()), this, SLOT(on_action_scale0_5_triggered()));
     connect(new QShortcut(QKeySequence(Qt::Key_5),this), SIGNAL(activated()), this, SLOT(fitDesktop()));
 
-    connect(ui->action_checkVersion,SIGNAL(triggered(bool)),this,SLOT(manualCheckVersion(bool)));
-    connect(ui->sliderProgress,SIGNAL(sliderPressed()),this,SLOT(sliderProgressPressed()));
-    connect(ui->sliderProgress,SIGNAL(sliderReleased()),this,SLOT(sliderProgressReleased()));
-    //connect(ui->sliderProgress,SIGNAL(valueChanged(int)),this,SLOT(sliderProgressValueChanged(int)));
-    connect(ui->sliderProgress,SIGNAL(sliderMoved(int)),this,SLOT(sliderProgressMoved(int)));
-    connect(ui->sliderVolume,SIGNAL(sliderMoved(int)),this,SLOT(sliderVolumeMoved(int)));
+    connect(ui->action_checkVersion, SIGNAL(triggered(bool)), this, SLOT(manualCheckVersion(bool)));
+    connect(ui->sliderProgress, SIGNAL(sliderReleased()), this, SLOT(sliderProgressReleased()));
+    //connect(ui->sliderProgress,SIGNAL(valueChanged(int)), this, SLOT(sliderProgressValueChanged(int)));
+    connect(ui->sliderProgress, SIGNAL(sliderMoved(int)), this, SLOT(sliderProgressMoved(int)));
+    connect(ui->sliderVolume, SIGNAL(sliderMoved(int)), this, SLOT(sliderVolumeMoved(int)));
 
     ui->tableWidget->setColumnHidden(1, true);
     ui->tableWidget->setStyleSheet("QTableWidget { color:white; background-color:black; }"
                                    "QTableWidget::item:selected { background-color:#222222; }");
     connect(ui->tableWidget, SIGNAL(cellClicked(int,int)), this, SLOT(playTV(int,int)));
     createPopmenu();
-
-    widtho = width() - video->width();
-    heighto = height() - video->height();
-    qDebug() << widtho << heighto;
 
     QStringList SL_args = QApplication::arguments();
     qDebug() << SL_args;
@@ -163,9 +151,6 @@ MainWindow::MainWindow(QWidget *parent) :
     }else{
         //fillTable("tv.m3u8");
         fillTable("tv.txt");
-        //player->setMedia(QUrl("http://live.bydauto.com.cn/7d4b5440ce67448289ca611d83081e71/6fd6527c70704bc78532a35df64ba319-5287d2089db37e62345123a1be272f8b.mp4"));
-        player->setMedia(QUrl("https://qiniu-xpc0.xpccdn.com/5cb980b78c6c0.mp4"));
-        player->play();
     }
 
     dialogUrl = new DialogURL(this);
@@ -175,12 +160,7 @@ MainWindow::MainWindow(QWidget *parent) :
     MPLurl->setPlaybackMode(QMediaPlaylist::Sequential);
     connect(MPLurl,SIGNAL(currentIndexChanged(int)),this,SLOT(MPLCIChange(int)));
 
-    //    QNetworkAccessManager *NAM = new QNetworkAccessManager;
-    //    QString urlAD = "https://cdnmall.bydauto.com.cn/resources/activityReleased/089cb95b-2bed-4726-b7a7-53db0b16d11c/images/qin-pro-index/pc01.jpg";
-    //    NAM->get(QNetworkRequest(urlAD));
-    //    connect(NAM, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyAD(QNetworkReply*)));
-
-    QTimer::singleShot(5000,this,SLOT(autoCheckVersion()));
+    QTimer::singleShot(5000, this, SLOT(autoCheckVersion()));
 }
 
 MainWindow::~MainWindow()
@@ -260,20 +240,15 @@ void MainWindow::on_action_quit_triggered()
 
 void MainWindow::on_action_capture_triggered()
 {
-    //if(isFullScreen()){ui->sliderProgress->hide();}
-    //QEventLoop eventloop;
-    //QTimer::singleShot(500, &eventloop, SLOT(quit()));
-    //eventloop.exec();
-    //QDateTime now = QDateTime::currentDateTime();
-    //QString path = QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).first() + "/" + now.toString("yyyyMMddHHmmss")+".jpg";
     QTime t(0,0,0);
     t = t.addMSecs(player->position());
     QString STime = t.toString("HHmmss");
     QString path = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + QFileInfo(player->currentMedia().canonicalUrl().toString()).baseName() + STime + ".jpg";
-    QPixmap pixmap = QGuiApplication::primaryScreen()->grabWindow(0,video->mapToGlobal(video->pos()).x(),video->mapToGlobal(video->pos()).y(),video->width()-1,video->height()-1);
-    pixmap.save(path,0,100);
+    QImage image(scene->sceneRect().size().toSize(), QImage::Format_ARGB32);
+    QPainter painter(&image);
+    scene->render(&painter);
+    image.save(path);
     ui->statusBar->showMessage("截图 " + path);
-    //if(isFullScreen()){ui->sliderProgress->show();}
 }
 
 QString MainWindow::SB(qint64 b)
@@ -297,33 +272,33 @@ QString MainWindow::SB(qint64 b)
 
 void MainWindow::on_action_capture16_triggered()
 {
-    QEventLoop eventloop;
-    QTimer::singleShot(500, &eventloop, SLOT(quit()));
-    eventloop.exec();
     QPixmap pixc[16];
     player->pause();
     player->setMuted(true);
-    QPixmap pixDS = QPixmap(1280 + 50, 960 + 80 + 40);
+    QPixmap pixDS(1280 + 50, 960 + 80 + 40);
     pixDS.fill(Qt::white);
     int k = 0;
     QPainter painter(&pixDS);
-    painter.drawPixmap(20,10,QPixmap("icon.png").scaled(60,60));
-    painter.drawText(300,30,"文件名称：" + QFileInfo(filename).fileName());
-    painter.drawText(300,60,"文件大小：" + SB(QFileInfo(filename).size()));
-    painter.drawText(500,60,"视频尺寸：" + QString::number(widthV) + " X " + QString::number(heightV));
-    //    QTime t(0,0,0);
-    //    t = t.addMSecs(player->duration());
-    //    QString STimeDuration = t.toString("hh:mm:ss");
-    painter.drawText(700,60,"视频时长：" + STimeDuration);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.drawPixmap(20, 10, QPixmap(":/icon.png").scaled(60,60));
+    painter.drawText(300, 30, "文件名称：" + QFileInfo(filename).fileName());
+    painter.drawText(300, 60, "文件大小：" + SB(QFileInfo(filename).size()));
+    painter.drawText(500, 60, "视频尺寸：" + QString::number(widthV) + " X " + QString::number(heightV));
+    painter.drawText(700, 60, "视频时长：" + STimeDuration);
     for(qint64 i=player->duration()/16; i<player->duration(); i+=player->duration()/16){
         player->setPosition(i);
-        pixc[k] = QGuiApplication::primaryScreen()->grabWindow(0,video->mapToGlobal(video->pos()).x(),video->mapToGlobal(video->pos()).y(),video->width(),video->height()).scaled(320,240);
+        //        pixc[k] = QGuiApplication::primaryScreen()->grabWindow(0,video->mapToGlobal(video->pos()).x(),video->mapToGlobal(video->pos()).y(),video->width(),video->height()).scaled(320,240);
+        QPixmap pixmap(scene->sceneRect().size().width(), scene->sceneRect().size().height());
+        QPainter painter1(&pixmap);
+        scene->render(&painter1);
+        pixc[k] = pixmap.scaled(320, 240, Qt::KeepAspectRatio);
         QTime t(0,0,0);
         t = t.addMSecs(player->position());
         QString STimeElapse = t.toString("hh:mm:ss");
-        QPainter painter(&pixc[k]);
-        painter.setPen(QPen(Qt::white));
-        painter.drawText(270,235,STimeElapse);
+        QPainter painter2(&pixc[k]);
+        painter2.setPen(QPen(Qt::white));
+        //painter2.drawText(270, 235, STimeElapse);
+        painter2.drawText(pixc[k].width()-60, pixc[k].height()-10, STimeElapse);
         QEventLoop eventloop;
         QTimer::singleShot(500, &eventloop, SLOT(quit()));
         eventloop.exec();
@@ -332,13 +307,15 @@ void MainWindow::on_action_capture16_triggered()
     k = 0;
     for(int y=0; y<4; y++){
         for(int x=0; x<4; x++){
-            painter.drawPixmap(x*(320+10)+10, y*(240+10)+80,pixc[k]);
+            painter.drawPixmap(x*(320+10)+10, y*(240+10)+80, pixc[k]);
             k++;
         }
     }
-    QFont font("Arial",20,QFont::Normal,false);
+    //QFont font("Arial",20,QFont::Normal,false);
+    QFont font = this->font();
+    font.setPointSize(20);
     painter.setFont(font);
-    painter.drawText(100,50,"海天鹰播放器");
+    painter.drawText(100, 50, "海天鹰播放器");
     QString path = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/Summary_" + QFileInfo(filename).baseName() + ".jpg";
     pixDS.save(path,0,100);
     player->play();
@@ -372,13 +349,21 @@ void MainWindow::on_action_info_triggered()
 void MainWindow::on_action_volumeUp_triggered()
 {
     player->setMuted(false);
-    player->setVolume(player->volume()+1);
+    if (player->volume() == 100) {
+        showMessage("音量：100");
+    } else {
+        player->setVolume(player->volume()+1);
+    }
 }
 
 void MainWindow::on_action_volumeDown_triggered()
 {
     player->setMuted(false);
-    player->setVolume(player->volume()-1);
+    if (player->volume() == 0) {
+        showMessage("音量：0");
+    } else {
+        player->setVolume(player->volume()-1);
+    }
 }
 
 void MainWindow::on_action_volumeMute_triggered()
@@ -399,7 +384,7 @@ void MainWindow::on_action_help_triggered()
 
 void MainWindow::on_action_changelog_triggered()
 {
-    QString s = "1.16\n(2020-02)\n右键菜单增加快捷键，右键菜单增加视频信息。\n\n1.15\n(2019-01)\n截图文件名改为：媒体文件名+当前进度时间。\n\n1.14\n(2018-12)\n支持打开xspf列表。\n\n1.13\n(2018-09)\n增加：写日志。\n修复Qt5.10按钮黑色背景。\n\n1.12\n(2018-06)\n增加：自动更新和手动更新。\n改动：历史记录限制到20条。\n\n1.11\n(2018-05)\n修复：从右键打开方式无法打开文件。\n(2018-04)\n修复：视频分辨率为0X0时，缩放出错。\n\n1.10\n(2018-03)\n修复：拖动进度条时，进度条被拉回的问题。\n修复：从历史记录打开视频没有修改文件名，导致剧情连拍文件名错误。\n修复：增加从Chrome扩展打开后，调试时窗口无法启动和从外部程序启动打开文件中断。\n\n1.9\n(2018-01)\n打开URL时自动粘贴剪贴板文字。\n\n1.8\n(2017-12)\n文件信息增加文件大小。\n增加视频缩放。\n\n1.7\n(2017-11)\n增加对直播API的解析，换鼠标拖动代码更平滑，增加windows版编译图标。\n(2017-10)\n增加历史记录。\n增加接收Chrome扩展传来的直播网址。\n修复m_bPressed没有初始化引起鼠标移动界面移动的Bug，音频封面Windows调试，取消会引起窗口宽度变化的关闭直播列表缩小窗宽，感谢Snail1991。\n如果播放的音乐有封面则显示。\n(2017-09)\n启动、暂停、停止显示广告。\n解决网络视频媒体信息频繁变更引起界面多余的缩放动作。\n\n1.6\n(2017-09)\n增加解析分号分隔的网络媒体字符串到播放列表。\n遍历媒体信息。\n\n1.5\n(2017-09)\n增加显示错误信息。\n(2017-08-20)\n增加拖放打开文件。\n\n1.4\n(2017-06)\n更新日志太长，消息框改成带滚动条的文本框。\n打开本地文件，自动隐藏直播列表。\n(2017-05)\n系统升级后出现有声音无视频，根据 https://bugreports.qt.io/browse/QTBUG-23761，卸载 sudo apt-get remove gstreamer1.0-vaapi 修复。\n\n1.3 (2017-04)\n记忆全屏前直播列表是否显示，以便退出全屏后恢复。\n直播列表做进主窗体内并支持显隐。\n\n1.2 (2017-03)\n增加打开方式打开文件。\n右键增加截图菜单。\n增加剧情连拍。\n增加截图。\n\n1.1 (2017-03)\n窗口标题增加台号。\n (2017-02)\n合并导入重复代码。\n加入逗号判断，解决导入崩溃。\n增加导入直播列表菜单。\n上一个、下一个按钮换台。\n增加直播列表。\n\n1.0 (2017-02)\n静音修改图标和拖动条。\n增加快进、快退。\n增加时间。\n修复拖动进度条卡顿BUG。\n全屏修改进度条样式。\n实现全屏。\n增加视频控件。\n增加控制栏。";
+    QString s = "2.0\n(2020-02)\n使用 QGraphicsVideoItem 代替 QVideoWidget，以便实现视频旋转和镜像。\n参考：https://github.com/mgardner99/490/blob/master/mainwindow.cpp。\n\n1.16\n(2020-02)\n右键菜单增加快捷键，右键菜单增加视频信息。\n\n1.15\n(2019-01)\n截图文件名改为：媒体文件名+当前进度时间。\n\n1.14\n(2018-12)\n支持打开xspf列表。\n\n1.13\n(2018-09)\n增加：写日志。\n修复Qt5.10按钮黑色背景。\n\n1.12\n(2018-06)\n增加：自动更新和手动更新。\n改动：历史记录限制到20条。\n\n1.11\n(2018-05)\n修复：从右键打开方式无法打开文件。\n(2018-04)\n修复：视频分辨率为0X0时，缩放出错。\n\n1.10\n(2018-03)\n修复：拖动进度条时，进度条被拉回的问题。\n修复：从历史记录打开视频没有修改文件名，导致剧情连拍文件名错误。\n修复：增加从Chrome扩展打开后，调试时窗口无法启动和从外部程序启动打开文件中断。\n\n1.9\n(2018-01)\n打开URL时自动粘贴剪贴板文字。\n\n1.8\n(2017-12)\n文件信息增加文件大小。\n增加视频缩放。\n\n1.7\n(2017-11)\n增加对直播API的解析，换鼠标拖动代码更平滑，增加windows版编译图标。\n(2017-10)\n增加历史记录。\n增加接收Chrome扩展传来的直播网址。\n修复m_bPressed没有初始化引起鼠标移动界面移动的Bug，音频封面Windows调试，取消会引起窗口宽度变化的关闭直播列表缩小窗宽，感谢Snail1991。\n如果播放的音乐有封面则显示。\n(2017-09)\n启动、暂停、停止显示广告。\n解决网络视频媒体信息频繁变更引起界面多余的缩放动作。\n\n1.6\n(2017-09)\n增加解析分号分隔的网络媒体字符串到播放列表。\n遍历媒体信息。\n\n1.5\n(2017-09)\n增加显示错误信息。\n(2017-08-20)\n增加拖放打开文件。\n\n1.4\n(2017-06)\n更新日志太长，消息框改成带滚动条的文本框。\n打开本地文件，自动隐藏直播列表。\n(2017-05)\n系统升级后出现有声音无视频，根据 https://bugreports.qt.io/browse/QTBUG-23761，卸载 sudo apt-get remove gstreamer1.0-vaapi 修复。\n\n1.3 (2017-04)\n记忆全屏前直播列表是否显示，以便退出全屏后恢复。\n直播列表做进主窗体内并支持显隐。\n\n1.2 (2017-03)\n增加打开方式打开文件。\n右键增加截图菜单。\n增加剧情连拍。\n增加截图。\n\n1.1 (2017-03)\n窗口标题增加台号。\n (2017-02)\n合并导入重复代码。\n加入逗号判断，解决导入崩溃。\n增加导入直播列表菜单。\n上一个、下一个按钮换台。\n增加直播列表。\n\n1.0 (2017-02)\n静音修改图标和拖动条。\n增加快进、快退。\n增加时间。\n修复拖动进度条卡顿BUG。\n全屏修改进度条样式。\n实现全屏。\n增加视频控件。\n增加控制栏。";
     QDialog *dialog = new QDialog;
     dialog->setWindowIcon(QIcon(":/icon.png"));
     dialog->setWindowTitle("更新历史");
@@ -430,7 +415,7 @@ void MainWindow::on_action_aboutQt_triggered()
 
 void MainWindow::on_action_about_triggered()
 {
-    QMessageBox aboutMB(QMessageBox::NoIcon, "关于", "海天鹰媒体播放器 1.16\n一款基于 Qt5 的媒体播放器。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：https://github.com/sonichy\n致谢：\n播放列表：http://blog.sina.com.cn/s/blog_74a7e56e0101agit.html\n获取媒体信息：https://www.zhihu.com/question/36859497");
+    QMessageBox aboutMB(QMessageBox::NoIcon, "关于", "海天鹰媒体播放器 2.0\n一款基于 Qt5 的媒体播放器。\n作者：海天鹰\nE-mail: sonichy@163.com\n主页：https://github.com/sonichy\n致谢：\n播放列表：http://blog.sina.com.cn/s/blog_74a7e56e0101agit.html\n获取媒体信息：https://www.zhihu.com/question/36859497");
     aboutMB.setIconPixmap(QPixmap(":/icon.png"));
     aboutMB.exec();
 }
@@ -443,7 +428,6 @@ void MainWindow::on_btnPlay_clicked()
 void MainWindow::on_btnStop_clicked()
 {
     player->stop();
-    //labelLogo->show();
 }
 
 void MainWindow::on_btnSeekB_clicked()
@@ -527,7 +511,7 @@ void MainWindow::enterFullscreen()
     if (isListShow) ui->tableWidget->setVisible(false);
     ui->verticalLayout_2->setMargin(0);
     ui->centralWidget->setStyleSheet("background-color:black;");
-    //labelLogo->move((video->width()-labelLogo->width())/2, (video->height()-labelLogo->height())/2);
+    fitDesktop();
 }
 
 void MainWindow::exitFullscreen()
@@ -542,8 +526,9 @@ void MainWindow::exitFullscreen()
     PMAFullscreen->setText("全屏&F");
     ui->verticalLayout_2->setMargin(1);
     ui->centralWidget->setStyleSheet("");
-    if(isListShow)ui->tableWidget->setVisible(isListShow);
-    //labelLogo->move((video->width()-labelLogo->width())/2, (video->height()-labelLogo->height())/2);
+    if (isListShow)
+        ui->tableWidget->setVisible(isListShow);
+    scale(sr);
 }
 
 void MainWindow::EEFullscreen()
@@ -586,10 +571,7 @@ void MainWindow::volumeChange(int v)
 {
     ui->sliderVolume->setValue(v);
     ui->sliderVolume->setToolTip(QString::number(v));
-    //labelTL->setText("音量：" + QString::number(v));
-    //labelTL->adjustSize();
-    //labelTL->show();
-    //QTimer::singleShot(3000,labelTL,SLOT(hide()));
+    showMessage("音量：" + QString::number(v));
     if(v==0){
         ui->btnMute->setIcon(QIcon::fromTheme("audio-volume-muted"));
     }else if(v<33){
@@ -647,11 +629,49 @@ void MainWindow::createPopmenu()
     connect(PMAFullscreen, SIGNAL(triggered()), this, SLOT(EEFullscreen()));
     connect(PMACapture, SIGNAL(triggered()), this, SLOT(on_action_capture_triggered()));
     connect(PMAInfo, SIGNAL(triggered()), this, SLOT(on_action_info_triggered()));
+
+    QAction *action_rotate = new QAction("旋转镜像", this);
+    popmenu->addAction(action_rotate);
+    QMenu *menu = new QMenu;
+    QAction *action_rotate_ccw = new QAction("逆时针旋转", this);
+    menu->addAction(action_rotate_ccw);
+    QAction *action_rotate_cw = new QAction("顺时针旋转", this);
+    menu->addAction(action_rotate_cw);
+    QAction *action_mirror_horizontal = new QAction("水平镜像", this);
+    menu->addAction(action_mirror_horizontal);
+    QAction *action_mirror_vertical = new QAction("垂直镜像", this);
+    menu->addAction(action_mirror_vertical);
+    action_rotate->setMenu(menu);
+    //视频旋转：https://github.com/mgardner99/490/blob/master/mainwindow.cpp#L318
+    connect(action_rotate_ccw, &QAction::triggered, [=](){
+        qreal x = GVI->boundingRect().width()/2.0;
+        qreal y = GVI->boundingRect().height()/2.0;
+        angle -= 90;
+        GVI->setTransform(QTransform().translate(x,y).rotate(angle).translate(-x,-y));
+        qDebug() << GVI->size();
+    });
+    connect(action_rotate_cw, &QAction::triggered, [=](){
+        qreal x = GVI->boundingRect().width() / 2.0;
+        qreal y = GVI->boundingRect().height() / 2.0;
+        angle += 90;
+        GVI->setTransform(QTransform().translate(x,y).rotate(angle).translate(-x,-y));
+    });
+    connect(action_mirror_horizontal, &QAction::triggered, [=](){
+        mh = -mh;
+        qreal x = GVI->boundingRect().width() / 2.0;
+        qreal y = GVI->boundingRect().height() / 2.0;
+        GVI->setTransform(QTransform().translate(x, y).scale(mh, 1).translate(-x, -y));
+    });
+    connect(action_mirror_vertical, &QAction::triggered, [=](){
+        mv = -mv;
+        qreal x = GVI->boundingRect().width() / 2.0;
+        qreal y = GVI->boundingRect().height() / 2.0;
+        GVI->setTransform(QTransform().translate(x, y).scale(1, mv).translate(-x, -y));
+    });
 }
 
 void MainWindow::contextMenuEvent(QContextMenuEvent *event)
 {
-    //pop_menu->clear();
     popmenu->exec(QCursor::pos());
     event->accept();
 }
@@ -768,42 +788,13 @@ void MainWindow::fillTable(QString filename)
 
 void MainWindow::hideWidget()
 {
-    //labelTL->hide();
     if(isFullScreen()){
         ui->sliderProgress->hide();
         setCursor(QCursor(Qt::BlankCursor));
     }
 }
 
-void MainWindow::mousePressEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::LeftButton)
-    {
-        m_bPressed = true;
-        m_point = pos()- event->globalPos();
-        setCursor(Qt::ClosedHandCursor);
-    }
-}
-
-void MainWindow::mouseMoveEvent(QMouseEvent *event)
-{
-    if (m_bPressed) {
-        move(event->globalPos() + m_point);
-        qDebug() << "Move" << pos();
-    }
-    if (isFullScreen()) {
-        QTimer::singleShot(3000,this,SLOT(hideWidget()));
-    }
-}
-
-void MainWindow::mouseReleaseEvent(QMouseEvent *event)
-{
-    Q_UNUSED(event);
-    m_bPressed = false;
-    setCursor(Qt::ArrowCursor);
-}
-
-void MainWindow::mouseDoubleClickEvent(QMouseEvent* event)
+void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
     if (player) {
@@ -813,32 +804,28 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent* event)
 
 void MainWindow::metaDataChange()
 {
-    labelLogo->setPixmap(pixmapAD.scaled(400,300));
-    labelLogo->adjustSize();
-    labelLogo->move((video->width()-labelLogo->width())/2, (video->height()-labelLogo->height())/2);
     qDebug() << "metaDataChange" << player->metaData(QMediaMetaData::Resolution);
-    if(player->metaData(QMediaMetaData::Resolution)!=QVariant::Invalid && !isFullScreen() && !isMaximized()){
+    if(player->metaData(QMediaMetaData::Resolution) != QVariant::Invalid && !isFullScreen() && !isMaximized()){
         if(widthV != player->metaData(QMediaMetaData::Resolution).toSize().width() || heightV != player->metaData(QMediaMetaData::Resolution).toSize().height()){
             int wl = 0;
-            if(ui->tableWidget->isVisible())wl=ui->tableWidget->width();
+            if (ui->tableWidget->isVisible())
+                wl = ui->tableWidget->width();
             widthV = player->metaData(QMediaMetaData::Resolution).toSize().width();
             heightV = player->metaData(QMediaMetaData::Resolution).toSize().height();
+            scene->setSceneRect(0, 0, widthV, heightV);
+            GVI->setSize(QSizeF(widthV, heightV));
             resize(widthV + wl, heightV + ui->controlPanel->height() + 60);
             //move((QApplication::desktop()->width() - width())/2, (QApplication::desktop()->height() - height())/2);
         }
     }
     if (!player->metaData(QMediaMetaData::ThumbnailImage).isNull()) {
         QImage imageCover = player->metaData(QMediaMetaData::ThumbnailImage).value<QImage>();
-        labelLogo->setPixmap(QPixmap::fromImage(imageCover));
-        labelLogo->adjustSize();
-        labelLogo->move((video->width()-labelLogo->width())/2, (video->height()-labelLogo->height())/2);
-        labelLogo->show();
     }
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *e)
 {
-    //if(e->mimeData()->hasFormat("text/uri-list")) //只能打开文本文件
+    //if(e->mimeData()->hasFormat("text/uri-list")) //只接收文件列表
     e->acceptProposedAction(); //可以在这个窗口部件上拖放对象
 }
 
@@ -893,7 +880,6 @@ void MainWindow::analyze()
     dialogUrl->ui->lineEdit->setText(surl);
     if (!surl.isEmpty()) {
         ui->tableWidget->hide();
-        labelLogo->hide();
         if (surl.contains(".m3u8")) {
             player->setMedia(QUrl(surl));
             player->play();
@@ -945,12 +931,10 @@ void MainWindow::stateChange(QMediaPlayer::State state)
 {
     qDebug() << state;
     if (state == QMediaPlayer::PlayingState) {
-        labelLogo->hide();
         ui->btnPlay->setIcon(QIcon::fromTheme("media-playback-pause"));
     } else if (state == QMediaPlayer::PausedState) {
         ui->btnPlay->setIcon(QIcon::fromTheme("media-playback-start"));
     } else if (state == QMediaPlayer::StoppedState) {
-        labelLogo->show();
         ui->btnPlay->setIcon(QIcon::fromTheme("media-playback-start"));
     }
 }
@@ -968,15 +952,6 @@ void MainWindow::mediaStatusChange(QMediaPlayer::MediaStatus status)
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event);
-    labelLogo->move((video->width()-labelLogo->width())/2, (video->height()-labelLogo->height())/2);
-}
-
-void MainWindow::replyAD(QNetworkReply *reply)
-{
-    pixmapAD.loadFromData(reply->readAll());
-    labelLogo->setPixmap(pixmapAD.scaled(400,300,Qt::KeepAspectRatio));
-    labelLogo->adjustSize();
-    labelLogo->move((video->width()-labelLogo->width())/2, (video->height()-labelLogo->height())/2);
 }
 
 void MainWindow::addHistory(QString url)
@@ -1006,11 +981,12 @@ void MainWindow::openHistory(bool b)
 
 void MainWindow::scale(float s)
 {
-    if (isMaximized()) showNormal();
-    if (widthV != 0 || heightV !=0) {
+    if (widthV != 0 || heightV != 0) {
+        if (isMaximized())
+            showNormal();
+        scene->setSceneRect(QRect(0, 0, widthV *s, heightV *s));
+        GVI->setSize(QSize(widthV * s, heightV * s));
         if (isFullScreen()) {
-            video->resize(widthV * s, heightV * s);
-            video->move((QApplication::desktop()->width() - video->width())/2, (QApplication::desktop()->height() - video->height())/2);
         } else {
             if (ui->tableWidget->isVisible()) {
                 resize(widthV * s + ui->tableWidget->width(), heightV * s + ui->menuBar->height() + ui->sliderProgress->height() +ui->controlPanel->height() + ui->statusBar->height());
@@ -1052,13 +1028,13 @@ void MainWindow::on_action_scale2_triggered()
 void MainWindow::fitDesktop()
 {
     if (isFullScreen()) {
-        video->move(0,0);
-        video->resize(QApplication::desktop()->width(),QApplication::desktop()->height());
+        float sw = (float) QApplication::desktop()->width() / widthV;
+        float sh = (float) QApplication::desktop()->height() / heightV;
+        qDebug() << sw << sh;
+        float s = qMax(sw, sh);
+        scene->setSceneRect(QRect(0, 0, widthV *s, heightV *s));
+        GVI->setSize(QSize(QApplication::desktop()->width(), QApplication::desktop()->height()));
     }
-}
-
-void MainWindow::sliderProgressPressed()
-{
 }
 
 void MainWindow::sliderProgressMoved(int v)
@@ -1196,4 +1172,13 @@ void MainWindow::appandText(QString fileName, QString text)
         file.write(text.toUtf8());
         file.close();
     }
+}
+
+void MainWindow::showMessage(QString s)
+{
+    GTI->setPlainText(s);
+    GTI->show();
+    QTimer::singleShot(5000, this, [=]{
+        GTI->hide();
+    });
 }

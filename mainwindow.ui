@@ -57,14 +57,14 @@
          <number>0</number>
         </property>
         <item>
-         <layout class="QVBoxLayout" name="vbox">
-          <property name="spacing">
-           <number>0</number>
+         <widget class="QGraphicsView" name="graphicsView">
+          <property name="verticalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
           </property>
-          <property name="sizeConstraint">
-           <enum>QLayout::SetMaximumSize</enum>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
           </property>
-         </layout>
+         </widget>
         </item>
         <item>
          <widget class="QSlider" name="sliderProgress">
@@ -150,7 +150,8 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset theme="media-skip-backward"/>
+              <iconset theme="media-skip-backward">
+               <normaloff>.</normaloff>.</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -175,7 +176,8 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset theme="media-seek-backward"/>
+              <iconset theme="media-seek-backward">
+               <normaloff>.</normaloff>.</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -200,7 +202,8 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset theme="media-playback-start"/>
+              <iconset theme="media-playback-start">
+               <normaloff>.</normaloff>.</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -225,7 +228,8 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset theme="media-seek-forward"/>
+              <iconset theme="media-seek-forward">
+               <normaloff>.</normaloff>.</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -250,7 +254,8 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset theme="media-skip-forward"/>
+              <iconset theme="media-skip-forward">
+               <normaloff>.</normaloff>.</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -275,7 +280,8 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset theme="media-playback-stop"/>
+              <iconset theme="media-playback-stop">
+               <normaloff>.</normaloff>.</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -300,7 +306,8 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset theme="audio-volume-high"/>
+              <iconset theme="audio-volume-high">
+               <normaloff>.</normaloff>.</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -389,7 +396,8 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset theme="view-fullscreen"/>
+              <iconset theme="view-fullscreen">
+               <normaloff>.</normaloff>.</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -483,7 +491,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>23</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -553,7 +561,8 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="action_open">
    <property name="icon">
-    <iconset theme="document-open"/>
+    <iconset theme="document-open">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>打开</string>
@@ -561,7 +570,8 @@
   </action>
   <action name="action_quit">
    <property name="icon">
-    <iconset theme="application-exit"/>
+    <iconset theme="application-exit">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>退出</string>
@@ -582,7 +592,8 @@
   </action>
   <action name="action_about">
    <property name="icon">
-    <iconset theme="help-about"/>
+    <iconset theme="help-about">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>关于</string>
@@ -600,7 +611,8 @@
   </action>
   <action name="action_volumeMute">
    <property name="icon">
-    <iconset theme="audio-volume-muted"/>
+    <iconset theme="audio-volume-muted">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>静音</string>
@@ -638,7 +650,8 @@
   </action>
   <action name="action_help">
    <property name="icon">
-    <iconset theme="help-contents"/>
+    <iconset theme="help-contents">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>帮助</string>
@@ -649,7 +662,8 @@
   </action>
   <action name="action_info">
    <property name="icon">
-    <iconset theme="dialog-information"/>
+    <iconset theme="dialog-information">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>信息</string>

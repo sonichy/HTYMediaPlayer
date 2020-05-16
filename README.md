@@ -6,6 +6,8 @@ sudo apt-get install libqt5multimedia5 libqt5multimediawidgets5
 
 ![alt](preview.jpg)  
 
+### 2.0 视频旋转镜像
+[参考](https://github.com/mgardner99/490/blob/master/mainwindow.cpp)
 ### 1.7 增加对直播API的解析，换鼠标拖动代码更平滑，增加历史记录，增加接收Chrome扩展传来的直播网址。
 ### 1.6版 增加解析分号分隔的网络媒体字符串到播放列表，遍历媒体信息，增加读取音频封面图片(Windows有效，Linux无效，Mac没试)。
 ![alt](music_cover.jpg)  

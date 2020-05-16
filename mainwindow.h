@@ -9,6 +9,8 @@
 #include <QTableWidget>
 #include <QMessageBox>
 #include <QNetworkReply>
+#include <QGraphicsVideoItem>
+#include <QGraphicsTextItem>
 
 namespace Ui {
     class MainWindow;
@@ -19,31 +21,29 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+protected:
+    void mouseDoubleClickEvent(QMouseEvent *event);
 
 private:
     Ui::MainWindow *ui;
     void createPopmenu();
     void createTVList();
-    void mouseDoubleClickEvent(QMouseEvent*);
-    void mousePressEvent(QMouseEvent*);
-    void mouseMoveEvent(QMouseEvent*);
-    void mouseReleaseEvent(QMouseEvent*);
     void open(QString path);
-    QString filename, STimeDuration, version;
+    QString filename, STimeDuration, version="2.0";
     QMediaPlayer *player;
-    QVideoWidget *video;
+    QGraphicsScene *scene;
+    QGraphicsVideoItem *GVI;
+    QGraphicsTextItem *GTI;
     QMenu *popmenu;
     QAction *PMAPlay, *PMAFullscreen, *PMACapture, *PMAInfo;
     QTableWidget *table;
-    int volume;
-    bool m_bPressed;
-    float sr;
+    float sr=1;
     QPoint m_point;
-    QLabel *labelLogo,*labelTL;
-    int widthV,heightV,widtho,heighto,listVisible;
-    bool isListShow, isManualUpdate;
+    int widthV, heightV, listVisible, angle=0, mh=1, mv=1;
+    bool isListShow, isManualUpdate=false;
     void dragEnterEvent(QDragEnterEvent*);
     void dropEvent(QDropEvent*);
     DialogURL *dialogUrl;
@@ -55,6 +55,7 @@ private:
     QString SBytes(qint64 bytes);
     bool importXSPF(QString fileName);
     void appandText(QString fileName, QString text);
+    void showMessage(QString s);
 
 private slots:
     void on_action_open_triggered();
@@ -105,7 +106,6 @@ private slots:
     void stateChange(QMediaPlayer::State);
     void mediaStatusChange(QMediaPlayer::MediaStatus status);
     void resizeEvent(QResizeEvent*);
-    void replyAD(QNetworkReply*);
     void addHistory(QString url);
     void openHistory(bool);
     void on_action_scale0_5_triggered();
@@ -113,7 +113,6 @@ private slots:
     void on_action_scale1_5_triggered();
     void on_action_scale2_triggered();
     void fitDesktop();
-    void sliderProgressPressed();
     void sliderProgressReleased();
     //void sliderProgressValueChanged(int);
     void sliderProgressMoved(int);
