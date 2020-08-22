@@ -6,6 +6,8 @@ sudo apt-get install libqt5multimedia5 libqt5multimediawidgets5
 
 ![alt](preview.png)  
 
+### 3.0 整合视频资源
+
 ### 2.0 视频旋转镜像
 [参考](https://github.com/mgardner99/490/blob/master/mainwindow.cpp)
 ### 1.7 增加对直播API的解析，换鼠标拖动代码更平滑，增加历史记录，增加接收Chrome扩展传来的直播网址。
