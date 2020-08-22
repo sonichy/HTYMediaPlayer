@@ -4,7 +4,7 @@ Linux 平台基于 Qt 的 QMultiMedia 的媒体播放程序，支持某些直播
 ### 依赖  
 sudo apt-get install libqt5multimedia5 libqt5multimediawidgets5
 
-![alt](preview.jpg)  
+![alt](preview.png)  
 
 ### 2.0 视频旋转镜像
 [参考](https://github.com/mgardner99/490/blob/master/mainwindow.cpp)

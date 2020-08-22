@@ -11,6 +11,7 @@
 #include <QNetworkReply>
 #include <QGraphicsVideoItem>
 #include <QGraphicsTextItem>
+#include <QTreeWidgetItem>
 
 namespace Ui {
     class MainWindow;
@@ -32,7 +33,7 @@ private:
     void createPopmenu();
     void createTVList();
     void open(QString path);
-    QString filename, STimeDuration, version="2.0";
+    QString filename, STimeDuration, version="3.0";
     QMediaPlayer *player;
     QGraphicsScene *scene;
     QGraphicsVideoItem *GVI;
@@ -53,7 +54,7 @@ private:
     void scale(float s);
     void setSTime(qint64);
     QString SBytes(qint64 bytes);
-    bool importXSPF(QString fileName);
+    //bool importXSPF(QString fileName);
     void appandText(QString fileName, QString text);
     void showMessage(QString s);
 
@@ -94,8 +95,8 @@ private slots:
     void playPause();
     void keyPressEvent(QKeyEvent*);
     void contextMenuEvent(QContextMenuEvent*);
-    void playTV(int,int);
-    void fillTable(QString);
+    //void playTV(int,int);
+    //void fillTable(QString);
     void hideWidget();
     void metaDataChange();
     void showHideList();
@@ -121,6 +122,11 @@ private slots:
     void manualCheckVersion(bool);
     void checkVersion(bool);
     void updateProgress(qint64 bytesReceived, qint64 bytesTotal);
+
+    QByteArray getReply(QString surl);
+    QByteArray postReply(QString surl,QString spost);
+    void search();
+    void treeWidgetItemDoubleClicked(QTreeWidgetItem *item, int column);
 };
 
 #endif // MAINWINDOW_H
