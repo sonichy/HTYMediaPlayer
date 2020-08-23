@@ -108,7 +108,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QLabel" name="labelTimeVideo">
+          <widget class="QLabel" name="label_time">
            <property name="toolTip">
             <string>时间</string>
            </property>
@@ -131,7 +131,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="btnSkipB">
+          <widget class="QPushButton" name="pushButton_skip_backward">
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -157,7 +157,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="btnSeekB">
+          <widget class="QPushButton" name="pushButton_seek_backward">
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -183,7 +183,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="btnPlay">
+          <widget class="QPushButton" name="pushButton_play">
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -209,7 +209,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="btnSeekF">
+          <widget class="QPushButton" name="pushButton_seek_forward">
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -235,7 +235,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="btnSkipF">
+          <widget class="QPushButton" name="pushButton_skip_forward">
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -261,7 +261,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="btnStop">
+          <widget class="QPushButton" name="pushButton_stop">
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -287,7 +287,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="btnMute">
+          <widget class="QPushButton" name="pushButton_mute">
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -377,7 +377,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="btnFullscreen">
+          <widget class="QPushButton" name="pushButton_fullscreen">
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -403,7 +403,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="btnList">
+          <widget class="QPushButton" name="pushButton_list">
            <property name="maximumSize">
             <size>
              <width>30</width>

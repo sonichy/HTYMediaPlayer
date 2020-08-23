@@ -58,6 +58,13 @@ MainWindow::MainWindow(QWidget *parent) :
     scene->addItem(GTI);
     ui->graphicsView->setScene(scene);
 
+    timer_information = new QTimer;
+    timer_information->setSingleShot(true);
+    connect(timer_information, &QTimer::timeout, [=]{
+        GTI->hide();
+    });
+
+
     player = new QMediaPlayer;
     player->setVolume(100);
     player->setVideoOutput(GVI);
@@ -78,11 +85,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(new QShortcut(QKeySequence(Qt::Key_T),this), SIGNAL(activated()), this, SLOT(on_action_liveList_triggered()));
     connect(new QShortcut(QKeySequence(Qt::Key_I),this), SIGNAL(activated()), this, SLOT(on_action_liveImport_triggered()));
     connect(new QShortcut(QKeySequence(Qt::Key_Escape),this), SIGNAL(activated()), this, SLOT(exitFullscreen()));
-    //connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Return),this), SIGNAL(activated()), this, SLOT(EEFullscreen()));
-    //connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Enter),this), SIGNAL(activated()), this, SLOT(EEFullscreen()));
+    connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Return),this), SIGNAL(activated()), this, SLOT(EEFullscreen()));
+    connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Enter),this), SIGNAL(activated()), this, SLOT(EEFullscreen()));
     connect(new QShortcut(QKeySequence(Qt::Key_Space),this), SIGNAL(activated()), this, SLOT(playPause()));
-    connect(new QShortcut(QKeySequence(Qt::Key_Left),this), SIGNAL(activated()), this, SLOT(on_btnSeekB_clicked()));
-    connect(new QShortcut(QKeySequence(Qt::Key_Right),this), SIGNAL(activated()), this, SLOT(on_btnSeekF_clicked()));
+    connect(new QShortcut(QKeySequence(Qt::Key_Left),this), SIGNAL(activated()), this, SLOT(on_pushButton_seek_backward_clicked()));
+    connect(new QShortcut(QKeySequence(Qt::Key_Right),this), SIGNAL(activated()), this, SLOT(on_pushButton_seek_forward_clicked()));
     connect(new QShortcut(QKeySequence(Qt::Key_P),this), SIGNAL(activated()), this, SLOT(on_action_capture_triggered()));
     connect(new QShortcut(QKeySequence(Qt::Key_Up),this), SIGNAL(activated()), this, SLOT(on_action_volumeUp_triggered()));
     connect(new QShortcut(QKeySequence(Qt::Key_Down),this), SIGNAL(activated()), this, SLOT(on_action_volumeDown_triggered()));
@@ -205,7 +212,7 @@ void MainWindow::on_action_openURL_triggered()
     dialogUrl->show();
 }
 
-void MainWindow::on_btnList_clicked()
+void MainWindow::on_pushButton_list_clicked()
 {
     showHideList();
 }
@@ -352,9 +359,11 @@ void MainWindow::on_action_volumeUp_triggered()
 {
     player->setMuted(false);
     if (player->volume() == 100) {
-        showMessage("音量：100");
+        GTI->setPlainText("音量：100");
+        GTI->show();
+        timer_information->start(3000);
     } else {
-        player->setVolume(player->volume()+1);
+        player->setVolume(player->volume() + 1);
     }
 }
 
@@ -362,7 +371,9 @@ void MainWindow::on_action_volumeDown_triggered()
 {
     player->setMuted(false);
     if (player->volume() == 0) {
-        showMessage("音量：0");
+        GTI->setPlainText("音量：100");
+        GTI->show();
+        timer_information->start(3000);
     } else {
         player->setVolume(player->volume()-1);
     }
@@ -422,37 +433,43 @@ void MainWindow::on_action_about_triggered()
     aboutMB.exec();
 }
 
-void MainWindow::on_btnPlay_clicked()
+void MainWindow::on_pushButton_play_clicked()
 {
     playPause();
 }
 
-void MainWindow::on_btnStop_clicked()
+void MainWindow::on_pushButton_stop_clicked()
 {
     player->stop();
 }
 
-void MainWindow::on_btnSeekB_clicked()
+void MainWindow::on_pushButton_seek_backward_clicked()
 {
     player->setPosition(player->position() - 5000);
+    GTI->setPlainText(ui->label_time->text());
+    GTI->show();
+    timer_information->start(3000);
 }
 
-void MainWindow::on_btnSeekF_clicked()
+void MainWindow::on_pushButton_seek_forward_clicked()
 {
     player->setPosition(player->position() + 5000);
+    GTI->setPlainText(ui->label_time->text());
+    GTI->show();
+    timer_information->start(3000);
 }
 
-void MainWindow::on_btnSkipB_clicked()
+void MainWindow::on_pushButton_skip_backward_clicked()
 {
 
 }
 
-void MainWindow::on_btnSkipF_clicked()
+void MainWindow::on_pushButton_skip_forward_clicked()
 {
 
 }
 
-void MainWindow::on_btnMute_clicked()
+void MainWindow::on_pushButton_mute_clicked()
 {
     on_action_volumeMute_triggered();
 }
@@ -484,7 +501,7 @@ void MainWindow::on_action_fullscreen_triggered()
     EEFullscreen();
 }
 
-void MainWindow::on_btnFullscreen_clicked()
+void MainWindow::on_pushButton_fullscreen_clicked()
 {
     EEFullscreen();
 }
@@ -559,7 +576,7 @@ void MainWindow::setSTime(qint64 v)
     //    t.setHMS(0,0,0);
     //    t = t.addMSecs(player->duration());
     //    QString STimeDuration = t.toString("hh:mm:ss");
-    ui->labelTimeVideo->setText(STimeElapse + "/" + STimeDuration);
+    ui->label_time->setText(STimeElapse + "/" + STimeDuration);
     ui->sliderProgress->setToolTip(STimeElapse);
 }
 
@@ -567,24 +584,26 @@ void MainWindow::volumeChange(int v)
 {
     ui->sliderVolume->setValue(v);
     ui->sliderVolume->setToolTip(QString::number(v));
-    showMessage("音量：" + QString::number(v));
-    if(v==0){
-        ui->btnMute->setIcon(QIcon::fromTheme("audio-volume-muted"));
-    }else if(v<33){
-        ui->btnMute->setIcon(QIcon::fromTheme("audio-volume-low"));
-    }else if(v<66){
-        ui->btnMute->setIcon(QIcon::fromTheme("audio-volume-medium"));
-    }else{
-        ui->btnMute->setIcon(QIcon::fromTheme("audio-volume-high"));
+    GTI->setPlainText("音量：" + QString::number(v));
+    GTI->show();
+    timer_information->start(3000);
+    if (v == 0) {
+        ui->pushButton_mute->setIcon(QIcon::fromTheme("audio-volume-muted"));
+    } else if (v < 33) {
+        ui->pushButton_mute->setIcon(QIcon::fromTheme("audio-volume-low"));
+    } else if (v < 66) {
+        ui->pushButton_mute->setIcon(QIcon::fromTheme("audio-volume-medium"));
+    } else {
+        ui->pushButton_mute->setIcon(QIcon::fromTheme("audio-volume-high"));
     }
 }
 
 void MainWindow::mutedChange(bool muted)
 {
-    if(muted){
-        ui->btnMute->setIcon(QIcon::fromTheme("audio-volume-muted"));
+    if (muted) {
+        ui->pushButton_mute->setIcon(QIcon::fromTheme("audio-volume-muted"));
         ui->sliderVolume->setValue(0);
-    }else{
+    } else {
         volumeChange(player->volume());
     }
 }
@@ -592,21 +611,12 @@ void MainWindow::mutedChange(bool muted)
 void MainWindow::playPause()
 {
     //qDebug() << "state=" << player->state();
-    if(player->state() == QMediaPlayer::PlayingState){
+    if (player->state() == QMediaPlayer::PlayingState) {
         player->pause();
-    }else if(player->state() == QMediaPlayer::PausedState){
+    } else if (player->state() == QMediaPlayer::PausedState) {
         player->play();
-    }else if(player->state() == QMediaPlayer::StoppedState){
+    } else if (player->state() == QMediaPlayer::StoppedState) {
         player->play();
-    }
-}
-
-void MainWindow::keyPressEvent(QKeyEvent *event)
-{
-    if(event->key() ==  Qt::Key_P){
-        playPause();
-    }else if(event->key() == Qt::Key_Enter){
-        EEFullscreen();
     }
 }
 
@@ -929,11 +939,11 @@ void MainWindow::stateChange(QMediaPlayer::State state)
 {
     qDebug() << state;
     if (state == QMediaPlayer::PlayingState) {
-        ui->btnPlay->setIcon(QIcon::fromTheme("media-playback-pause"));
+        ui->pushButton_play->setIcon(QIcon::fromTheme("media-playback-pause"));
     } else if (state == QMediaPlayer::PausedState) {
-        ui->btnPlay->setIcon(QIcon::fromTheme("media-playback-start"));
+        ui->pushButton_play->setIcon(QIcon::fromTheme("media-playback-start"));
     } else if (state == QMediaPlayer::StoppedState) {
-        ui->btnPlay->setIcon(QIcon::fromTheme("media-playback-start"));
+        ui->pushButton_play->setIcon(QIcon::fromTheme("media-playback-start"));
     }
 }
 
@@ -1172,15 +1182,6 @@ void MainWindow::appandText(QString fileName, QString text)
         file.write(text.toUtf8());
         file.close();
     }
-}
-
-void MainWindow::showMessage(QString s)
-{
-    GTI->setPlainText(s);
-    GTI->show();
-    QTimer::singleShot(5000, this, [=]{
-        GTI->hide();
-    });
 }
 
 QByteArray MainWindow::getReply(QString surl)

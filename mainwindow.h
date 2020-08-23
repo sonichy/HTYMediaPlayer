@@ -38,6 +38,7 @@ private:
     QGraphicsScene *scene;
     QGraphicsVideoItem *GVI;
     QGraphicsTextItem *GTI;
+    QTimer *timer_information;
     QMenu *popmenu;
     QAction *PMAPlay, *PMAFullscreen, *PMACapture, *PMAInfo;
     QTableWidget *table;
@@ -56,7 +57,6 @@ private:
     QString SBytes(qint64 bytes);
     //bool importXSPF(QString fileName);
     void appandText(QString fileName, QString text);
-    void showMessage(QString s);
 
 private slots:
     void on_action_open_triggered();
@@ -75,16 +75,16 @@ private slots:
     void on_action_changelog_triggered();
     void on_action_aboutQt_triggered();
     void on_action_about_triggered();
-    void on_btnPlay_clicked();
-    void on_btnStop_clicked();
-    void on_btnSeekB_clicked();
-    void on_btnSeekF_clicked();
-    void on_btnSkipB_clicked();
-    void on_btnSkipF_clicked();
-    void on_btnMute_clicked();
+    void on_pushButton_play_clicked();
+    void on_pushButton_stop_clicked();
+    void on_pushButton_seek_backward_clicked();
+    void on_pushButton_seek_forward_clicked();
+    void on_pushButton_skip_backward_clicked();
+    void on_pushButton_skip_forward_clicked();
+    void on_pushButton_mute_clicked();
     void on_pushButton_playbackMode_clicked();
-    void on_btnFullscreen_clicked();
-    void on_btnList_clicked();
+    void on_pushButton_fullscreen_clicked();
+    void on_pushButton_list_clicked();
     void durationChange(qint64);
     void positionChange(qint64);
     void volumeChange(int);
@@ -93,7 +93,6 @@ private slots:
     void exitFullscreen();
     void EEFullscreen();
     void playPause();
-    void keyPressEvent(QKeyEvent*);
     void contextMenuEvent(QContextMenuEvent*);
     //void playTV(int,int);
     //void fillTable(QString);
