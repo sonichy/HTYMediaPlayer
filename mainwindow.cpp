@@ -30,9 +30,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->splitter->setStretchFactor(0,2);
+    ui->splitter->setStretchFactor(1,1);
     ui->widgetZY->hide();
     move((QApplication::desktop()->width() - width())/2, (QApplication::desktop()->height() - height())/2);
-    ui->widgetZY->setFixedWidth(200);
     QAction *action_search = new QAction;
     action_search->setIcon(QIcon::fromTheme("search"));
     ui->lineEdit_search->addAction(action_search, QLineEdit::TrailingPosition);
@@ -63,7 +64,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(timer_information, &QTimer::timeout, [=]{
         GTI->hide();
     });
-
 
     player = new QMediaPlayer;
     player->setVolume(100);
@@ -296,7 +296,6 @@ void MainWindow::on_action_capture16_triggered()
     painter.drawText(700, 60, "视频时长：" + STimeDuration);
     for(qint64 i=player->duration()/16; i<player->duration(); i+=player->duration()/16){
         player->setPosition(i);
-        //        pixc[k] = QGuiApplication::primaryScreen()->grabWindow(0,video->mapToGlobal(video->pos()).x(),video->mapToGlobal(video->pos()).y(),video->width(),video->height()).scaled(320,240);
         QPixmap pixmap(scene->sceneRect().size().width(), scene->sceneRect().size().height());
         QPainter painter1(&pixmap);
         scene->render(&painter1);
@@ -320,7 +319,6 @@ void MainWindow::on_action_capture16_triggered()
             k++;
         }
     }
-    //QFont font("Arial",20,QFont::Normal,false);
     QFont font = this->font();
     font.setPointSize(20);
     painter.setFont(font);
@@ -802,11 +800,35 @@ void MainWindow::hideWidget()
     }
 }
 
+void MainWindow::mousePressEvent(QMouseEvent *event)
+{
+    Q_UNUSED(event);
+    if (isFullScreen()) {
+        GTI->setPlainText(ui->label_time->text());
+        GTI->show();
+        timer_information->start(3000);
+    }
+}
+
 void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
     if (player) {
         EEFullscreen();
+    }
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *event)
+{
+    //Q_UNUSED(event);
+    qDebug() << event;
+    if (isFullScreen()) {
+        setCursor(QCursor(Qt::ArrowCursor));
+        ui->sliderProgress->show();
+        QTimer::singleShot(3000, this, [=]{
+            ui->sliderProgress->hide();
+            setCursor(QCursor(Qt::BlankCursor));
+        });
     }
 }
 

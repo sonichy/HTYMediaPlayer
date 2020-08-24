@@ -26,7 +26,9 @@ public:
     ~MainWindow();
 
 protected:
+    void mousePressEvent(QMouseEvent *event);
     void mouseDoubleClickEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
 
 private:
     Ui::MainWindow *ui;

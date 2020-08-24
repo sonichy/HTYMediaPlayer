@@ -1,12 +1,13 @@
 # Qt 海天鹰媒体播放器
 Linux 平台基于 Qt 的 QMultiMedia 的媒体播放程序，支持某些直播。  
-已编译好的 HTYMP 程序适用64位 Linux 系统 Qt5 环境，双击运行，终端运行 ./install.sh 生成desktop。  
+已编译好的 HTYMP 程序适用 64 位 Linux 系统 Qt5.7 以上环境，允许执行权限后双击运行。下载图标并在终端运行 ./install.sh 生成 desktop，并附加到启动器。  
 ### 依赖  
 sudo apt-get install libqt5multimedia5 libqt5multimediawidgets5
 
 ![alt](preview.png)  
 
 ### 3.0 整合视频资源
+搜索节目即可追剧
 
 ### 2.0 视频旋转镜像
 [参考](https://github.com/mgardner99/490/blob/master/mainwindow.cpp)
