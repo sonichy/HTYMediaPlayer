@@ -78,7 +78,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(player, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), SLOT(mediaStatusChange(QMediaPlayer::MediaStatus)));
     connect(player, &QMediaPlayer::bufferStatusChanged, [=](int i){
         if (i < 100) {
-            ui->statusBar->showMessage("缓冲 " + QString::number(i)+ "%");
+            ui->statusBar->showMessage("正在缓冲 " + QString::number(i)+ "%");
         } else {
             ui->statusBar->showMessage("");
         }
@@ -1280,7 +1280,7 @@ void MainWindow::treeWidgetItemDoubleClicked(QTreeWidgetItem *item, int column)
     qDebug() << column << item->text(column) << item->toolTip(column);
     if (item->toolTip(0).endsWith(".m3u8")) {
         setWindowTitle(item->parent()->text(0) + item->text(0));
-        ui->statusBar->showMessage("播放 " + item->toolTip(0), 1000);
+        ui->statusBar->showMessage("播放 " + item->toolTip(0));
         player->setMedia(QUrl(item->toolTip(0)));
         player->play();
     }
