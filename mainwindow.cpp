@@ -76,6 +76,13 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(player, SIGNAL(error(QMediaPlayer::Error)), this, SLOT(errorHandle(QMediaPlayer::Error)));
     connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(stateChange(QMediaPlayer::State)));
     connect(player, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), SLOT(mediaStatusChange(QMediaPlayer::MediaStatus)));
+    connect(player, &QMediaPlayer::bufferStatusChanged, [=](int i){
+        if (i < 100) {
+            ui->statusBar->showMessage("缓冲 " + QString::number(i)+ "%");
+        } else {
+            ui->statusBar->showMessage("");
+        }
+    });
 
     playlist = new QMediaPlaylist;
     player->setPlaylist(playlist);
@@ -1240,7 +1247,8 @@ void MainWindow::search()
     QString s = ui->lineEdit_search->text();
     if (s != "") {
         ui->statusBar->showMessage("搜索\"" + s + "\"", 5000);
-        QString surl = "https://cj.okzy.tv/inc/feifei3s/?m=vod-search&wd=" + s;
+        QString surl = "http://www.zdziyuan.com/inc/s_feifei3zuidam3u8/?m=vod-search&wd=" + s;
+        //QString surl = "https://cj.okzy.tv/inc/feifei3ckm3u8s/?m=vod-search&wd=" + s;
         QJsonDocument JD = QJsonDocument::fromJson(getReply(surl));
         int status = JD.object().value("status").toInt();
         if (status == 200) {
@@ -1250,17 +1258,14 @@ void MainWindow::search()
                 QTreeWidgetItem *TWI1 = new QTreeWidgetItem(ui->treeWidget);
                 TWI1->setText(0, data[i].toObject().value("vod_name").toString());
                 QString vod_url = data[i].toObject().value("vod_url").toString();
-                QStringList SL = vod_url.split("$$$");
-                for (int j=0; j<SL.length(); j++) {
-                    QStringList SL1 = SL.at(j).split("\r\n");
-                    for (int k=0; k<SL1.length(); k++) {
-                        if (SL1.at(k).endsWith(".m3u8")) {
-                           QStringList SL2 = SL1.at(k).split("$");
-                           QTreeWidgetItem *TWI2 = new QTreeWidgetItem(TWI1);
-                           TWI2->setText(0, SL2.at(0));
-                           TWI2->setToolTip(0, SL2.at(1));
+                QStringList SL1 = vod_url.split("\r\n");
+                for (int k=0; k<SL1.length(); k++) {
+                    if (SL1.at(k).endsWith(".m3u8")) {
+                        QStringList SL2 = SL1.at(k).split("$");
+                        QTreeWidgetItem *TWI2 = new QTreeWidgetItem(TWI1);
+                        TWI2->setText(0, SL2.at(0));
+                        TWI2->setToolTip(0, SL2.at(1));
 
-                        }
                     }
                 }
             }
@@ -1275,7 +1280,7 @@ void MainWindow::treeWidgetItemDoubleClicked(QTreeWidgetItem *item, int column)
     qDebug() << column << item->text(column) << item->toolTip(column);
     if (item->toolTip(0).endsWith(".m3u8")) {
         setWindowTitle(item->parent()->text(0) + item->text(0));
-        ui->statusBar->showMessage("播放 " + item->toolTip(0), 5000);
+        ui->statusBar->showMessage("播放 " + item->toolTip(0), 1000);
         player->setMedia(QUrl(item->toolTip(0)));
         player->play();
     }
