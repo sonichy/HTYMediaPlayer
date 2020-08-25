@@ -1287,13 +1287,12 @@ void MainWindow::search()
 
 void MainWindow::treeWidgetItemDoubleClicked(QTreeWidgetItem *item, int column)
 {
-    qDebug() << column << item->text(column) << item->toolTip(column);
-    if (item->toolTip(0).endsWith(".m3u8")) {
-        setWindowTitle(item->parent()->text(0) + item->text(0));
-        ui->statusBar->showMessage("播放 " + item->toolTip(0));
-        player->setMedia(QUrl(item->toolTip(0)));
-        player->play();
-    }
+    Q_UNUSED(column);
+    //qDebug() << column << item->text(column) << item->toolTip(column);
+    setWindowTitle(item->parent()->text(0) + item->text(0));
+    ui->statusBar->showMessage("播放 " + item->toolTip(0));
+    player->setMedia(QUrl(item->toolTip(0)));
+    player->play();
 }
 
 void MainWindow::genTreeLive()
