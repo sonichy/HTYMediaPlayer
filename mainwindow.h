@@ -59,6 +59,8 @@ private:
     QString SBytes(qint64 bytes);
     //bool importXSPF(QString fileName);
     void appandText(QString fileName, QString text);
+    QTreeWidgetItem *TWI_search;
+    void genTreeLive();
 
 private slots:
     void on_action_open_triggered();

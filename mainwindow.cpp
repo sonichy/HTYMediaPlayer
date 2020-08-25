@@ -115,6 +115,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->sliderVolume, SIGNAL(sliderMoved(int)), this, SLOT(sliderVolumeMoved(int)));
 
     createPopmenu();
+    genTreeLive();
+    TWI_search = new QTreeWidgetItem(ui->treeWidget);
+    TWI_search->setText(0, "搜索");
 
     QStringList SL_args = QApplication::arguments();
     qDebug() << SL_args;
@@ -1252,10 +1255,18 @@ void MainWindow::search()
         QJsonDocument JD = QJsonDocument::fromJson(getReply(surl));
         int status = JD.object().value("status").toInt();
         if (status == 200) {
-            ui->treeWidget->clear();
+            //清空节点：https://www.cnblogs.com/azbane/p/11966343.html
+            int count = TWI_search->childCount();
+            while (count--) {
+                QTreeWidgetItem *TWI = TWI_search->child(count);
+                TWI_search->removeChild(TWI);
+                delete TWI;
+                //TWI = nullptr;
+            }
+            //ui->treeWidget->clear();
             QJsonArray data = JD.object().value("data").toArray();
             for (int i=0; i<data.size(); i++) {
-                QTreeWidgetItem *TWI1 = new QTreeWidgetItem(ui->treeWidget);
+                QTreeWidgetItem *TWI1 = new QTreeWidgetItem(TWI_search);
                 TWI1->setText(0, data[i].toObject().value("vod_name").toString());
                 QString vod_url = data[i].toObject().value("vod_url").toString();
                 QStringList SL1 = vod_url.split("\r\n");
@@ -1265,7 +1276,6 @@ void MainWindow::search()
                         QTreeWidgetItem *TWI2 = new QTreeWidgetItem(TWI1);
                         TWI2->setText(0, SL2.at(0));
                         TWI2->setToolTip(0, SL2.at(1));
-
                     }
                 }
             }
@@ -1283,5 +1293,30 @@ void MainWindow::treeWidgetItemDoubleClicked(QTreeWidgetItem *item, int column)
         ui->statusBar->showMessage("播放 " + item->toolTip(0));
         player->setMedia(QUrl(item->toolTip(0)));
         player->play();
+    }
+}
+
+void MainWindow::genTreeLive()
+{
+    QString filepath = QApplication::applicationDirPath() + "/live.txt";
+    QFile *file = new QFile(filepath);
+    if (file->open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream TS(file);
+        TS.setCodec("UTF-8");
+        QString s = TS.readAll();
+        file->close();
+        QTreeWidgetItem *TWI = new QTreeWidgetItem(ui->treeWidget);
+        TWI->setText(0, "直播");
+        QStringList SL = s.split("\n");
+        for (int i=0; i<SL.size(); i++) {
+            QStringList SL1 = SL.at(i).split(",");
+            QTreeWidgetItem *TWI1 = new QTreeWidgetItem(TWI);
+            if (SL1.size() > 1) {
+                TWI1->setText(0, SL1.at(0));
+                TWI1->setToolTip(0, SL1.at(1));
+            } else {
+                qDebug() << "Split Error: Line" << i << SL.at(i);
+            }
+        }
     }
 }
