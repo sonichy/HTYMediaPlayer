@@ -29,6 +29,7 @@ protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseDoubleClickEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event);
 
 private:
     Ui::MainWindow *ui;
@@ -40,7 +41,7 @@ private:
     QGraphicsScene *scene;
     QGraphicsVideoItem *GVI;
     QGraphicsTextItem *GTI;
-    QTimer *timer_information;
+    QTimer *timer_information, *timer_controlPanel;
     QMenu *popmenu;
     QAction *PMAPlay, *PMAFullscreen, *PMACapture, *PMAInfo;
     QTableWidget *table;

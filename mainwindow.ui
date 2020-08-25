@@ -28,7 +28,7 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <property name="mouseTracking">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <property name="spacing">
@@ -49,7 +49,7 @@
     <item>
      <widget class="QSplitter" name="splitter">
       <property name="mouseTracking">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>

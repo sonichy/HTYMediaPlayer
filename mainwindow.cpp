@@ -65,6 +65,20 @@ MainWindow::MainWindow(QWidget *parent) :
         GTI->hide();
     });
 
+    timer_controlPanel = new QTimer;
+    timer_controlPanel->setSingleShot(true);
+    connect(timer_controlPanel, &QTimer::timeout, [=]{
+        if(isFullScreen()){
+            ui->sliderProgress->hide();
+            ui->controlPanel->hide();
+            setCursor(Qt::BlankCursor);
+        }
+    });
+
+    ui->graphicsView->installEventFilter(this);
+    ui->controlPanel->installEventFilter(this);
+
+
     player = new QMediaPlayer;
     player->setVolume(100);
     player->setVideoOutput(GVI);
@@ -92,8 +106,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(new QShortcut(QKeySequence(Qt::Key_T),this), SIGNAL(activated()), this, SLOT(on_action_liveList_triggered()));
     connect(new QShortcut(QKeySequence(Qt::Key_I),this), SIGNAL(activated()), this, SLOT(on_action_liveImport_triggered()));
     connect(new QShortcut(QKeySequence(Qt::Key_Escape),this), SIGNAL(activated()), this, SLOT(exitFullscreen()));
-    connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Return),this), SIGNAL(activated()), this, SLOT(EEFullscreen()));
-    connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Enter),this), SIGNAL(activated()), this, SLOT(EEFullscreen()));
+    connect(new QShortcut(QKeySequence(Qt::ALT + Qt::Key_Return),this), SIGNAL(activated()), this, SLOT(EEFullscreen()));
+    connect(new QShortcut(QKeySequence(Qt::ALT + Qt::Key_Enter),this), SIGNAL(activated()), this, SLOT(EEFullscreen()));
     connect(new QShortcut(QKeySequence(Qt::Key_Space),this), SIGNAL(activated()), this, SLOT(playPause()));
     connect(new QShortcut(QKeySequence(Qt::Key_Left),this), SIGNAL(activated()), this, SLOT(on_pushButton_seek_backward_clicked()));
     connect(new QShortcut(QKeySequence(Qt::Key_Right),this), SIGNAL(activated()), this, SLOT(on_pushButton_seek_forward_clicked()));
@@ -390,16 +404,16 @@ void MainWindow::on_action_volumeDown_triggered()
 
 void MainWindow::on_action_volumeMute_triggered()
 {
-    if(player->isMuted()){
+    if (player->isMuted()) {
         player->setMuted(false);
-    }else{
+    } else {
         player->setMuted(true);
     }
 }
 
 void MainWindow::on_action_help_triggered()
 {
-    QMessageBox MB(QMessageBox::NoIcon, "帮助", "快捷键：\nO\t打开文件\nU\t打开网址\nT\t直播列表\nI\t导入直播文件\n空格\t播放、暂停\n回车、双击\t全屏、退出全屏\nEsc\t退出全屏\n上\t增加音量\n下\t减小音量\n左 \t快退\n右\t快进\nM\t静音\nP\t截图\n1\t原始视频大小\n2\t2倍视频大小\n3\t1.5倍视频大小\n4\t0.5倍视频大小\n5\t视频铺满全屏");
+    QMessageBox MB(QMessageBox::NoIcon, "帮助", "快捷键：\nO\t打开文件\nU\t打开网址\nT\t直播列表\nI\t导入直播文件\n空格\t播放、暂停\nAlt+回车、双击\t全屏、退出全屏\nEsc\t退出全屏\n上\t增加音量\n下\t减小音量\n左 \t快退\n右\t快进\nM\t静音\nP\t截图\n1\t原始视频大小\n2\t2倍视频大小\n3\t1.5倍视频大小\n4\t0.5倍视频大小\n5\t视频铺满全屏");
     MB.setWindowIcon(QIcon(":/icon.png"));
     MB.exec();
 }
@@ -532,7 +546,7 @@ void MainWindow::enterFullscreen()
     PMAFullscreen->setText("退出全屏&X");
     if (isListShow)
         ui->widgetZY->setVisible(false);
-    ui->centralWidget->setStyleSheet("background-color:black;");
+    ui->centralWidget->setStyleSheet("color:gray; background-color:black;");
     fitDesktop();
 }
 
@@ -1321,5 +1335,28 @@ void MainWindow::genTreeLive()
                 qDebug() << "Split Error: Line" << i << SL.at(i);
             }
         }
+    }
+}
+
+bool MainWindow::eventFilter(QObject *obj, QEvent *event)
+{
+    if (obj == ui->graphicsView) {
+        if (event->type() == QEvent::MouseMove) { //晃动显示并开始计时
+            if(isFullScreen()){
+                setCursor(Qt::ArrowCursor);
+                ui->sliderProgress->show();
+                ui->controlPanel->show();
+                timer_controlPanel->start(3000);
+            }
+            return true;
+        }
+    } else if (obj == ui->controlPanel) {
+        if (event->type() == QEvent::Enter) { //进入停止计时
+            timer_controlPanel->stop();
+        } else if (event->type() == QEvent::Leave) { //离开开始计时
+            timer_controlPanel->start(3000);
+        }
+    } else {
+        return QObject::eventFilter(obj, event);
     }
 }
