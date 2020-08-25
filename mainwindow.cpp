@@ -118,6 +118,7 @@ MainWindow::MainWindow(QWidget *parent) :
     genTreeLive();
     TWI_search = new QTreeWidgetItem(ui->treeWidget);
     TWI_search->setText(0, "搜索");
+    TWI_search->setToolTip(0, "");
 
     QStringList SL_args = QApplication::arguments();
     qDebug() << SL_args;
@@ -1263,7 +1264,6 @@ void MainWindow::search()
                 delete TWI;
                 //TWI = nullptr;
             }
-            //ui->treeWidget->clear();
             QJsonArray data = JD.object().value("data").toArray();
             for (int i=0; i<data.size(); i++) {
                 QTreeWidgetItem *TWI1 = new QTreeWidgetItem(TWI_search);
@@ -1279,6 +1279,7 @@ void MainWindow::search()
                     }
                 }
             }
+            TWI_search->setExpanded(true);
         } else {
             ui->statusBar->showMessage("搜索错误", 5000);
         }
@@ -1287,12 +1288,14 @@ void MainWindow::search()
 
 void MainWindow::treeWidgetItemDoubleClicked(QTreeWidgetItem *item, int column)
 {
-    Q_UNUSED(column);
-    //qDebug() << column << item->text(column) << item->toolTip(column);
-    setWindowTitle(item->parent()->text(0) + item->text(0));
-    ui->statusBar->showMessage("播放 " + item->toolTip(0));
-    player->setMedia(QUrl(item->toolTip(0)));
-    player->play();
+    //Q_UNUSED(column);
+    qDebug() << item->parent() << column << item->text(column) << item->toolTip(column);
+    if (item->parent()) {
+        setWindowTitle(item->parent()->text(0) + item->text(0));
+        ui->statusBar->showMessage("播放 " + item->toolTip(0));
+        player->setMedia(QUrl(item->toolTip(0)));
+        player->play();
+    }
 }
 
 void MainWindow::genTreeLive()
@@ -1306,6 +1309,7 @@ void MainWindow::genTreeLive()
         file->close();
         QTreeWidgetItem *TWI = new QTreeWidgetItem(ui->treeWidget);
         TWI->setText(0, "直播");
+        TWI->setToolTip(0, "");
         QStringList SL = s.split("\n");
         for (int i=0; i<SL.size(); i++) {
             QStringList SL1 = SL.at(i).split(",");
