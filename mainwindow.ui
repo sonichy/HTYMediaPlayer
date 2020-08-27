@@ -543,6 +543,7 @@
      <addaction name="action_scale1"/>
      <addaction name="action_scale1_5"/>
      <addaction name="action_scale2"/>
+     <addaction name="action_scale0"/>
     </widget>
     <addaction name="action_fullscreen"/>
     <addaction name="menu_scale"/>
@@ -718,6 +719,14 @@
   <action name="action_checkVersion">
    <property name="text">
     <string>检查更新</string>
+   </property>
+  </action>
+  <action name="action_scale0">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>原始大小</string>
    </property>
   </action>
  </widget>

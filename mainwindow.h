@@ -47,7 +47,7 @@ private:
     QTableWidget *table;
     float sr=1;
     QPoint m_point;
-    int widthV, heightV, listVisible, angle=0, mh=1, mv=1;
+    int widthV=0, heightV=0,widthV0=0, heightV0=0, listVisible, angle=0, mh=1, mv=1;
     bool isListShow, isManualUpdate=false;
     void dragEnterEvent(QDragEnterEvent*);
     void dropEvent(QDropEvent*);
@@ -113,6 +113,7 @@ private slots:
     void resizeEvent(QResizeEvent*);
     void addHistory(QString url);
     void openHistory(bool);
+    void on_action_scale0_triggered();
     void on_action_scale0_5_triggered();
     void on_action_scale1_triggered();
     void on_action_scale1_5_triggered();

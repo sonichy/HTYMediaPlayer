@@ -1,4 +1,3 @@
-#pragma execution_character_set("utf-8")
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QFileDialog>
@@ -41,15 +40,17 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->lineEdit_search, SIGNAL(returnPressed()), this, SLOT(search()));
     connect(ui->treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(treeWidgetItemDoubleClicked(QTreeWidgetItem*, int)));
 
-    QActionGroup *actionGroupScale = new QActionGroup(this);
-    actionGroupScale->addAction(ui->action_scale0_5);
-    actionGroupScale->addAction(ui->action_scale1);
-    actionGroupScale->addAction(ui->action_scale1_5);
-    actionGroupScale->addAction(ui->action_scale2);
+    QActionGroup *actionGroup_scale = new QActionGroup(this);
+    actionGroup_scale->addAction(ui->action_scale0_5);
+    actionGroup_scale->addAction(ui->action_scale1);
+    actionGroup_scale->addAction(ui->action_scale1_5);
+    actionGroup_scale->addAction(ui->action_scale2);
+    actionGroup_scale->addAction(ui->action_scale0);
 
     scene = new QGraphicsScene;
     scene->setBackgroundBrush(Qt::black);
     GVI = new QGraphicsVideoItem;
+    GVI->setAspectRatioMode(Qt::IgnoreAspectRatio);
     scene->addItem(GVI);
     GTI = new QGraphicsTextItem;
     GTI->setDefaultTextColor(Qt::white);
@@ -116,6 +117,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(new QShortcut(QKeySequence(Qt::Key_Down),this), SIGNAL(activated()), this, SLOT(on_action_volumeDown_triggered()));
     connect(new QShortcut(QKeySequence(Qt::Key_M),this), SIGNAL(activated()), this, SLOT(on_action_volumeMute_triggered()));
     connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_I),this), SIGNAL(activated()), this, SLOT(on_action_info_triggered()));
+     connect(new QShortcut(QKeySequence(Qt::Key_0),this), SIGNAL(activated()), this, SLOT(on_action_scale0_triggered()));
     connect(new QShortcut(QKeySequence(Qt::Key_1),this), SIGNAL(activated()), this, SLOT(on_action_scale1_triggered()));
     connect(new QShortcut(QKeySequence(Qt::Key_2),this), SIGNAL(activated()), this, SLOT(on_action_scale2_triggered()));
     connect(new QShortcut(QKeySequence(Qt::Key_3),this), SIGNAL(activated()), this, SLOT(on_action_scale1_5_triggered()));
@@ -174,7 +176,7 @@ MainWindow::MainWindow(QWidget *parent) :
             //浏览器端传来的数据会有一个双引号引在两端
             url = url.mid(1, url.length()-2);
             qDebug() << url;
-            if(url != ""){
+            if (url != "") {
                 ui->widgetZY->hide();
                 player->setMedia(QUrl(url));
                 player->play();
@@ -182,9 +184,6 @@ MainWindow::MainWindow(QWidget *parent) :
                 setWindowTitle(url);
             }
         }
-    }else{
-        //fillTable("tv.m3u8");
-        //fillTable("tv.txt");
     }
 
     dialogUrl = new DialogURL(this);
@@ -192,7 +191,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(dialogUrl->ui->tableWidget,SIGNAL(cellClicked(int,int)),this,SLOT(playURL(int,int)));
     MPLurl = new QMediaPlaylist;
     MPLurl->setPlaybackMode(QMediaPlaylist::Sequential);
-    connect(MPLurl,SIGNAL(currentIndexChanged(int)),this,SLOT(MPLCIChange(int)));
+    connect(MPLurl, SIGNAL(currentIndexChanged(int)), this, SLOT(MPLCIChange(int)));
 
     QTimer::singleShot(5000, this, SLOT(autoCheckVersion()));
 }
@@ -277,7 +276,7 @@ void MainWindow::on_action_capture_triggered()
     QTime t(0,0,0);
     t = t.addMSecs(player->position());
     QString STime = t.toString("HHmmss");
-    QString path = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + QFileInfo(player->currentMedia().canonicalUrl().toString()).baseName() + STime + ".jpg";
+    QString path = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + QFileInfo(windowTitle()).baseName() + STime + ".jpg";
     QImage image(scene->sceneRect().size().toSize(), QImage::Format_ARGB32);
     QPainter painter(&image);
     scene->render(&painter);
@@ -413,7 +412,7 @@ void MainWindow::on_action_volumeMute_triggered()
 
 void MainWindow::on_action_help_triggered()
 {
-    QMessageBox MB(QMessageBox::NoIcon, "帮助", "快捷键：\nO\t打开文件\nU\t打开网址\nT\t直播列表\nI\t导入直播文件\n空格\t播放、暂停\nAlt+回车、双击\t全屏、退出全屏\nEsc\t退出全屏\n上\t增加音量\n下\t减小音量\n左 \t快退\n右\t快进\nM\t静音\nP\t截图\n1\t原始视频大小\n2\t2倍视频大小\n3\t1.5倍视频大小\n4\t0.5倍视频大小\n5\t视频铺满全屏");
+    QMessageBox MB(QMessageBox::NoIcon, "帮助", "快捷键：\nO\t打开文件\nU\t打开网址\nT\t直播列表\nI\t导入直播文件\n空格\t播放、暂停\nAlt+回车\t全屏、退出全屏\n鼠标左键双击\nEsc\t退出全屏\n上\t增加音量\n下\t减小音量\n左 \t快退\n右\t快进\nM\t静音\nP\t截图\n1\t原始视频大小\n2\t2倍视频大小\n3\t1.5倍视频大小\n4\t0.5倍视频大小\n5\t视频铺满全屏");
     MB.setWindowIcon(QIcon(":/icon.png"));
     MB.exec();
 }
@@ -547,23 +546,25 @@ void MainWindow::enterFullscreen()
     if (isListShow)
         ui->widgetZY->setVisible(false);
     ui->centralWidget->setStyleSheet("color:gray; background-color:black;");
-    fitDesktop();
+    //fitDesktop();
 }
 
 void MainWindow::exitFullscreen()
 {
-    showNormal();
-    setCursor(QCursor(Qt::ArrowCursor));
-    ui->menuBar->show();
-    ui->controlPanel->show();
-    ui->statusBar->show();
-    ui->sliderProgress->show();
-    ui->sliderProgress->setStyleSheet("");
-    PMAFullscreen->setText("全屏&F");
-    ui->centralWidget->setStyleSheet("");
-    if (isListShow)
-        ui->widgetZY->setVisible(isListShow);
-    scale(sr);
+    if (isFullScreen()) {
+        showNormal();
+        setCursor(QCursor(Qt::ArrowCursor));
+        ui->menuBar->show();
+        ui->controlPanel->show();
+        ui->statusBar->show();
+        ui->sliderProgress->show();
+        ui->sliderProgress->setStyleSheet("");
+        PMAFullscreen->setText("全屏&F");
+        ui->centralWidget->setStyleSheet("");
+        if (isListShow)
+            ui->widgetZY->setVisible(isListShow);
+        scale(sr);
+    }
 }
 
 void MainWindow::EEFullscreen()
@@ -861,16 +862,17 @@ void MainWindow::metaDataChange()
 {
     qDebug() << "metaDataChange" << player->metaData(QMediaMetaData::Resolution);
     if(player->metaData(QMediaMetaData::Resolution) != QVariant::Invalid && !isFullScreen() && !isMaximized()){
-        if(widthV != player->metaData(QMediaMetaData::Resolution).toSize().width() || heightV != player->metaData(QMediaMetaData::Resolution).toSize().height()){
+        if(widthV0 != player->metaData(QMediaMetaData::Resolution).toSize().width() || heightV0 != player->metaData(QMediaMetaData::Resolution).toSize().height()){
             int wl = 0;
             if (ui->widgetZY->isVisible())
                 wl = ui->widgetZY->width();
-            widthV = player->metaData(QMediaMetaData::Resolution).toSize().width();
-            heightV = player->metaData(QMediaMetaData::Resolution).toSize().height();
+            widthV0 = player->metaData(QMediaMetaData::Resolution).toSize().width();
+            heightV0 = player->metaData(QMediaMetaData::Resolution).toSize().height();
+            widthV = widthV0;
+            heightV = heightV0;
             scene->setSceneRect(0, 0, widthV, heightV);
             GVI->setSize(QSizeF(widthV, heightV));
             resize(widthV + wl, heightV + ui->controlPanel->height() + 60);
-            //move((QApplication::desktop()->width() - width())/2, (QApplication::desktop()->height() - height())/2);
         }
     }
     if (!player->metaData(QMediaMetaData::ThumbnailImage).isNull()) {
@@ -1006,15 +1008,25 @@ void MainWindow::mediaStatusChange(QMediaPlayer::MediaStatus status)
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
-    Q_UNUSED(event);
+    qDebug() << event->spontaneous();
+    if (event->spontaneous() && !isFullScreen()  && (widthV != event->size().width() || heightV != event->size().height())) {
+        widthV = event->size().width();
+        heightV = event->size().height();
+        qDebug() << widthV << heightV;
+        //scene->setSceneRect(QRect(0, 0, event->size().width(), event->size().height()));
+        //GVI->setSize(event->size());
+        scale(sr);
+        float swh = (float) event->size().width() / event->size().height();
+        ui->statusBar->showMessage("比例：" + QString::number(swh));
+    }
 }
 
 void MainWindow::addHistory(QString url)
 {
-    QAction *action = new QAction(url,this);
+    QAction *action = new QAction(url, this);
     action->setData(url);
     ui->menu_history->addAction(action);
-    connect(action,SIGNAL(triggered(bool)),this,SLOT(openHistory(bool)));
+    connect(action, SIGNAL(triggered(bool)), this, SLOT(openHistory(bool)));
     if(ui->menu_history->actions().size()>20)
         ui->menu_history->removeAction(ui->menu_history->actions().at(0));
 }
@@ -1041,8 +1053,7 @@ void MainWindow::scale(float s)
             showNormal();
         scene->setSceneRect(QRect(0, 0, widthV *s, heightV *s));
         GVI->setSize(QSize(widthV * s, heightV * s));
-        if (isFullScreen()) {
-        } else {
+        if (!isFullScreen()) {//窗口适应视频
             if (ui->widgetZY->isVisible()) {
                 resize(widthV * s + ui->widgetZY->width(), heightV * s + ui->menuBar->height() + ui->sliderProgress->height() +ui->controlPanel->height() + ui->statusBar->height());
             } else {
@@ -1050,6 +1061,15 @@ void MainWindow::scale(float s)
             }
         }
     }
+}
+
+void MainWindow::on_action_scale0_triggered()
+{
+    widthV = widthV0;
+    heightV = heightV0;
+    sr = 1;
+    scale(sr);
+    ui->action_scale0->setChecked(true);
 }
 
 void MainWindow::on_action_scale0_5_triggered()
