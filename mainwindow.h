@@ -101,7 +101,6 @@ private slots:
     void contextMenuEvent(QContextMenuEvent*);
     //void playTV(int,int);
     //void fillTable(QString);
-    void hideWidget();
     void metaDataChange();
     void showHideList();
     void errorHandle(QMediaPlayer::Error);

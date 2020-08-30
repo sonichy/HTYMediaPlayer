@@ -579,7 +579,7 @@ void MainWindow::EEFullscreen()
 void MainWindow::durationChange(qint64 d)
 {
     ui->sliderProgress->setMaximum(d);
-    //qDebug() << "player->duration()=" << player->duration() << d;
+    qDebug() << "player->duration() =" << player->duration() << d;
     QTime t(0,0,0);
     t = t.addMSecs(d);
     STimeDuration = t.toString("hh:mm:ss");
@@ -818,22 +818,14 @@ void MainWindow::fillTable(QString filename)
 }
 */
 
-void MainWindow::hideWidget()
-{
-    if(isFullScreen()){
-        ui->sliderProgress->hide();
-        setCursor(QCursor(Qt::BlankCursor));
-    }
-}
-
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
-    Q_UNUSED(event);
-    if (isFullScreen()) {
-        GTI->setPlainText(ui->label_time->text());
-        GTI->show();
-        timer_information->start(3000);
-    }
+//    Q_UNUSED(event);
+//    if (isFullScreen()) {
+//        GTI->setPlainText(ui->label_time->text());
+//        GTI->show();
+//        timer_information->start(3000);
+//    }
 }
 
 void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
@@ -846,16 +838,17 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
+    //无效
     //Q_UNUSED(event);
-    qDebug() << event;
-    if (isFullScreen()) {
-        setCursor(QCursor(Qt::ArrowCursor));
-        ui->sliderProgress->show();
-        QTimer::singleShot(3000, this, [=]{
-            ui->sliderProgress->hide();
-            setCursor(QCursor(Qt::BlankCursor));
-        });
-    }
+//    qDebug() << event;
+//    if (isFullScreen()) {
+//        setCursor(QCursor(Qt::ArrowCursor));
+//        ui->sliderProgress->show();
+//        QTimer::singleShot(3000, this, [=]{
+//            ui->sliderProgress->hide();
+//            setCursor(QCursor(Qt::BlankCursor));
+//        });
+//    }
 }
 
 void MainWindow::metaDataChange()
@@ -1362,19 +1355,25 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
     if (obj == ui->graphicsView) {
         if (event->type() == QEvent::MouseMove) { //晃动显示并开始计时
-            if(isFullScreen()){
+            if (isFullScreen()) {
                 setCursor(Qt::ArrowCursor);
                 ui->sliderProgress->show();
                 ui->controlPanel->show();
                 timer_controlPanel->start(3000);
+                QString s = QDateTime::currentDateTime().toString("hh:mm");
+                GTI->setPlainText(s);
+                GTI->show();
+                timer_information->start(3000);
             }
             return true;
         }
     } else if (obj == ui->controlPanel) {
         if (event->type() == QEvent::Enter) { //进入停止计时
             timer_controlPanel->stop();
+            timer_information->stop();
         } else if (event->type() == QEvent::Leave) { //离开开始计时
             timer_controlPanel->start(3000);
+            timer_information->start(3000);
         }
     } else {
         return QObject::eventFilter(obj, event);
