@@ -546,7 +546,7 @@ void MainWindow::enterFullscreen()
     if (isListShow)
         ui->widgetZY->setVisible(false);
     ui->centralWidget->setStyleSheet("color:gray; background-color:black;");
-    //fitDesktop();
+    fitDesktop();
 }
 
 void MainWindow::exitFullscreen()
@@ -1044,7 +1044,7 @@ void MainWindow::scale(float s)
     if (widthV != 0 || heightV != 0) {
         if (isMaximized())
             showNormal();
-        scene->setSceneRect(QRect(0, 0, widthV *s, heightV *s));
+        scene->setSceneRect(QRect(0, 0, widthV * s, heightV * s));
         GVI->setSize(QSize(widthV * s, heightV * s));
         if (!isFullScreen()) {//窗口适应视频
             if (ui->widgetZY->isVisible()) {
@@ -1096,12 +1096,14 @@ void MainWindow::on_action_scale2_triggered()
 void MainWindow::fitDesktop()
 {
     if (isFullScreen()) {
-        float sw = (float) QApplication::desktop()->width() / widthV;
-        float sh = (float) QApplication::desktop()->height() / heightV;
-        qDebug() << sw << sh;
-        float s = qMax(sw, sh);
-        scene->setSceneRect(QRect(0, 0, widthV *s, heightV *s));
-        GVI->setSize(QSize(QApplication::desktop()->width(), QApplication::desktop()->height()));
+        float s;
+        if (widthV >= heightV) {
+            s = (float) QApplication::desktop()->width() / widthV;
+        } else {
+            s = (float) QApplication::desktop()->height() / heightV;
+        }
+        scene->setSceneRect(QRect(0, 0, widthV * s, heightV * s));
+        GVI->setSize(QSize(widthV * s, heightV * s));
     }
 }
 
