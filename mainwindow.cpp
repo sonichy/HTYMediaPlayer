@@ -483,12 +483,48 @@ void MainWindow::on_pushButton_seek_forward_clicked()
 
 void MainWindow::on_pushButton_skip_backward_clicked()
 {
-
+    playlist->previous();
+    QMediaContent MC = playlist->media(playlist->currentIndex());
+    player->setMedia(MC);
+    player->play();
+    QString surl = MC.canonicalUrl().toString();
+    QTreeWidgetItemIterator it(ui->treeWidget);
+    while (*it) {
+        if((*it)->toolTip(0) == surl){
+            qDebug() << (*it)->text(0);
+            ui->treeWidget->setCurrentItem(*it);
+            QString s = (*it)->parent()->text(0) + (*it)->text(0);
+            setWindowTitle(s);
+            GTI->setPlainText(s);
+            GTI->show();
+            timer_information->start(3000);
+            break;
+        }
+        ++it;
+    }
 }
 
 void MainWindow::on_pushButton_skip_forward_clicked()
 {
-
+    playlist->next();
+    QMediaContent MC = playlist->media(playlist->currentIndex());
+    player->setMedia(MC);
+    player->play();
+    QString surl = MC.canonicalUrl().toString();
+    QTreeWidgetItemIterator it(ui->treeWidget);
+    while (*it) {
+        if((*it)->toolTip(0) == surl){
+            qDebug() << (*it)->text(0);
+            ui->treeWidget->setCurrentItem(*it);
+            QString s = (*it)->parent()->text(0) + (*it)->text(0);
+            setWindowTitle(s);
+            GTI->setPlainText(s);
+            GTI->show();
+            timer_information->start(3000);
+            break;
+        }
+        ++it;
+    }
 }
 
 void MainWindow::on_pushButton_mute_clicked()
@@ -579,7 +615,7 @@ void MainWindow::EEFullscreen()
 void MainWindow::durationChange(qint64 d)
 {
     ui->sliderProgress->setMaximum(d);
-    qDebug() << "player->duration() =" << player->duration() << d;
+    //qDebug() << "player->duration() =" << player->duration() << d;
     QTime t(0,0,0);
     t = t.addMSecs(d);
     STimeDuration = t.toString("hh:mm:ss");
@@ -853,7 +889,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 
 void MainWindow::metaDataChange()
 {
-    qDebug() << "metaDataChange" << player->metaData(QMediaMetaData::Resolution);
+    //qDebug() << "metaDataChange" << player->metaData(QMediaMetaData::Resolution);
     if(player->metaData(QMediaMetaData::Resolution) != QVariant::Invalid && !isFullScreen() && !isMaximized()){
         if(widthV0 != player->metaData(QMediaMetaData::Resolution).toSize().width() || heightV0 != player->metaData(QMediaMetaData::Resolution).toSize().height()){
             int wl = 0;
@@ -979,7 +1015,7 @@ void MainWindow::playURL(int r,int c)
 
 void MainWindow::stateChange(QMediaPlayer::State state)
 {
-    qDebug() << state;
+    //qDebug() << state;
     if (state == QMediaPlayer::PlayingState) {
         ui->pushButton_play->setIcon(QIcon::fromTheme("media-playback-pause"));
     } else if (state == QMediaPlayer::PausedState) {
@@ -992,20 +1028,38 @@ void MainWindow::stateChange(QMediaPlayer::State state)
 void MainWindow::mediaStatusChange(QMediaPlayer::MediaStatus status)
 {
     qDebug() << status;
-    if (status == QMediaPlayer::EndOfMedia) {
-        if(playlist->playbackMode() == QMediaPlaylist::CurrentItemInLoop){
+    if (status == QMediaPlayer::EndOfMedia) {//自动播放下一个
+        if (playlist->playbackMode() == QMediaPlaylist::CurrentItemInLoop || playlist->playbackMode() == QMediaPlaylist::Sequential) {
+            playlist->next();
+            qDebug() << "playlist"<< playlist->currentIndex();
+            QMediaContent MC = playlist->media(playlist->currentIndex());
+            player->setMedia(MC);
             player->play();
+            QString surl = MC.canonicalUrl().toString();
+            QTreeWidgetItemIterator it(ui->treeWidget);
+            while (*it) {
+                if ((*it)->toolTip(0) == surl) {
+                    ui->treeWidget->setCurrentItem(*it);
+                    QString s = (*it)->parent()->text(0) + (*it)->text(0);
+                    setWindowTitle(s);
+                    GTI->setPlainText(s);
+                    GTI->show();
+                    timer_information->start(3000);
+                    break;
+                }
+                ++it;
+            }
         }
     }
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
-    qDebug() << event->spontaneous();
+    //qDebug() << event->spontaneous();
     if (event->spontaneous() && !isFullScreen()  && (widthV != event->size().width() || heightV != event->size().height())) {
         widthV = event->size().width();
         heightV = event->size().height();
-        qDebug() << widthV << heightV;
+        //qDebug() << widthV << heightV;
         //scene->setSceneRect(QRect(0, 0, event->size().width(), event->size().height()));
         //GVI->setSize(event->size());
         scale(sr);
@@ -1128,7 +1182,7 @@ void MainWindow::manualCheckVersion(bool b)
 
 void MainWindow::checkVersion(bool b)
 {
-    qDebug() << b;
+    //qDebug() << b;
     QString surl = "https://raw.githubusercontent.com/sonichy/HTYMediaPlayer/master/version";
     QUrl url(surl);
     QNetworkAccessManager manager;
@@ -1321,6 +1375,20 @@ void MainWindow::treeWidgetItemDoubleClicked(QTreeWidgetItem *item, int column)
         ui->statusBar->showMessage("播放 " + item->toolTip(0));
         player->setMedia(QUrl(item->toolTip(0)));
         player->play();
+
+        playlist->clear();
+        playlist->setPlaybackMode(QMediaPlaylist::Sequential);
+        QTreeWidgetItemIterator it(item->parent());
+        while (*it) {
+            if ((*it)->toolTip(0) != "") {//过滤parent(第一个)
+                playlist->addMedia(QUrl((*it)->toolTip(0)));
+                //qDebug() << (*it)->text(0) << (*it)->toolTip(0) << playlist->addMedia(QUrl((*it)->toolTip(0)));
+            }
+            ++it;
+        }
+        int index = item->parent()->indexOfChild(item);
+        qDebug() << "QTreeItem" << index;
+        playlist->setCurrentIndex(index);
     }
 }
 
