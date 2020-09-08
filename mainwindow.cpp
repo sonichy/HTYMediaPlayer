@@ -1096,12 +1096,9 @@ void MainWindow::on_action_scale2_triggered()
 void MainWindow::fitDesktop()
 {
     if (isFullScreen()) {
-        float s;
-        if (widthV >= heightV) {
-            s = (float) QApplication::desktop()->width() / widthV;
-        } else {
-            s = (float) QApplication::desktop()->height() / heightV;
-        }
+        float s1 = (float) QApplication::desktop()->width() / widthV;
+        float s2 = (float) QApplication::desktop()->height() / heightV;
+        float s = qMin(s1, s2);
         scene->setSceneRect(QRect(0, 0, widthV * s, heightV * s));
         GVI->setSize(QSize(widthV * s, heightV * s));
     }
