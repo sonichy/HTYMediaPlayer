@@ -1333,35 +1333,44 @@ void MainWindow::search()
         ui->statusBar->showMessage("搜索\"" + s + "\"", 5000);
         QString surl = "http://www.zdziyuan.com/inc/s_feifei3zuidam3u8/?m=vod-search&wd=" + s;
         //QString surl = "https://cj.okzy.tv/inc/feifei3ckm3u8s/?m=vod-search&wd=" + s;
-        QJsonDocument JD = QJsonDocument::fromJson(getReply(surl));
-        int status = JD.object().value("status").toInt();
-        if (status == 200) {
-            //清空节点：https://www.cnblogs.com/azbane/p/11966343.html
-            int count = TWI_search->childCount();
-            while (count--) {
-                QTreeWidgetItem *TWI = TWI_search->child(count);
-                TWI_search->removeChild(TWI);
-                delete TWI;
-                //TWI = nullptr;
-            }
-            QJsonArray data = JD.object().value("data").toArray();
-            for (int i=0; i<data.size(); i++) {
-                QTreeWidgetItem *TWI1 = new QTreeWidgetItem(TWI_search);
-                TWI1->setText(0, data[i].toObject().value("vod_name").toString());
-                QString vod_url = data[i].toObject().value("vod_url").toString();
-                QStringList SL1 = vod_url.split("\r\n");
-                for (int k=0; k<SL1.length(); k++) {
-                    if (SL1.at(k).endsWith(".m3u8")) {
-                        QStringList SL2 = SL1.at(k).split("$");
-                        QTreeWidgetItem *TWI2 = new QTreeWidgetItem(TWI1);
-                        TWI2->setText(0, SL2.at(0));
-                        TWI2->setToolTip(0, SL2.at(1));
+        qDebug() << surl;
+        QJsonParseError JPE;
+        QByteArray BA = getReply(surl);
+        QJsonDocument JD = QJsonDocument::fromJson(BA, &JPE);
+        if (JPE.error == QJsonParseError::NoError) {
+            int status = JD.object().value("status").toInt();
+            if (status == 200) {
+                //清空节点：https://www.cnblogs.com/azbane/p/11966343.html
+                int count = TWI_search->childCount();
+                while (count--) {
+                    QTreeWidgetItem *TWI = TWI_search->child(count);
+                    TWI_search->removeChild(TWI);
+                    delete TWI;
+                    //TWI = nullptr;
+                }
+                QJsonArray data = JD.object().value("data").toArray();
+                for (int i=0; i<data.size(); i++) {
+                    QTreeWidgetItem *TWI1 = new QTreeWidgetItem(TWI_search);
+                    TWI1->setText(0, data[i].toObject().value("vod_name").toString());
+                    TWI1->setToolTip(0, "导演：" + data[i].toObject().value("vod_director").toString() + "\n演员：" + data[i].toObject().value("vod_actor").toString() + "\n简介：" + data[i].toObject().value("vod_content").toString().replace("。","。\n") + "\n类型：" + data[i].toObject().value("vod_type").toString() + "\n地区：" + data[i].toObject().value("vod_area").toString() + "\n语言：" + data[i].toObject().value("vod_language").toString() + "\n年份：" + data[i].toObject().value("vod_year").toString());
+                    QString vod_url = data[i].toObject().value("vod_url").toString();
+                    QStringList SL1 = vod_url.split("\r\n");
+                    for (int k=0; k<SL1.length(); k++) {
+                        if (SL1.at(k).endsWith(".m3u8")) {
+                            QStringList SL2 = SL1.at(k).split("$");
+                            QTreeWidgetItem *TWI2 = new QTreeWidgetItem(TWI1);
+                            TWI2->setText(0, SL2.at(0));
+                            TWI2->setToolTip(0, SL2.at(1));
+                        }
                     }
                 }
+                TWI_search->setExpanded(true);
+            } else {
+                ui->statusBar->showMessage("搜索错误", 5000);
             }
-            TWI_search->setExpanded(true);
         } else {
-            ui->statusBar->showMessage("搜索错误", 5000);
+            ui->statusBar->showMessage(BA, 5000);
+            qDebug() << BA;
         }
     }
 }
