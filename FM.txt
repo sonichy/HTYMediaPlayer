@@ -1,0 +1,13 @@
+北京青年广播,http://audiolive.rbc.cn:1935/live/am927/96K/tzwj_video.m3u8
+吉林音乐广播,http://live.jlradio.net/live/fm927/543210k/tzwj_main.m3u8
+辽宁文艺广播,http://satellitepull.cnr.cn/live/wxlnwygb/playlist.m3u8
+河南天籁之音,http://stream.hndt.com/live/gudian/playlist.m3u8
+湖北经典音乐广播,http://live7.hbtv.com.cn/masvod/hbjdyygb_q1/index.m3u8
+湖南新闻频道,http://satellitepull.cnr.cn/live/wx32hunxwgb/playlist.m3u8
+湖南电台旅游故事频道,http://satellitepull.cnr.cn/live/wx32hunlygb/playlist.m3u8
+湖南金鹰955电台,http://satellitepull.cnr.cn/live/wx32955/playlist.m3u8
+湖南电台潇湘之声,http://satellitepull.cnr.cn/live/wx32hunyygb/playlist.m3u8
+江苏音乐魅力,http://lzlive.vojs.cn/jAmO6Ng/92/live.m3u8
+云南音乐广播,http://satellitepull.cnr.cn/live/wxynyygb/playlist.m3u8
+广东音乐之声,http://satellitepull.cnr.cn/live/wxgdyyzs/playlist.m3u8
+广东城市之声,http://ctt5.rgd.com.cn/fm1036

@@ -62,6 +62,7 @@ private:
     void appandText(QString fileName, QString text);
     QTreeWidgetItem *TWI_search;
     void genTreeLive();
+    void genTreeFM();
 
 private slots:
     void on_action_open_triggered();

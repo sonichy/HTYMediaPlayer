@@ -117,7 +117,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(new QShortcut(QKeySequence(Qt::Key_Down),this), SIGNAL(activated()), this, SLOT(on_action_volumeDown_triggered()));
     connect(new QShortcut(QKeySequence(Qt::Key_M),this), SIGNAL(activated()), this, SLOT(on_action_volumeMute_triggered()));
     connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_I),this), SIGNAL(activated()), this, SLOT(on_action_info_triggered()));
-     connect(new QShortcut(QKeySequence(Qt::Key_0),this), SIGNAL(activated()), this, SLOT(on_action_scale0_triggered()));
+    connect(new QShortcut(QKeySequence(Qt::Key_0),this), SIGNAL(activated()), this, SLOT(on_action_scale0_triggered()));
     connect(new QShortcut(QKeySequence(Qt::Key_1),this), SIGNAL(activated()), this, SLOT(on_action_scale1_triggered()));
     connect(new QShortcut(QKeySequence(Qt::Key_2),this), SIGNAL(activated()), this, SLOT(on_action_scale2_triggered()));
     connect(new QShortcut(QKeySequence(Qt::Key_3),this), SIGNAL(activated()), this, SLOT(on_action_scale1_5_triggered()));
@@ -132,6 +132,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     createPopmenu();
     genTreeLive();
+    genTreeFM();
     TWI_search = new QTreeWidgetItem(ui->treeWidget);
     TWI_search->setText(0, "搜索");
     TWI_search->setToolTip(0, "");
@@ -274,7 +275,7 @@ void MainWindow::on_action_quit_triggered()
 void MainWindow::on_action_capture_triggered()
 {
     QTime t(0,0,0);
-    t = t.addMSecs(player->position());
+    t = t.addMSecs(static_cast<int>(player->position()));
     QString STime = t.toString("HHmmss");
     QString path = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + QFileInfo(windowTitle()).baseName() + STime + ".jpg";
     QImage image(scene->sceneRect().size().toSize(), QImage::Format_ARGB32);
@@ -320,12 +321,12 @@ void MainWindow::on_action_capture16_triggered()
     painter.drawText(700, 60, "视频时长：" + STimeDuration);
     for(qint64 i=player->duration()/16; i<player->duration(); i+=player->duration()/16){
         player->setPosition(i);
-        QPixmap pixmap(scene->sceneRect().size().width(), scene->sceneRect().size().height());
+        QPixmap pixmap(static_cast<int>(scene->sceneRect().size().width()), static_cast<int>(scene->sceneRect().size().height()));
         QPainter painter1(&pixmap);
         scene->render(&painter1);
         pixc[k] = pixmap.scaled(320, 240, Qt::KeepAspectRatio);
         QTime t(0,0,0);
-        t = t.addMSecs(player->position());
+        t = t.addMSecs(static_cast<int>(player->position()));
         QString STimeElapse = t.toString("hh:mm:ss");
         QPainter painter2(&pixc[k]);
         painter2.setPen(QPen(Qt::white));
@@ -348,7 +349,7 @@ void MainWindow::on_action_capture16_triggered()
     painter.setFont(font);
     painter.drawText(100, 50, "海天鹰播放器");
     QString path = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/Summary_" + QFileInfo(filename).baseName() + ".jpg";
-    pixDS.save(path,0,100);
+    pixDS.save(path, nullptr, 100);
     player->play();
     player->setMuted(false);
 }
@@ -356,25 +357,25 @@ void MainWindow::on_action_capture16_triggered()
 void MainWindow::on_action_info_triggered()
 {
     QString path = player->currentMedia().canonicalUrl().toString();
-    if(path.startsWith("file://"))
+    if (path.startsWith("file://"))
         path = path.mid(7);
-    QString s = "媒体地址：" + path + "\n";
+    QString s = "名称：" + QFileInfo(windowTitle()).completeBaseName() + "\n媒体地址：" + path + "\n";
     QStringList SLMD = player->availableMetaData();
     //qDebug() << SLMD;
-    for(int i=0; i<SLMD.size(); i++){
-        if(SLMD.at(i)=="PixelAspectRatio" || SLMD.at(i)=="Resolution"){
+    for (int i=0; i<SLMD.size(); i++) {
+        if (SLMD.at(i) == "PixelAspectRatio" || SLMD.at(i) == "Resolution") {
             s += SLMD.at(i) + ": " + QString::number(player->metaData(SLMD.at(i)).toSize().width()) + " X " + QString::number(player->metaData(SLMD.at(i)).toSize().height()) + "\n";
-        }else{
+        } else {
             s += SLMD.at(i) + ": " + player->metaData(SLMD.at(i)).toString() + "\n";
         }
     }
 
     s += "文件大小：" + SB(QFileInfo(path).size());
-    QMessageBox MBInfo(QMessageBox::NoIcon, "信息", s);
+    QMessageBox MB(QMessageBox::NoIcon, "信息", s);
     QImage imageCover = player->metaData(QMediaMetaData::ThumbnailImage).value<QImage>();
-    MBInfo.setIconPixmap(QPixmap::fromImage(imageCover));
-    MBInfo.setWindowIcon(QIcon(":/icon.png"));
-    MBInfo.exec();
+    MB.setIconPixmap(QPixmap::fromImage(imageCover));
+    MB.setWindowIcon(QIcon(":/icon.png"));
+    MB.exec();
 }
 
 void MainWindow::on_action_volumeUp_triggered()
@@ -419,7 +420,7 @@ void MainWindow::on_action_help_triggered()
 
 void MainWindow::on_action_changelog_triggered()
 {
-    QString s = "3.0\n(2020-08)\n移除直播列表，增加OK资源网列表。\n\n2.0\n(2020-02)\n使用 QGraphicsVideoItem 代替 QVideoWidget，以便实现视频旋转和镜像。\n参考：https://github.com/mgardner99/490/blob/master/mainwindow.cpp。\n\n1.16\n(2020-02)\n右键菜单增加快捷键，右键菜单增加视频信息。\n\n1.15\n(2019-01)\n截图文件名改为：媒体文件名+当前进度时间。\n\n1.14\n(2018-12)\n支持打开xspf列表。\n\n1.13\n(2018-09)\n增加：写日志。\n修复Qt5.10按钮黑色背景。\n\n1.12\n(2018-06)\n增加：自动更新和手动更新。\n改动：历史记录限制到20条。\n\n1.11\n(2018-05)\n修复：从右键打开方式无法打开文件。\n(2018-04)\n修复：视频分辨率为0X0时，缩放出错。\n\n1.10\n(2018-03)\n修复：拖动进度条时，进度条被拉回的问题。\n修复：从历史记录打开视频没有修改文件名，导致剧情连拍文件名错误。\n修复：增加从Chrome扩展打开后，调试时窗口无法启动和从外部程序启动打开文件中断。\n\n1.9\n(2018-01)\n打开URL时自动粘贴剪贴板文字。\n\n1.8\n(2017-12)\n文件信息增加文件大小。\n增加视频缩放。\n\n1.7\n(2017-11)\n增加对直播API的解析，换鼠标拖动代码更平滑，增加windows版编译图标。\n(2017-10)\n增加历史记录。\n增加接收Chrome扩展传来的直播网址。\n修复m_bPressed没有初始化引起鼠标移动界面移动的Bug，音频封面Windows调试，取消会引起窗口宽度变化的关闭直播列表缩小窗宽，感谢Snail1991。\n如果播放的音乐有封面则显示。\n(2017-09)\n启动、暂停、停止显示广告。\n解决网络视频媒体信息频繁变更引起界面多余的缩放动作。\n\n1.6\n(2017-09)\n增加解析分号分隔的网络媒体字符串到播放列表。\n遍历媒体信息。\n\n1.5\n(2017-09)\n增加显示错误信息。\n(2017-08-20)\n增加拖放打开文件。\n\n1.4\n(2017-06)\n更新日志太长，消息框改成带滚动条的文本框。\n打开本地文件，自动隐藏直播列表。\n(2017-05)\n系统升级后出现有声音无视频，根据 https://bugreports.qt.io/browse/QTBUG-23761，卸载 sudo apt-get remove gstreamer1.0-vaapi 修复。\n\n1.3 (2017-04)\n记忆全屏前直播列表是否显示，以便退出全屏后恢复。\n直播列表做进主窗体内并支持显隐。\n\n1.2 (2017-03)\n增加打开方式打开文件。\n右键增加截图菜单。\n增加剧情连拍。\n增加截图。\n\n1.1 (2017-03)\n窗口标题增加台号。\n (2017-02)\n合并导入重复代码。\n加入逗号判断，解决导入崩溃。\n增加导入直播列表菜单。\n上一个、下一个按钮换台。\n增加直播列表。\n\n1.0 (2017-02)\n静音修改图标和拖动条。\n增加快进、快退。\n增加时间。\n修复拖动进度条卡顿BUG。\n全屏修改进度条样式。\n实现全屏。\n增加视频控件。\n增加控制栏。";
+    QString s = "3.1\n(2020-12)\n增加广播列表。\n\n3.0\n(2020-08)\n移除直播列表，增加OK资源网列表。\n\n2.0\n(2020-02)\n使用 QGraphicsVideoItem 代替 QVideoWidget，以便实现视频旋转和镜像。\n参考：https://github.com/mgardner99/490/blob/master/mainwindow.cpp。\n\n1.16\n(2020-02)\n右键菜单增加快捷键，右键菜单增加视频信息。\n\n1.15\n(2019-01)\n截图文件名改为：媒体文件名+当前进度时间。\n\n1.14\n(2018-12)\n支持打开xspf列表。\n\n1.13\n(2018-09)\n增加：写日志。\n修复Qt5.10按钮黑色背景。\n\n1.12\n(2018-06)\n增加：自动更新和手动更新。\n改动：历史记录限制到20条。\n\n1.11\n(2018-05)\n修复：从右键打开方式无法打开文件。\n(2018-04)\n修复：视频分辨率为0X0时，缩放出错。\n\n1.10\n(2018-03)\n修复：拖动进度条时，进度条被拉回的问题。\n修复：从历史记录打开视频没有修改文件名，导致剧情连拍文件名错误。\n修复：增加从Chrome扩展打开后，调试时窗口无法启动和从外部程序启动打开文件中断。\n\n1.9\n(2018-01)\n打开URL时自动粘贴剪贴板文字。\n\n1.8\n(2017-12)\n文件信息增加文件大小。\n增加视频缩放。\n\n1.7\n(2017-11)\n增加对直播API的解析，换鼠标拖动代码更平滑，增加windows版编译图标。\n(2017-10)\n增加历史记录。\n增加接收Chrome扩展传来的直播网址。\n修复m_bPressed没有初始化引起鼠标移动界面移动的Bug，音频封面Windows调试，取消会引起窗口宽度变化的关闭直播列表缩小窗宽，感谢Snail1991。\n如果播放的音乐有封面则显示。\n(2017-09)\n启动、暂停、停止显示广告。\n解决网络视频媒体信息频繁变更引起界面多余的缩放动作。\n\n1.6\n(2017-09)\n增加解析分号分隔的网络媒体字符串到播放列表。\n遍历媒体信息。\n\n1.5\n(2017-09)\n增加显示错误信息。\n(2017-08-20)\n增加拖放打开文件。\n\n1.4\n(2017-06)\n更新日志太长，消息框改成带滚动条的文本框。\n打开本地文件，自动隐藏直播列表。\n(2017-05)\n系统升级后出现有声音无视频，根据 https://bugreports.qt.io/browse/QTBUG-23761，卸载 sudo apt-get remove gstreamer1.0-vaapi 修复。\n\n1.3 (2017-04)\n记忆全屏前直播列表是否显示，以便退出全屏后恢复。\n直播列表做进主窗体内并支持显隐。\n\n1.2 (2017-03)\n增加打开方式打开文件。\n右键增加截图菜单。\n增加剧情连拍。\n增加截图。\n\n1.1 (2017-03)\n窗口标题增加台号。\n (2017-02)\n合并导入重复代码。\n加入逗号判断，解决导入崩溃。\n增加导入直播列表菜单。\n上一个、下一个按钮换台。\n增加直播列表。\n\n1.0 (2017-02)\n静音修改图标和拖动条。\n增加快进、快退。\n增加时间。\n修复拖动进度条卡顿BUG。\n全屏修改进度条样式。\n实现全屏。\n增加视频控件。\n增加控制栏。";
     QDialog *dialog = new QDialog;
     dialog->setWindowIcon(QIcon(":/icon.png"));
     dialog->setWindowTitle("更新历史");
@@ -445,7 +446,7 @@ void MainWindow::on_action_changelog_triggered()
 
 void MainWindow::on_action_aboutQt_triggered()
 {
-    QMessageBox::aboutQt(NULL, "关于 Qt");
+    QMessageBox::aboutQt(nullptr, "关于 Qt");
 }
 
 void MainWindow::on_action_about_triggered()
@@ -490,12 +491,12 @@ void MainWindow::on_pushButton_skip_backward_clicked()
     QString surl = MC.canonicalUrl().toString();
     QTreeWidgetItemIterator it(ui->treeWidget);
     while (*it) {
-        if((*it)->toolTip(0) == surl){
+        if ((*it)->toolTip(0) == surl) {
             qDebug() << (*it)->text(0);
             ui->treeWidget->setCurrentItem(*it);
-            QString s = (*it)->parent()->text(0) + (*it)->text(0);
-            setWindowTitle(s);
-            GTI->setPlainText(s);
+            QString name = (*it)->parent()->text(0) + " - " + (*it)->text(0);
+            setWindowTitle(name);
+            GTI->setPlainText(name);
             GTI->show();
             timer_information->start(3000);
             break;
@@ -513,10 +514,10 @@ void MainWindow::on_pushButton_skip_forward_clicked()
     QString surl = MC.canonicalUrl().toString();
     QTreeWidgetItemIterator it(ui->treeWidget);
     while (*it) {
-        if((*it)->toolTip(0) == surl){
+        if ((*it)->toolTip(0) == surl) {
             qDebug() << (*it)->text(0);
             ui->treeWidget->setCurrentItem(*it);
-            QString s = (*it)->parent()->text(0) + (*it)->text(0);
+            QString s = (*it)->parent()->text(0) + " - " + (*it)->text(0);
             setWindowTitle(s);
             GTI->setPlainText(s);
             GTI->show();
@@ -1197,7 +1198,7 @@ void MainWindow::checkVersion(bool b)
     QStringList SLVN = QString(BA).split(".");
     QStringList SLV = version.split(".");
     if((SLVN.at(0) > SLV.at(0)) || (SLVN.at(0) == SLV.at(0) && SLVN.at(1) > SLV.at(1))){
-        QMessageBox::StandardButton SB = QMessageBox::question(NULL, "海天鹰播放器 更新", "检查到有更新，是否从 " + version + " 升级到 " + BA + " ?", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        QMessageBox::StandardButton SB = QMessageBox::question(nullptr, "海天鹰播放器 更新", "检查到有更新，是否从 " + version + " 升级到 " + BA + " ?", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
         if(SB == QMessageBox::Yes){
             surl = "https://codeload.github.com/sonichy/HTYMediaPlayer/zip/master";
             reply = manager.get(QNetworkRequest(QUrl(surl)));
@@ -1214,7 +1215,7 @@ void MainWindow::checkVersion(bool b)
             ui->statusBar->showMessage("更新包已下载到 " + filepath);
         }
     }else if(b){
-        QMessageBox::information(NULL, "海天鹰播放器 更新", "当前版本 " + version +" 是最新的版本！");
+        QMessageBox::information(nullptr, "海天鹰播放器 更新", "当前版本 " + version +" 是最新的版本！");
         //isManualUpdate = true;
     }else{
         ui->statusBar->showMessage("当前版本 " + version +" 是最新的版本！");
@@ -1351,8 +1352,9 @@ void MainWindow::search()
                 QJsonArray data = JD.object().value("data").toArray();
                 for (int i=0; i<data.size(); i++) {
                     QTreeWidgetItem *TWI1 = new QTreeWidgetItem(TWI_search);
-                    TWI1->setText(0, data[i].toObject().value("vod_name").toString());
-                    TWI1->setToolTip(0, "导演：" + data[i].toObject().value("vod_director").toString() + "\n演员：" + data[i].toObject().value("vod_actor").toString() + "\n简介：" + data[i].toObject().value("vod_content").toString().replace("。","。\n") + "\n类型：" + data[i].toObject().value("vod_type").toString() + "\n地区：" + data[i].toObject().value("vod_area").toString() + "\n语言：" + data[i].toObject().value("vod_language").toString() + "\n年份：" + data[i].toObject().value("vod_year").toString());
+                    QString vod_name = data[i].toObject().value("vod_name").toString();
+                    TWI1->setText(0, vod_name);
+                    TWI1->setToolTip(0, vod_name + "\n导演：" + data[i].toObject().value("vod_director").toString() + "\n演员：" + data[i].toObject().value("vod_actor").toString() + "\n简介：" + data[i].toObject().value("vod_content").toString().replace("。","。\n") + "\n类型：" + data[i].toObject().value("vod_type").toString() + "\n地区：" + data[i].toObject().value("vod_area").toString() + "\n语言：" + data[i].toObject().value("vod_language").toString() + "\n年份：" + data[i].toObject().value("vod_year").toString());
                     QString vod_url = data[i].toObject().value("vod_url").toString();
                     QStringList SL1 = vod_url.split("\r\n");
                     for (int k=0; k<SL1.length(); k++) {
@@ -1380,7 +1382,7 @@ void MainWindow::treeWidgetItemDoubleClicked(QTreeWidgetItem *item, int column)
     //Q_UNUSED(column);
     qDebug() << item->parent() << column << item->text(column) << item->toolTip(column);
     if (item->parent()) {
-        setWindowTitle(item->parent()->text(0) + item->text(0));
+        setWindowTitle(item->parent()->text(0) + " - " + item->text(0));
         ui->statusBar->showMessage("播放 " + item->toolTip(0));
         player->setMedia(QUrl(item->toolTip(0)));
         player->play();
@@ -1427,6 +1429,32 @@ void MainWindow::genTreeLive()
     }
 }
 
+void MainWindow::genTreeFM()
+{
+    QString filepath = QApplication::applicationDirPath() + "/FM.txt";
+    QFile *file = new QFile(filepath);
+    if (file->open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream TS(file);
+        TS.setCodec("UTF-8");
+        QString s = TS.readAll();
+        file->close();
+        QTreeWidgetItem *TWI = new QTreeWidgetItem(ui->treeWidget);
+        TWI->setText(0, "广播");
+        TWI->setToolTip(0, "");
+        QStringList SL = s.split("\n");
+        for (int i=0; i<SL.size(); i++) {
+            QStringList SL1 = SL.at(i).split(",");
+            QTreeWidgetItem *TWI1 = new QTreeWidgetItem(TWI);
+            if (SL1.size() > 1) {
+                TWI1->setText(0, SL1.at(0));
+                TWI1->setToolTip(0, SL1.at(1));
+            } else {
+                qDebug() << "Split Error: Line" << i << SL.at(i);
+            }
+        }
+    }
+}
+
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
     if (obj == ui->graphicsView) {
@@ -1451,7 +1479,6 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             timer_controlPanel->start(3000);
             timer_information->start(3000);
         }
-    } else {
-        return QObject::eventFilter(obj, event);
     }
+    return QObject::eventFilter(obj, event);
 }
